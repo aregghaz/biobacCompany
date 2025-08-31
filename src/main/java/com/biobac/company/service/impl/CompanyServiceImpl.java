@@ -8,6 +8,7 @@ import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.request.FilterCriteria;
+import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +41,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public CompanyDto getCompany(Long companyId) {
+    public CompanyResponse getCompany(Long companyId) {
         return companyRepository.findById(companyId)
-                .map(companyMapper::toDto)
+                .map(companyMapper::toResponse)
                 .orElseThrow(() -> new NotFoundException("Company with ID " + companyId + " does not exist."));
     }
 
@@ -73,16 +74,16 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CompanyDto> listAllCompanies() {
+    public List<CompanyResponse> listAllCompanies() {
         return companyRepository.findAll()
                 .stream()
-                .map(companyMapper::toDto)
+                .map(companyMapper::toResponse)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Pair<List<CompanyDto>, PaginationMetadata> listCompaniesWithPagination(Integer page, Integer size, String sortBy, String sortDir, Map<String, FilterCriteria> filters) {
+    public Pair<List<CompanyResponse>, PaginationMetadata> listCompaniesWithPagination(Integer page, Integer size, String sortBy, String sortDir, Map<String, FilterCriteria> filters) {
         Sort sort = sortDir.equalsIgnoreCase("asc") ?
                 Sort.by(sortBy).ascending() :
                 Sort.by(sortBy).descending();
@@ -93,9 +94,9 @@ public class CompanyServiceImpl implements CompanyService {
 
         Page<Company> companyPage = companyRepository.findAll(spec, pageable);
 
-        List<CompanyDto> content = companyPage.getContent()
+        List<CompanyResponse> content = companyPage.getContent()
                 .stream()
-                .map(companyMapper::toDto)
+                .map(companyMapper::toResponse)
                 .toList();
 
         PaginationMetadata metadata = new PaginationMetadata(

@@ -4,41 +4,47 @@ import com.biobac.company.dto.CompanyDto;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ApiResponse;
+import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.constraints.Min;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/company")
 @RequiredArgsConstructor
+@Validated
 public class CompanyController {
     private final CompanyService companyService;
 
     @PostMapping("/pagination")
-    public ApiResponse<List<CompanyDto>> listCompaniesWithPagination(
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size,
+    public ApiResponse<List<CompanyResponse>> listCompaniesWithPagination(
+            @RequestParam(required = false, defaultValue = "0") @Min(0) int page,
+            @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir,
-            @RequestBody Map<String, FilterCriteria> filters) {
-        Pair<List<CompanyDto>, PaginationMetadata> result = companyService.listCompaniesWithPagination(page, size, sortBy, sortDir, filters);
+            @RequestBody(required = false) Map<String, FilterCriteria> filters) {
+        Map<String, FilterCriteria> safeFilters = (filters == null) ? Collections.emptyMap() : filters;
+        Pair<List<CompanyResponse>, PaginationMetadata> result = companyService.listCompaniesWithPagination(page, size, sortBy, sortDir, safeFilters);
         return ResponseUtil.success("Companies retrieved successfully", result.getFirst(), result.getSecond());
     }
 
     @GetMapping
-    public ApiResponse<List<CompanyDto>> listAllCompanies() {
-        List<CompanyDto> companies = companyService.listAllCompanies();
+    public ApiResponse<List<CompanyResponse>> listAllCompanies() {
+        List<CompanyResponse> companies = companyService.listAllCompanies();
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<CompanyDto> getCompany(@PathVariable Long id) {
-        CompanyDto company = companyService.getCompany(id);
+    public ApiResponse<CompanyResponse> getCompany(@PathVariable Long id) {
+        CompanyResponse company = companyService.getCompany(id);
         return ResponseUtil.success("Company retrieved successfully", company);
     }
 

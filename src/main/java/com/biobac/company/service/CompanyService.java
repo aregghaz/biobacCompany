@@ -3,6 +3,7 @@ package com.biobac.company.service;
 import com.biobac.company.dto.CompanyDto;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.FilterCriteria;
+import com.biobac.company.response.CompanyResponse;
 import org.springframework.data.util.Pair;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,7 @@ public interface CompanyService {
     CompanyDto registerCompany(CompanyDto dto);
 
     @Transactional(readOnly = true)
-    CompanyDto getCompany(Long companyId);
+    CompanyResponse getCompany(Long companyId);
 
     @Transactional
     CompanyDto updateCompany(Long id, CompanyDto dto);
@@ -23,8 +24,8 @@ public interface CompanyService {
     void deleteCompany(Long companyId);
 
     @Transactional(readOnly = true)
-    List<CompanyDto> listAllCompanies();
+    List<CompanyResponse> listAllCompanies();
 
     @Transactional(readOnly = true)
-    Pair<List<CompanyDto>, PaginationMetadata> listCompaniesWithPagination(Integer page, Integer size, String sortBy, String sortDir, Map<String, FilterCriteria> filters);
+    Pair<List<CompanyResponse>, PaginationMetadata> listCompaniesWithPagination(Integer page, Integer size, String sortBy, String sortDir, Map<String, FilterCriteria> filters);
 }
