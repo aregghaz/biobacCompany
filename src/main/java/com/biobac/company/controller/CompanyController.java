@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.constraints.Min;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class CompanyController {
     private final CompanyService companyService;
 
-    @PostMapping("/pagination")
+    @PostMapping("/all")
     public ApiResponse<List<CompanyResponse>> listCompaniesWithPagination(
             @RequestParam(required = false, defaultValue = "0") @Min(0) int page,
             @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
@@ -64,5 +65,11 @@ public class CompanyController {
     public ApiResponse<Void> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
         return ResponseUtil.success("Company deleted successfully");
+    }
+
+    @GetMapping("/name/{id}")
+    public ApiResponse<String> getCompanyName(@PathVariable Long id) {
+        String name = companyService.getCompanyName(id);
+        return ResponseUtil.success("Company name retrieved successfully", name);
     }
 }

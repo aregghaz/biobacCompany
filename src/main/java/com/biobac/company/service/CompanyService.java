@@ -28,4 +28,7 @@ public interface CompanyService {
 
     @Transactional(readOnly = true)
     Pair<List<CompanyResponse>, PaginationMetadata> listCompaniesWithPagination(Integer page, Integer size, String sortBy, String sortDir, Map<String, FilterCriteria> filters);
+
+    @Transactional(readOnly = true)
+    String getCompanyName(Long id);
 }

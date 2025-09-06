@@ -113,4 +113,14 @@ public class CompanyServiceImpl implements CompanyService {
 
         return Pair.of(content, metadata);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getCompanyName(Long id) {
+        String name = companyRepository.findCompanyNameById(id);
+        if (name == null) {
+            throw new NotFoundException("Company with ID " + id + " does not exist.");
+        }
+        return name;
+    }
 }
