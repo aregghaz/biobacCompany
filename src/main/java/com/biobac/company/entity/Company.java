@@ -1,11 +1,10 @@
 package com.biobac.company.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,6 +16,14 @@ public class Company extends BaseAuditable {
     private String name;
     private String address;
     private String phoneNumber;
+    private String managerNumber;
     private String email;
     private String website;
+    @ManyToMany
+    @JoinTable(
+            name = "company_types_mapping",
+            joinColumns = @JoinColumn(name = "company_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_id")
+    )
+    private List<CompanyType> types;
 }

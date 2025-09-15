@@ -1,24 +1,20 @@
-package com.biobac.company.response;
+package com.biobac.company.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class CompanyResponse {
-    private Long id;
+public class CompanyRequest {
     private String name;
     private String address;
     private String phoneNumber;
     private String managerNumber;
     private String email;
     private String website;
-    private List<CompanyTypeResponse> types;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private List<Long> typeIds;
 }

@@ -1,12 +1,14 @@
 package com.biobac.company.service.impl;
 
-import com.biobac.company.dto.CompanyDto;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Company;
+import com.biobac.company.entity.CompanyType;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
+import com.biobac.company.repository.CompanyTypeRepository;
+import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
@@ -28,15 +30,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
+    private final CompanyTypeRepository companyTypeRepository;
     private final CompanyMapper companyMapper;
 
     @Override
     @Transactional
-    public CompanyDto registerCompany(CompanyDto dto) {
-        if (companyRepository.existsByName(dto.getName())) {
-            throw new DuplicateException("Company with name " + dto.getName() + " already exists.");
+    public CompanyResponse registerCompany(CompanyRequest request) {
+        if (companyRepository.existsByName(request.getName())) {
+            throw new DuplicateException("Company with name " + request.getName() + " already exists.");
         }
-        return companyMapper.toDto(companyRepository.save(companyMapper.toEntity(dto)));
+        Company company = companyMapper.toEntity(request);
+        if (request.getTypeIds() != null) {
+            List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
+            company.setTypes(types);
+        }
+        return companyMapper.toResponse(companyRepository.save(company));
     }
 
     @Override
@@ -49,18 +57,22 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional
-    public CompanyDto updateCompany(Long id, CompanyDto dto) {
+    public CompanyResponse updateCompany(Long id, CompanyRequest request) {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Company with ID " + id + " does not exist."));
 
-        if (companyRepository.existsByNameAndIdNot(dto.getName(), id)) {
-            throw new DuplicateException("Company with name " + dto.getName() + " already exists.");
+        if (companyRepository.existsByNameAndIdNot(request.getName(), id)) {
+            throw new DuplicateException("Company with name " + request.getName() + " already exists.");
         }
 
-        companyMapper.updateEntityFromDto(dto, company);
+        companyMapper.updateEntityFromDto(request, company);
+        if (request.getTypeIds() != null) {
+            List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
+            company.setTypes(types);
+        }
 
         Company updatedCompany = companyRepository.save(company);
-        return companyMapper.toDto(updatedCompany);
+        return companyMapper.toResponse(updatedCompany);
     }
 
     @Override

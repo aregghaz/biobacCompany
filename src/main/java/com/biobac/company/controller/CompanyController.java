@@ -2,6 +2,7 @@ package com.biobac.company.controller;
 
 import com.biobac.company.dto.CompanyDto;
 import com.biobac.company.dto.PaginationMetadata;
+import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.CompanyResponse;
@@ -31,7 +32,7 @@ public class CompanyController {
             @RequestParam(required = false, defaultValue = "10") @Min(1) int size,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir,
-            @RequestBody(required = false) Map<String, FilterCriteria> filters) {
+            @RequestBody Map<String, FilterCriteria> filters) {
         Map<String, FilterCriteria> safeFilters = (filters == null) ? Collections.emptyMap() : filters;
         Pair<List<CompanyResponse>, PaginationMetadata> result = companyService.listCompaniesWithPagination(page, size, sortBy, sortDir, safeFilters);
         return ResponseUtil.success("Companies retrieved successfully", result.getFirst(), result.getSecond());
@@ -50,14 +51,14 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<CompanyDto> updateCompany(@PathVariable Long id, @RequestBody CompanyDto companyDto) {
-        CompanyDto updatedCompany = companyService.updateCompany(id, companyDto);
+    public ApiResponse<CompanyResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyRequest request) {
+        CompanyResponse updatedCompany = companyService.updateCompany(id, request);
         return ResponseUtil.success("Company updated successfully", updatedCompany);
     }
 
     @PostMapping
-    public ApiResponse<CompanyDto> registerCompany(@RequestBody CompanyDto companyDto) {
-        CompanyDto registeredCompany = companyService.registerCompany(companyDto);
+    public ApiResponse<CompanyResponse> registerCompany(@RequestBody CompanyRequest request) {
+        CompanyResponse registeredCompany = companyService.registerCompany(request);
         return ResponseUtil.success("Company registered successfully", registeredCompany);
     }
 
