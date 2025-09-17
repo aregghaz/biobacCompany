@@ -13,6 +13,7 @@ public class CompanyRequest {
     private String name;
     private String address;
     private String phoneNumber;
+    private List<Long> attributeGroupIds;
     private String managerNumber;
     private String email;
     private String website;

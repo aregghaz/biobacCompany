@@ -47,6 +47,9 @@ public class CompanyServiceImpl implements CompanyService {
             List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
             company.setTypes(types);
         }
+        if (request.getAttributeGroupIds() != null && !request.getAttributeGroupIds().isEmpty()) {
+            company.setAttributeGroupIds(request.getAttributeGroupIds());
+        }
         Company saved = companyRepository.save(company);
         if (request.getAttributes() != null && !request.getAttributes().isEmpty()) {
             attributeClient.createValues(saved.getId(), AttributeTargetType.COMPANY.name(), request.getAttributes());
@@ -77,7 +80,9 @@ public class CompanyServiceImpl implements CompanyService {
             List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
             company.setTypes(types);
         }
-
+        if (request.getAttributeGroupIds() != null && !request.getAttributeGroupIds().isEmpty()) {
+            company.setAttributeGroupIds(request.getAttributeGroupIds());
+        }
         Company updatedCompany = companyRepository.save(company);
         if (request.getAttributes() != null && !request.getAttributes().isEmpty()) {
             attributeClient.createValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributes());
