@@ -2,6 +2,9 @@ package com.biobac.company.exception;
 
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.utils.ResponseUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,6 +26,29 @@ public class GlobalExceptionHandler {
         int status = ex.getStatusCode().value();
         String message = ex.getReason() != null ? ex.getReason() : ex.getMessage();
         return ResponseEntity.status(status).body(ResponseUtil.error(message));
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ApiResponse<Object>> handleFeignException(FeignException ex) {
+        String errorMessage = "Internal Server Error";
+
+        try {
+            String body = ex.contentUTF8();
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(body);
+
+            if (node.has("message")) {
+                errorMessage = node.get("message").asText();
+            } else {
+                errorMessage = body;
+            }
+        } catch (Exception parseEx) {
+            errorMessage = ex.getMessage();
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ResponseUtil.error(errorMessage));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

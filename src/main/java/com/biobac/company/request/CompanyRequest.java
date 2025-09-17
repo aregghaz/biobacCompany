@@ -17,4 +17,5 @@ public class CompanyRequest {
     private String email;
     private String website;
     private List<Long> typeIds;
+    private List<AttributeUpsertRequest> attributes;
 }

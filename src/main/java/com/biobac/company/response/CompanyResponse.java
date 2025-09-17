@@ -21,4 +21,5 @@ public class CompanyResponse {
     private List<CompanyTypeResponse> types;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<AttributeResponse> attributes;
 }

@@ -1,6 +1,8 @@
 package com.biobac.company.service.impl;
 
+import com.biobac.company.client.AttributeClient;
 import com.biobac.company.dto.PaginationMetadata;
+import com.biobac.company.entity.AttributeTargetType;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.exception.DuplicateException;
@@ -32,6 +34,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanyTypeRepository companyTypeRepository;
     private final CompanyMapper companyMapper;
+    private final AttributeClient attributeClient;
 
     @Override
     @Transactional
@@ -44,7 +47,11 @@ public class CompanyServiceImpl implements CompanyService {
             List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
             company.setTypes(types);
         }
-        return companyMapper.toResponse(companyRepository.save(company));
+        Company saved = companyRepository.save(company);
+        if (request.getAttributes() != null && !request.getAttributes().isEmpty()) {
+            attributeClient.createValues(saved.getId(), AttributeTargetType.COMPANY.name(), request.getAttributes());
+        }
+        return companyMapper.toResponse(saved);
     }
 
     @Override
@@ -72,6 +79,9 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Company updatedCompany = companyRepository.save(company);
+        if (request.getAttributes() != null && !request.getAttributes().isEmpty()) {
+            attributeClient.createValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributes());
+        }
         return companyMapper.toResponse(updatedCompany);
     }
 
@@ -81,6 +91,8 @@ public class CompanyServiceImpl implements CompanyService {
         if (!companyRepository.existsById(companyId)) {
             throw new NotFoundException("Company with ID " + companyId + " does not exist.");
         }
+        attributeClient.deleteValues(companyId, AttributeTargetType.COMPANY.name());
+
         companyRepository.deleteById(companyId);
     }
 
