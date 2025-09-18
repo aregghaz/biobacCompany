@@ -20,7 +20,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             CompanyType companyType1 = new CompanyType("buyer");
             companyTypeRepository.save(companyType1);
 
-            CompanyType companyType2 = new CompanyType("saler");
+            CompanyType companyType2 = new CompanyType("seller");
             companyTypeRepository.save(companyType2);
         }
     }

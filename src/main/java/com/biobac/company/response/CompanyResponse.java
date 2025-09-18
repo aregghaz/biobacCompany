@@ -16,6 +16,7 @@ public class CompanyResponse {
     private String address;
     private String phoneNumber;
     private String managerNumber;
+    private List<Long> attributeGroupIds;
     private String email;
     private String website;
     private List<CompanyTypeResponse> types;

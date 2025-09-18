@@ -10,6 +10,7 @@ import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
+import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
@@ -25,6 +26,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -84,9 +86,11 @@ public class CompanyServiceImpl implements CompanyService {
             company.setAttributeGroupIds(request.getAttributeGroupIds());
         }
         Company updatedCompany = companyRepository.save(company);
-        if (request.getAttributes() != null && !request.getAttributes().isEmpty()) {
-            attributeClient.createValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributes());
-        }
+
+        List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty() ? Collections.emptyList() : request.getAttributes();
+
+        attributeClient.updateValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributeGroupIds(), attributes);
+
         return companyMapper.toResponse(updatedCompany);
     }
 
