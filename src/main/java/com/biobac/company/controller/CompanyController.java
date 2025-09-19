@@ -1,6 +1,5 @@
 package com.biobac.company.controller;
 
-import com.biobac.company.dto.CompanyDto;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
@@ -8,12 +7,11 @@ import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.utils.ResponseUtil;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.constraints.Min;
 
 import java.util.Collections;
 import java.util.List;

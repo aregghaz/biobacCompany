@@ -20,6 +20,9 @@ public class Company extends BaseAuditable {
     private List<Long> attributeGroupIds;
     private String email;
     private String website;
+    @ManyToOne
+    @JoinColumn(name = "region_id")
+    private Region region;
     @ManyToMany
     @JoinTable(
             name = "company_types_mapping",

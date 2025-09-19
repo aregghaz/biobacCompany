@@ -5,11 +5,13 @@ import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.AttributeTargetType;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyType;
+import com.biobac.company.entity.Region;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
+import com.biobac.company.repository.RegionRepository;
 import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
@@ -35,6 +37,7 @@ import java.util.Map;
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanyTypeRepository companyTypeRepository;
+    private final RegionRepository regionRepository;
     private final CompanyMapper companyMapper;
     private final AttributeClient attributeClient;
 
@@ -45,6 +48,11 @@ public class CompanyServiceImpl implements CompanyService {
             throw new DuplicateException("Company with name " + request.getName() + " already exists.");
         }
         Company company = companyMapper.toEntity(request);
+        if (request.getRegionId() != null) {
+            Region region = regionRepository.findById(request.getRegionId())
+                    .orElseThrow(() -> new NotFoundException("Region not found"));
+            company.setRegion(region);
+        }
         if (request.getTypeIds() != null) {
             List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
             company.setTypes(types);
@@ -81,6 +89,11 @@ public class CompanyServiceImpl implements CompanyService {
         if (request.getTypeIds() != null) {
             List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
             company.setTypes(types);
+        }
+        if (request.getRegionId() != null) {
+            Region region = regionRepository.findById(request.getRegionId())
+                    .orElseThrow(() -> new NotFoundException("Region not found"));
+            company.setRegion(region);
         }
         if (request.getAttributeGroupIds() != null && !request.getAttributeGroupIds().isEmpty()) {
             company.setAttributeGroupIds(request.getAttributeGroupIds());

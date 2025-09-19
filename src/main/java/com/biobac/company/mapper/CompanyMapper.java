@@ -4,12 +4,14 @@ import com.biobac.company.client.AttributeClient;
 import com.biobac.company.entity.AttributeTargetType;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyType;
+import com.biobac.company.entity.Region;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.repository.CompanyTypeRepository;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.AttributeResponse;
 import com.biobac.company.response.CompanyResponse;
+import com.biobac.company.response.RegionResponse;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +34,8 @@ public abstract class CompanyMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "types", ignore = true)
     public abstract void updateEntityFromDto(CompanyRequest dto, @MappingTarget Company entity);
+
+    protected abstract RegionResponse toResponse(Region region);
 
     protected List<AttributeResponse> fetchAttributes(Long companyId) {
         if (companyId == null) return Collections.emptyList();
