@@ -15,6 +15,8 @@ public class CompanyRequest {
     private String phoneNumber;
     private List<Long> attributeGroupIds;
     private Long regionId;
+    private boolean advancePayment;
+    private Long saleTypeId;
     private String managerNumber;
     private String email;
     private String website;

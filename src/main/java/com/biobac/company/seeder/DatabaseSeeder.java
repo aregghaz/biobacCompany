@@ -2,8 +2,10 @@ package com.biobac.company.seeder;
 
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.entity.Region;
+import com.biobac.company.entity.SaleType;
 import com.biobac.company.repository.CompanyTypeRepository;
 import com.biobac.company.repository.RegionRepository;
+import com.biobac.company.repository.SaleTypeRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +17,12 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private final CompanyTypeRepository companyTypeRepository;
     private final RegionRepository regionRepository;
+    private final SaleTypeRepository saleTypeRepository;
 
-    public DatabaseSeeder(CompanyTypeRepository companyTypeRepository, RegionRepository regionRepository) {
+    public DatabaseSeeder(CompanyTypeRepository companyTypeRepository, RegionRepository regionRepository, SaleTypeRepository saleTypeRepository) {
         this.companyTypeRepository = companyTypeRepository;
         this.regionRepository = regionRepository;
+        this.saleTypeRepository = saleTypeRepository;
     }
 
     @Override
@@ -29,6 +33,14 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             CompanyType companyType2 = new CompanyType("seller");
             companyTypeRepository.save(companyType2);
+        }
+
+        if(saleTypeRepository.count() == 0){
+            SaleType saleType1 = new SaleType("Wholesale");
+            saleTypeRepository.save(saleType1);
+
+            SaleType saleType2 = new SaleType("Retail");
+            saleTypeRepository.save(saleType2);
         }
 
         if (regionRepository.count() == 0) {

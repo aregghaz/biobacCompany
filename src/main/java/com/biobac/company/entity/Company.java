@@ -16,8 +16,11 @@ public class Company extends BaseAuditable {
     private String name;
     private String address;
     private String phoneNumber;
+    private boolean advancePayment;
     private String managerNumber;
     private List<Long> attributeGroupIds;
+    @ManyToOne
+    private SaleType saleType;
     private String email;
     private String website;
     @ManyToOne

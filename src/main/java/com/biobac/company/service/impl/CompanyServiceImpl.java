@@ -2,16 +2,14 @@ package com.biobac.company.service.impl;
 
 import com.biobac.company.client.AttributeClient;
 import com.biobac.company.dto.PaginationMetadata;
-import com.biobac.company.entity.AttributeTargetType;
-import com.biobac.company.entity.Company;
-import com.biobac.company.entity.CompanyType;
-import com.biobac.company.entity.Region;
+import com.biobac.company.entity.*;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
 import com.biobac.company.repository.RegionRepository;
+import com.biobac.company.repository.SaleTypeRepository;
 import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
@@ -40,6 +38,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final RegionRepository regionRepository;
     private final CompanyMapper companyMapper;
     private final AttributeClient attributeClient;
+    private final SaleTypeRepository saleTypeRepository;
 
     @Override
     @Transactional
@@ -52,6 +51,11 @@ public class CompanyServiceImpl implements CompanyService {
             Region region = regionRepository.findById(request.getRegionId())
                     .orElseThrow(() -> new NotFoundException("Region not found"));
             company.setRegion(region);
+        }
+        if (request.getSaleTypeId() != null) {
+            SaleType saleType = saleTypeRepository.findById(request.getSaleTypeId())
+                    .orElseThrow(() -> new NotFoundException("Sale type not found"));
+            company.setSaleType(saleType);
         }
         if (request.getTypeIds() != null) {
             List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
@@ -94,6 +98,11 @@ public class CompanyServiceImpl implements CompanyService {
             Region region = regionRepository.findById(request.getRegionId())
                     .orElseThrow(() -> new NotFoundException("Region not found"));
             company.setRegion(region);
+        }
+        if (request.getSaleTypeId() != null) {
+            SaleType saleType = saleTypeRepository.findById(request.getSaleTypeId())
+                    .orElseThrow(() -> new NotFoundException("Region not found"));
+            company.setSaleType(saleType);
         }
         if (request.getAttributeGroupIds() != null && !request.getAttributeGroupIds().isEmpty()) {
             company.setAttributeGroupIds(request.getAttributeGroupIds());

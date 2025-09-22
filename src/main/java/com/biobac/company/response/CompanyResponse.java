@@ -17,9 +17,11 @@ public class CompanyResponse {
     private String phoneNumber;
     private String managerNumber;
     private RegionResponse region;
+    private SaleTypeResponse saleType;
     private List<Long> attributeGroupIds;
     private String email;
     private String website;
+    private boolean advancePayment;
     private List<CompanyTypeResponse> types;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
