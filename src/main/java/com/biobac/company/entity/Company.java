@@ -21,6 +21,8 @@ public class Company extends BaseAuditable {
     private String managerNumber;
     private List<Long> attributeGroupIds;
     @ManyToOne
+    private CompanyGroup companyGroup;
+    @ManyToOne
     private SaleType saleType;
     private String email;
     private String website;
@@ -35,4 +37,5 @@ public class Company extends BaseAuditable {
     )
     private List<CompanyType> types;
     private BigDecimal balance;
+    private boolean deleted = false;
 }

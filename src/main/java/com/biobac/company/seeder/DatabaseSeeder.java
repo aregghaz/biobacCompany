@@ -28,15 +28,15 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (companyTypeRepository.count() == 0) {
-            CompanyType companyType1 = new CompanyType("buyer");
+            CompanyType companyType1 = new CompanyType("Покупатели");
             companyTypeRepository.save(companyType1);
 
-            CompanyType companyType2 = new CompanyType("seller");
+            CompanyType companyType2 = new CompanyType("Поставщики");
             companyTypeRepository.save(companyType2);
         }
 
         if(saleTypeRepository.count() == 0){
-            SaleType saleType1 = new SaleType("Wholesale");
+            SaleType saleType1 = new SaleType("Оптовая торговля");
             saleTypeRepository.save(saleType1);
 
             SaleType saleType2 = new SaleType("Retail");

@@ -22,4 +22,5 @@ public class CompanyRequest {
     private String website;
     private List<Long> typeIds;
     private List<AttributeUpsertRequest> attributes;
+    private Long companyGroupId;
 }

@@ -6,15 +6,13 @@ import com.biobac.company.entity.*;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
-import com.biobac.company.repository.CompanyRepository;
-import com.biobac.company.repository.CompanyTypeRepository;
-import com.biobac.company.repository.RegionRepository;
-import com.biobac.company.repository.SaleTypeRepository;
+import com.biobac.company.repository.*;
 import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
+import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,6 +37,8 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyMapper companyMapper;
     private final AttributeClient attributeClient;
     private final SaleTypeRepository saleTypeRepository;
+    private final CompanyGroupRepository companyGroupRepository;
+    private final GroupUtil groupUtil;
 
     @Override
     @Transactional
@@ -47,6 +47,11 @@ public class CompanyServiceImpl implements CompanyService {
             throw new DuplicateException("Company with name " + request.getName() + " already exists.");
         }
         Company company = companyMapper.toEntity(request);
+        if (request.getCompanyGroupId() != null) {
+            CompanyGroup companyGroup = companyGroupRepository.findById(request.getCompanyGroupId())
+                    .orElseThrow(() -> new NotFoundException("Company group not found"));
+            company.setCompanyGroup(companyGroup);
+        }
         if (request.getRegionId() != null) {
             Region region = regionRepository.findById(request.getRegionId())
                     .orElseThrow(() -> new NotFoundException("Region not found"));
@@ -94,6 +99,11 @@ public class CompanyServiceImpl implements CompanyService {
             List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
             company.setTypes(types);
         }
+        if (request.getCompanyGroupId() != null) {
+            CompanyGroup companyGroup = companyGroupRepository.findById(request.getCompanyGroupId())
+                    .orElseThrow(() -> new NotFoundException("Company group not found"));
+            company.setCompanyGroup(companyGroup);
+        }
         if (request.getRegionId() != null) {
             Region region = regionRepository.findById(request.getRegionId())
                     .orElseThrow(() -> new NotFoundException("Region not found"));
@@ -119,18 +129,19 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     @Transactional
     public void deleteCompany(Long companyId) {
-        if (!companyRepository.existsById(companyId)) {
-            throw new NotFoundException("Company with ID " + companyId + " does not exist.");
-        }
-        attributeClient.deleteValues(companyId, AttributeTargetType.COMPANY.name());
-
-        companyRepository.deleteById(companyId);
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new NotFoundException("Company not found"));
+        company.setDeleted(true);
+        companyRepository.save(company);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<CompanyResponse> listAllCompanies() {
-        return companyRepository.findAll()
+        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
+        Specification<Company> spec = CompanySpecification.isDeleted()
+                .and(CompanySpecification.belongsToGroups(groupIds));
+        return companyRepository.findAll(spec)
                 .stream()
                 .map(companyMapper::toResponse)
                 .toList();
@@ -139,13 +150,15 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     @Transactional(readOnly = true)
     public Pair<List<CompanyResponse>, PaginationMetadata> listCompaniesWithPagination(Integer page, Integer size, String sortBy, String sortDir, Map<String, FilterCriteria> filters) {
+        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Sort sort = sortDir.equalsIgnoreCase("asc") ?
                 Sort.by(sortBy).ascending() :
                 Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Specification<Company> spec = CompanySpecification.buildSpecification(filters);
+        Specification<Company> spec = CompanySpecification.buildSpecification(filters)
+                .and(CompanySpecification.belongsToGroups(groupIds));
 
         Page<Company> companyPage = companyRepository.findAll(spec, pageable);
 

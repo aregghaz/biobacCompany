@@ -28,4 +28,6 @@ public class CompanyResponse {
     private LocalDateTime updatedAt;
     private List<AttributeResponse> attributes;
     private BigDecimal balance;
+    private Long companyGroupId;
+    private String companyGroupName;
 }

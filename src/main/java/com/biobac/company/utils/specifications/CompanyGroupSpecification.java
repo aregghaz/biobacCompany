@@ -5,7 +5,6 @@ import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,48 +15,19 @@ import java.util.Map;
 
 import static com.biobac.company.utils.SpecificationUtil.*;
 
-public class CompanySpecification {
-    private static String isTypeField(String field) {
-        Map<String, String> typeField = Map.of(
-                "type", "id",
-                "typeId", "id",
-                "typeIds", "id",
-                "typeName", "id"
-        );
-        return typeField.getOrDefault(field, null);
-    }
-
-    private static String isGroupField(String field) {
-        Map<String, String> groupField = Map.of(
-                "companyGroupId", "id"
-        );
-        return groupField.getOrDefault(field, null);
-    }
-
-    public static Specification<Company> buildSpecification(Map<String, FilterCriteria> filters) {
+public class CompanyGroupSpecification {
+    public static Specification<CompanyGroup> buildSpecification(Map<String, FilterCriteria> filters) {
         return (root, query, cb) -> {
             query.distinct(true);
             List<Predicate> predicates = new ArrayList<>();
             Join<Company, CompanyType> companyTypeJoin = null;
-            Join<Company, CompanyGroup> companyGroupJoin = null;
 
             if (filters != null) {
                 for (Map.Entry<String, FilterCriteria> entry : filters.entrySet()) {
                     String field = entry.getKey();
                     Path<?> path;
-                    if (isTypeField(field) != null) {
-                        if (companyTypeJoin == null) {
-                            companyTypeJoin = root.join("types", JoinType.LEFT);
-                        }
-                        path = companyTypeJoin.get(isTypeField(field));
-                    } else if (isGroupField(field) != null) {
-                        if (companyGroupJoin == null) {
-                            companyGroupJoin = root.join("companyGroup", JoinType.LEFT);
-                        }
-                        path = companyGroupJoin.get(isGroupField(field));
-                    } else {
-                        path = root.get(field);
-                    }
+                    path = root.get(field);
+
                     FilterCriteria criteria = entry.getValue();
                     Predicate predicate = null;
 
@@ -80,16 +50,12 @@ public class CompanySpecification {
         };
     }
 
-    public static Specification<Company> isDeleted() {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.isFalse(root.get("deleted")));
-    }
-
-    public static Specification<Company> belongsToGroups(List<Long> groupIds) {
+    public static Specification<CompanyGroup> belongsToGroups(List<Long> groupIds) {
         return (root, query, cb) -> {
             if (groupIds == null || groupIds.isEmpty()) {
                 return cb.disjunction();
             }
-            return root.get("companyGroup").get("id").in(groupIds);
+            return root.get("id").in(groupIds);
         };
     }
 }
