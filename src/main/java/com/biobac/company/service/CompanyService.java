@@ -23,4 +23,8 @@ public interface CompanyService {
     Pair<List<CompanyResponse>, PaginationMetadata> listCompaniesWithPagination(Integer page, Integer size, String sortBy, String sortDir, Map<String, FilterCriteria> filters);
 
     String getCompanyName(Long id);
+
+    List<CompanyResponse> listAllBuyersCompanies();
+
+    List<CompanyResponse> listAllSellersCompanies();
 }

@@ -92,4 +92,13 @@ public class CompanySpecification {
             return root.get("companyGroup").get("id").in(groupIds);
         };
     }
+
+    public static Specification<Company> filterBuyer() {
+        return (root, query, cb) -> root.get("types").get("id").in(1);
+
+    }
+
+    public static Specification<Company> filterSeller() {
+        return (root, query, cb) -> root.get("types").get("id").in(2);
+    }
 }

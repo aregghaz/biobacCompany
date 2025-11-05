@@ -42,6 +42,18 @@ public class CompanyController {
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 
+    @GetMapping("/buyer")
+    public ApiResponse<List<CompanyResponse>> listAllBuyersCompanies() {
+        List<CompanyResponse> companies = companyService.listAllBuyersCompanies();
+        return ResponseUtil.success("Companies retrieved successfully", companies);
+    }
+
+    @GetMapping("/seller")
+    public ApiResponse<List<CompanyResponse>> listAllSellersCompanies() {
+        List<CompanyResponse> companies = companyService.listAllSellersCompanies();
+        return ResponseUtil.success("Companies retrieved successfully", companies);
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<CompanyResponse> getCompany(@PathVariable Long id) {
         CompanyResponse company = companyService.getCompany(id);
