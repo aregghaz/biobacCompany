@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,7 +16,9 @@ public class Company extends BaseAuditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String address;
+    private String legalAddress;
+    private String actualAddress;
+    private String warehouseAddress;
     private String phoneNumber;
     private boolean advancePayment;
     private String managerNumber;
@@ -38,4 +41,22 @@ public class Company extends BaseAuditable {
     private List<CompanyType> types;
     private BigDecimal balance;
     private boolean deleted = false;
+
+    @ManyToOne
+    private ClientType customerType;
+
+    @ManyToOne
+    private Line line;
+
+    @ManyToOne
+    private Cooperation cooperation;
+
+    @OneToMany(mappedBy = "company")
+    private List<ContactPerson> contactPersons = new ArrayList<>();
+
+    @OneToOne(mappedBy = "company")
+    private Details details;
+
+    @OneToOne(mappedBy = "company")
+    private Conditions conditions;
 }

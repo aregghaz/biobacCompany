@@ -7,9 +7,7 @@ import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.*;
-import com.biobac.company.request.AttributeUpsertRequest;
-import com.biobac.company.request.CompanyRequest;
-import com.biobac.company.request.FilterCriteria;
+import com.biobac.company.request.*;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.utils.GroupUtil;
@@ -38,6 +36,12 @@ public class CompanyServiceImpl implements CompanyService {
     private final AttributeClient attributeClient;
     private final SaleTypeRepository saleTypeRepository;
     private final CompanyGroupRepository companyGroupRepository;
+    private final DetailsRepository detailsRepository;
+    private final ConditionsRepository conditionsRepository;
+    private final ContractFormRepository contractFormRepository;
+    private final FinancialTermsRepository financialTermsRepository;
+    private final DeliveryPayerRepository deliveryPayerRepository;
+    private final DeliveryMethodRepository deliveryMethodRepository;
     private final GroupUtil groupUtil;
 
     @Override
@@ -46,34 +50,30 @@ public class CompanyServiceImpl implements CompanyService {
         if (companyRepository.existsByName(request.getName())) {
             throw new DuplicateException("Company with name " + request.getName() + " already exists.");
         }
+
         Company company = companyMapper.toEntity(request);
-        if (request.getCompanyGroupId() != null) {
-            CompanyGroup companyGroup = companyGroupRepository.findById(request.getCompanyGroupId())
-                    .orElseThrow(() -> new NotFoundException("Company group not found"));
-            company.setCompanyGroup(companyGroup);
+
+        setCompanyRelations(company, request);
+
+        Company savedCompany = companyRepository.save(company);
+
+        if (request.getDetail() != null) {
+            updateOrCreateDetails(savedCompany, request.getDetail());
         }
-        if (request.getRegionId() != null) {
-            Region region = regionRepository.findById(request.getRegionId())
-                    .orElseThrow(() -> new NotFoundException("Region not found"));
-            company.setRegion(region);
+
+        if (request.getCondition() != null) {
+            updateOrCreateConditions(savedCompany, request.getCondition());
         }
-        if (request.getSaleTypeId() != null) {
-            SaleType saleType = saleTypeRepository.findById(request.getSaleTypeId())
-                    .orElseThrow(() -> new NotFoundException("Sale type not found"));
-            company.setSaleType(saleType);
-        }
-        if (request.getTypeIds() != null) {
-            List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
-            company.setTypes(types);
-        }
-        if (request.getAttributeGroupIds() != null && !request.getAttributeGroupIds().isEmpty()) {
-            company.setAttributeGroupIds(request.getAttributeGroupIds());
-        }
-        Company saved = companyRepository.save(company);
+
         if (request.getAttributes() != null && !request.getAttributes().isEmpty()) {
-            attributeClient.createValues(saved.getId(), AttributeTargetType.COMPANY.name(), request.getAttributes());
+            attributeClient.createValues(
+                    savedCompany.getId(),
+                    AttributeTargetType.COMPANY.name(),
+                    request.getAttributes()
+            );
         }
-        return companyMapper.toResponse(saved);
+
+        return companyMapper.toResponse(savedCompany);
     }
 
     @Override
@@ -95,29 +95,16 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         companyMapper.updateEntityFromDto(request, company);
-        if (request.getTypeIds() != null) {
-            List<CompanyType> types = companyMapper.mapTypeIds(request.getTypeIds(), companyTypeRepository);
-            company.setTypes(types);
-        }
-        if (request.getCompanyGroupId() != null) {
-            CompanyGroup companyGroup = companyGroupRepository.findById(request.getCompanyGroupId())
-                    .orElseThrow(() -> new NotFoundException("Company group not found"));
-            company.setCompanyGroup(companyGroup);
-        }
-        if (request.getRegionId() != null) {
-            Region region = regionRepository.findById(request.getRegionId())
-                    .orElseThrow(() -> new NotFoundException("Region not found"));
-            company.setRegion(region);
-        }
-        if (request.getSaleTypeId() != null) {
-            SaleType saleType = saleTypeRepository.findById(request.getSaleTypeId())
-                    .orElseThrow(() -> new NotFoundException("Region not found"));
-            company.setSaleType(saleType);
-        }
-        if (request.getAttributeGroupIds() != null && !request.getAttributeGroupIds().isEmpty()) {
-            company.setAttributeGroupIds(request.getAttributeGroupIds());
-        }
+        setCompanyRelations(company, request);
         Company updatedCompany = companyRepository.save(company);
+
+        if (request.getDetail() != null) {
+            updateOrCreateDetails(updatedCompany, request.getDetail());
+        }
+
+        if (request.getCondition() != null) {
+            updateOrCreateConditions(updatedCompany, request.getCondition());
+        }
 
         List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty() ? Collections.emptyList() : request.getAttributes();
 
@@ -216,5 +203,90 @@ public class CompanyServiceImpl implements CompanyService {
                 .stream()
                 .map(companyMapper::toResponse)
                 .toList();
+    }
+
+    private void setCompanyRelations(Company company, CompanyRequest request) {
+
+        if (request.getCompanyGroupId() != null) {
+            CompanyGroup group = companyGroupRepository.findById(request.getCompanyGroupId())
+                    .orElseThrow(() -> new NotFoundException("Company group not found"));
+            company.setCompanyGroup(group);
+        }
+
+        if (request.getRegionId() != null) {
+            Region region = regionRepository.findById(request.getRegionId())
+                    .orElseThrow(() -> new NotFoundException("Region not found"));
+            company.setRegion(region);
+        }
+
+        if (request.getSaleTypeId() != null) {
+            SaleType saleType = saleTypeRepository.findById(request.getSaleTypeId())
+                    .orElseThrow(() -> new NotFoundException("Sale type not found"));
+            company.setSaleType(saleType);
+        }
+
+        if (request.getTypeIds() != null) {
+            List<CompanyType> types = companyMapper.mapTypeIds(
+                    request.getTypeIds(),
+                    companyTypeRepository
+            );
+            company.setTypes(types);
+        }
+
+        if (request.getAttributeGroupIds() != null) {
+            company.setAttributeGroupIds(request.getAttributeGroupIds());
+        }
+    }
+
+
+    private void updateOrCreateDetails(Company company, DetailsRequest dto) {
+        Details details = detailsRepository.findByCompanyId(company.getId())
+                .orElseGet(Details::new);
+
+        details.setCompany(company);
+        details.setInn(dto.getInn());
+        details.setKpp(dto.getKpp());
+        details.setOgrn(dto.getOgrn());
+        details.setOkpo(dto.getOkpo());
+        details.setBankAccount(dto.getBankAccount());
+        details.setBik(dto.getBik());
+        details.setKs(dto.getKs());
+        details.setBankName(dto.getBankName());
+
+        detailsRepository.save(details);
+    }
+
+    private void updateOrCreateConditions(Company company, ConditionsRequest dto) {
+        Conditions conditions = conditionsRepository.findByCompanyId(company.getId())
+                .orElseGet(Conditions::new);
+
+        conditions.setCompany(company);
+        conditions.setDeliveryMethod(findDeliveryMethod(dto.getDeliveryMethodId()));
+        conditions.setDeliveryPayer(findDeliveryPayer(dto.getDeliveryPayerId()));
+        conditions.setFinancialTerms(findFinancialTerms(dto.getFinancialTermsId()));
+        conditions.setContractForm(findContractForm(dto.getContractFormId()));
+        conditions.setBonus(dto.getBonus());
+
+        conditionsRepository.save(conditions);
+    }
+
+    private DeliveryMethod findDeliveryMethod(Long id) {
+        return deliveryMethodRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("DeliveryMethod not found with id " + id));
+    }
+
+    private DeliveryPayer findDeliveryPayer(Long id) {
+        return deliveryPayerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("DeliveryPayer not found with id " + id));
+    }
+
+    private FinancialTerms findFinancialTerms(Long id) {
+        return financialTermsRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("FinancialTerms not found with id " + id));
+    }
+
+    private ContractForm findContractForm(Long id) {
+        return contractFormRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("ContractForm not found with id " + id));
     }
 }

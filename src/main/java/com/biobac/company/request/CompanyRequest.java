@@ -11,16 +11,23 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanyRequest {
     private String name;
-    private String address;
+    private String legalAddress;
+    private String actualAddress;
+    private String warehouseAddress;
     private String phoneNumber;
     private List<Long> attributeGroupIds;
     private Long regionId;
     private boolean advancePayment;
     private Long saleTypeId;
+    private Long lineId;
+    private Long clientTypeId;
+    private Long cooperationId;
     private String managerNumber;
     private String email;
     private String website;
     private List<Long> typeIds;
     private List<AttributeUpsertRequest> attributes;
     private Long companyGroupId;
+    private ConditionsRequest condition;
+    private DetailsRequest detail;
 }

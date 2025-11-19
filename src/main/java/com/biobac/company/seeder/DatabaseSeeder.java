@@ -1,11 +1,7 @@
 package com.biobac.company.seeder;
 
-import com.biobac.company.entity.CompanyType;
-import com.biobac.company.entity.Region;
-import com.biobac.company.entity.SaleType;
-import com.biobac.company.repository.CompanyTypeRepository;
-import com.biobac.company.repository.RegionRepository;
-import com.biobac.company.repository.SaleTypeRepository;
+import com.biobac.company.entity.*;
+import com.biobac.company.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +14,25 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final CompanyTypeRepository companyTypeRepository;
     private final RegionRepository regionRepository;
     private final SaleTypeRepository saleTypeRepository;
+    private final ContractFormRepository contractFormRepository;
+    private final FinancialTermsRepository financialTermsRepository;
+    private final DeliveryPayerRepository deliveryPayerRepository;
+    private final DeliveryMethodRepository deliveryMethodRepository;
+    private final ClientTypeRepository clientTypeRepository;
+    private final CooperationRepository cooperationRepository;
+    private final LineRepository lineRepository;
 
-    public DatabaseSeeder(CompanyTypeRepository companyTypeRepository, RegionRepository regionRepository, SaleTypeRepository saleTypeRepository) {
+    public DatabaseSeeder(CompanyTypeRepository companyTypeRepository, RegionRepository regionRepository, SaleTypeRepository saleTypeRepository, ContractFormRepository contractFormRepository, FinancialTermsRepository financialTermsRepository, DeliveryPayerRepository deliveryPayerRepository, DeliveryMethodRepository deliveryMethodRepository, ClientTypeRepository clientTypeRepository, CooperationRepository cooperationRepository, LineRepository lineRepository) {
         this.companyTypeRepository = companyTypeRepository;
         this.regionRepository = regionRepository;
         this.saleTypeRepository = saleTypeRepository;
+        this.contractFormRepository = contractFormRepository;
+        this.financialTermsRepository = financialTermsRepository;
+        this.deliveryPayerRepository = deliveryPayerRepository;
+        this.deliveryMethodRepository = deliveryMethodRepository;
+        this.clientTypeRepository = clientTypeRepository;
+        this.cooperationRepository = cooperationRepository;
+        this.lineRepository = lineRepository;
     }
 
     @Override
@@ -35,106 +45,243 @@ public class DatabaseSeeder implements CommandLineRunner {
             companyTypeRepository.save(companyType2);
         }
 
+        if (lineRepository.count() == 0) {
+            List<String> lines = List.of(
+                    "Gurgen Line",
+                    "Анапа",
+                    "Армавир",
+                    "Бетонка",
+                    "Быковское ш",
+                    "Владимир-Иваново",
+                    "Волоколамское ш",
+                    "Горьковское ш",
+                    "Дмитровское ш",
+                    "Дубна",
+                    "Егорьевское ш",
+                    "Закрытые",
+                    "Калуга",
+                    "Калужского ш",
+                    "Каширское ш",
+                    "Киевское ш",
+                    "Ключевые клиенты",
+                    "Краснодар",
+                    "Ленинградское ш",
+                    "Майкоп",
+                    "Маркетплейс",
+                    "Можайское ш",
+                    "Нижний Новгород",
+                    "Новорыжское ш",
+                    "Новорязанское ш",
+                    "Ногинск",
+                    "Носовыхинское ш",
+                    "Оптовая продажа",
+                    "Подольск, Чехов",
+                    "Поставщики",
+                    "Пятигорск",
+                    "Пятницкое ш",
+                    "Рогачовское ш",
+                    "Ростов",
+                    "Руза",
+                    "Рязань",
+                    "Симферопольское ш",
+                    "Сочи-Адлер",
+                    "Ставрополь",
+                    "Тверь",
+                    "Тихорецк",
+                    "Тула",
+                    "Щелковское ш",
+                    "Ярославль-Кострома",
+                    "Ярославское ш"
+            );
+
+            lines.forEach(name -> lineRepository.save(new Line(name)));
+        }
+
+        if (contractFormRepository.count() == 0) {
+            List<String> forms = List.of(
+                    "Наша типовая форма",
+                    "Форма клиента",
+                    "Наша форма с Протоколом разногласий",
+                    "Форма клиента с Протоколом разногласий",
+                    "Наша типовая форма СТМ"
+            );
+
+            forms.forEach(f -> contractFormRepository.save(new ContractForm(f)));
+        }
+
+        if (deliveryMethodRepository.count() == 0) {
+            List<String> methods = List.of(
+                    "Самовывоз",
+                    "До терминала ТК, МО",
+                    "ДО РЦ или склад МО",
+                    "До терминала ТК РФ",
+                    "До адреса РФ",
+                    "СДЭК ИМ",
+                    "Почта РФ ИМ",
+                    "Яндекс доставка ИМ",
+                    "Курьер ИМ",
+                    "До терминала РБ"
+            );
+
+            methods.forEach(m -> deliveryMethodRepository.save(new DeliveryMethod(m)));
+        }
+
+        if (financialTermsRepository.count() == 0) {
+            List<String> terms = List.of(
+                    "Отсрочка 30",
+                    "Отсрочка 60",
+                    "Отсрочка 80",
+                    "Отсрочка 90",
+                    "Реализация",
+                    "Предоплата 50%",
+                    "Предоплата",
+                    "Другие"
+            );
+
+            terms.forEach(t -> financialTermsRepository.save(new FinancialTerms(t)));
+        }
+
+        if (deliveryPayerRepository.count() == 0) {
+            List<String> payers = List.of(
+                    "Поставщик",
+                    "Клиент",
+                    "Биобак"
+            );
+
+            payers.forEach(p -> deliveryPayerRepository.save(new DeliveryPayer(p)));
+        }
+
+        if (cooperationRepository.count() == 0) {
+
+            List<String> statuses = List.of(
+                    "Сотрудничество",
+                    "Да",
+                    "Нет",
+                    "Закрыт",
+                    "Должник",
+                    "Реанимация"
+            );
+
+            statuses.forEach(s -> cooperationRepository.save(new Cooperation(s)));
+        }
+
+        if (clientTypeRepository.count() == 0) {
+
+            List<String> clientTypes = List.of(
+                    "Поставщик",
+                    "Локальная сеть",
+                    "Федеральная сеть",
+                    "Розница хозяйственный",
+                    "Маркетплейс",
+                    "Розница садовод",
+                    "Розница сантехника",
+                    "Интернет магазин",
+                    "Бассейн",
+                    "Агрофирма",
+                    "СТМ",
+                    "Частное лицо",
+                    "Дистрибьютор",
+                    "Селлер",
+                    "Опт база",
+                    "Другое"
+            );
+
+            clientTypes.forEach(type -> clientTypeRepository.save(new ClientType(type)));
+        }
+
         if(saleTypeRepository.count() == 0){
             SaleType saleType1 = new SaleType("Оптовая торговля");
             saleTypeRepository.save(saleType1);
 
-            SaleType saleType2 = new SaleType("Retail");
+            SaleType saleType2 = new SaleType("Розничная торговля");
             saleTypeRepository.save(saleType2);
         }
 
         if (regionRepository.count() == 0) {
             List<Region> regions = Arrays.asList(
-                    new Region("Adygea", "AD"),
-                    new Region("Altai", "AL"),
-                    new Region("Altai Krai", "ALT"),
-                    new Region("Amur", "AMU"),
-                    new Region("Arkhangelsk", "ARK"),
-                    new Region("Astrakhan", "AST"),
-                    new Region("Belgorod", "BEL"),
-                    new Region("Bryansk", "BRY"),
-                    new Region("Chechen Republic", "CHE"),
-                    new Region("Chelyabinsk", "CHEL"),
-                    new Region("Chukotka Autonomous Okrug", "CHU"),
-                    new Region("Chuvash Republic", "CHE"),
-                    new Region("Dagestan", "DA"),
-                    new Region("Ingushetia", "ING"),
-                    new Region("Irkutsk", "IRK"),
-                    new Region("Ivanovo", "IVA"),
-                    new Region("Jewish Autonomous Oblast", "JAO"),
-                    new Region("Kabardino-Balkar Republic", "KBR"),
-                    new Region("Kaliningrad", "KGD"),
-                    new Region("Kaluga", "KLU"),
-                    new Region("Kamchatka Krai", "KAM"),
-                    new Region("Karachay–Cherkess Republic", "KCH"),
-                    new Region("Kemerovo", "KEM"),
-                    new Region("Khabarovsk Krai", "KHA"),
-                    new Region("Khakassia", "KK"),
-                    new Region("Khanty–Mansi Autonomous Okrug – Yugra", "KHM"),
-                    new Region("Kirov", "KIR"),
-                    new Region("Komi", "KOM"),
-                    new Region("Kostroma", "KOS"),
-                    new Region("Krasnodar Krai", "KDA"),
-                    new Region("Krasnoyarsk Krai", "KYA"),
-                    new Region("Kurgan", "KGN"),
-                    new Region("Kursk", "KRS"),
-                    new Region("Leningrad", "LEN"),
-                    new Region("Lipetsk", "LIP"),
-                    new Region("Magadan", "MAG"),
-                    new Region("Mari El", "MAR"),
-                    new Region("Mordovia", "MOR"),
-                    new Region("Moscow", "MOS"),
-                    new Region("Moscow Oblast", "MOS"),
-                    new Region("Murmansk", "MUR"),
-                    new Region("Nenets Autonomous Okrug", "NGR"),
-                    new Region("Nizhny Novgorod", "NGR"),
-                    new Region("North Ossetia–Alania", "OSA"),
-                    new Region("Novgorod", "NGR"),
-                    new Region("Novosibirsk", "NVS"),
-                    new Region("Omsk", "OMS"),
-                    new Region("Orenburg", "ORE"),
-                    new Region("Oryol", "ORY"),
-                    new Region("Penza", "PEN"),
-                    new Region("Perm Krai", "PER"),
-                    new Region("Primorsky Krai", "PRI"),
-                    new Region("Pskov", "PSK"),
-                    new Region("Republic of Bashkortostan", "BA"),
-                    new Region("Republic of Buryatia", "BU"),
-                    new Region("Republic of Crimea", "CR"),
-                    new Region("Republic of Dagestan", "DA"),
-                    new Region("Republic of Ingushetia", "IN"),
-                    new Region("Republic of Kalmykia", "KL"),
-                    new Region("Republic of Karelia", "KR"),
-                    new Region("Republic of Khakassia", "KK"),
-                    new Region("Republic of Komi", "KO"),
-                    new Region("Republic of Mari El", "ME"),
-                    new Region("Republic of Mordovia", "MO"),
-                    new Region("Republic of Sakha (Yakutia)", "SA"),
-                    new Region("Republic of Tatarstan", "TA"),
-                    new Region("Republic of Tyva", "TY"),
-                    new Region("Republic of Udmurtia", "UD"),
-                    new Region("Ryazan", "RYZ"),
-                    new Region("Saint Petersburg", "SPE"),
-                    new Region("Sakhalin", "SAK"),
-                    new Region("Samara", "SAM"),
-                    new Region("Saratov", "SAR"),
-                    new Region("Smolensk", "SMO"),
-                    new Region("Stavropol Krai", "STA"),
-                    new Region("Sverdlovsk", "SVE"),
-                    new Region("Tambov", "TAM"),
-                    new Region("Tatarstan", "TA"),
-                    new Region("Tula", "TUL"),
-                    new Region("Tver", "TVE"),
-                    new Region("Tyumen", "TYU"),
-                    new Region("Tyva Republic", "TY"),
-                    new Region("Udmurtia", "UD"),
-                    new Region("Ulyanovsk", "ULY"),
-                    new Region("Vladimir", "VLA"),
-                    new Region("Volgograd", "VGG"),
-                    new Region("Vologda", "VLG"),
-                    new Region("Voronezh", "VOR"),
-                    new Region("Yamalo-Nenets Autonomous Okrug", "YAR"),
-                    new Region("Yaroslavl", "YAR")
+                    new Region("Республика Адыгея", "ADY"),
+                    new Region("Республика Алтай", "ALT"),
+                    new Region("Алтайский край", "ALC"),
+                    new Region("Амурская область", "AMU"),
+                    new Region("Архангельская область", "ARK"),
+                    new Region("Астраханская область", "AST"),
+                    new Region("Белгородская область", "BEL"),
+                    new Region("Брянская область", "BRY"),
+                    new Region("Республика Бурятия", "BUR"),
+                    new Region("Чеченская Республика", "CHC"),
+                    new Region("Челябинская область", "CHL"),
+                    new Region("Чукотский автономный округ", "CHU"),
+                    new Region("Чувашская Республика", "CHV"),
+                    new Region("Республика Дагестан", "DAG"),
+                    new Region("Республика Ингушетия", "ING"),
+                    new Region("Иркутская область", "IRK"),
+                    new Region("Ивановская область", "IVA"),
+                    new Region("Еврейская автономная область", "JAO"),
+                    new Region("Кабардино-Балкарская Республика", "KBR"),
+                    new Region("Калининградская область", "KGD"),
+                    new Region("Калужская область", "KLU"),
+                    new Region("Камчатский край", "KAM"),
+                    new Region("Карачаево-Черкесская Республика", "KCR"),
+                    new Region("Кемеровская область", "KEM"),
+                    new Region("Кировская область", "KIR"),
+                    new Region("Республика Коми", "KOM"),
+                    new Region("Костромская область", "KOS"),
+                    new Region("Краснодарский край", "KDA"),
+                    new Region("Красноярский край", "KYA"),
+                    new Region("Курганская область", "KGN"),
+                    new Region("Курская область", "KRS"),
+                    new Region("Ленинградская область", "LEN"),
+                    new Region("Липецкая область", "LIP"),
+                    new Region("Магаданская область", "MAG"),
+                    new Region("Республика Марий Эл", "MAE"),
+                    new Region("Республика Мордовия", "MOR"),
+                    new Region("Москва", "MSC"),
+                    new Region("Московская область", "MSO"),
+                    new Region("Мурманская область", "MUR"),
+                    new Region("Ненецкий автономный округ", "NAO"),
+                    new Region("Нижегородская область", "NIZ"),
+                    new Region("Новгородская область", "NOV"),
+                    new Region("Новосибирская область", "NVS"),
+                    new Region("Омская область", "OMS"),
+                    new Region("Оренбургская область", "ORE"),
+                    new Region("Орловская область", "ORL"),
+                    new Region("Пензенская область", "PNZ"),
+                    new Region("Пермский край", "PER"),
+                    new Region("Приморский край", "PRI"),
+                    new Region("Псковская область", "PSK"),
+                    new Region("Республика Башкортостан", "BAS"),
+                    new Region("Республика Калмыкия", "KAL"),
+                    new Region("Республика Карелия", "KAR"),
+                    new Region("Республика Хакасия", "HAK"),
+                    new Region("Республика Саха (Якутия)", "SAK"),
+                    new Region("Республика Татарстан", "TAT"),
+                    new Region("Республика Тыва", "TYV"),
+                    new Region("Удмуртская Республика", "UDM"),
+                    new Region("Ростовская область", "ROS"),
+                    new Region("Рязанская область", "RYZ"),
+                    new Region("Санкт-Петербург", "SPB"),
+                    new Region("Сахалинская область", "SAH"),
+                    new Region("Самарская область", "SAM"),
+                    new Region("Саратовская область", "SAR"),
+                    new Region("Смоленская область", "SMO"),
+                    new Region("Ставропольский край", "STA"),
+                    new Region("Свердловская область", "SVE"),
+                    new Region("Тамбовская область", "TAM"),
+                    new Region("Тверская область", "TVE"),
+                    new Region("Томская область", "TOM"),
+                    new Region("Тульская область", "TUL"),
+                    new Region("Тюменская область", "TYU"),
+                    new Region("Ульяновская область", "ULY"),
+                    new Region("Владимирская область", "VLA"),
+                    new Region("Волгоградская область", "VGG"),
+                    new Region("Вологодская область", "VLG"),
+                    new Region("Воронежская область", "VOR"),
+                    new Region("Ямало-Ненецкий автономный округ", "YNA"),
+                    new Region("Ярославская область", "YAR"),
+                    new Region("Донецкая Народная Республика", "DNR"),
+                    new Region("Луганская Народная Республика", "LNR"),
+                    new Region("Запорожская область", "ZAP"),
+                    new Region("Херсонская область", "KHE")
             );
             regionRepository.saveAll(regions);
         }
