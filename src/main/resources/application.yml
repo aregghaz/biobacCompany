@@ -13,10 +13,14 @@ spring:
 
 server:
   port: 8060
+fns:
+  api:
+    key: 620d8655236d5823a34ca3250c57b56220f7b528
 jwt:
   secret: b10bac_super_secret_key_which_is_long_enough_please_change
   expiration-ms: 86400000
 services:
   attribute-url: http://kinomino.ru:8050/api
   user-url: http://kinomino.ru:8070/api
+  fns-url: https://api-fns.ru/api
 #  user-url: http://localhost:8070/api
