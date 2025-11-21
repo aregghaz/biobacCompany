@@ -1,42 +1,42 @@
 package com.biobac.company.response;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class CompanyResponse extends AuditableResponse {
+public class CompanyResponse {
     private Long id;
     private String name;
-    private String legalAddress;
+    private String localAddress;
     private String actualAddress;
     private String warehouseAddress;
-    private String phoneNumber;
+    private List<String> phoneNumber;
     private String managerNumber;
-
     private RegionResponse region;
     private SaleTypeResponse saleType;
     private List<Long> attributeGroupIds;
-    private String email;
-    private String website;
+    private Set<String> email;
+    private Set<String> website;
     private boolean advancePayment;
     private List<CompanyTypeResponse> types;
     private List<AttributeResponse> attributes;
     private BigDecimal balance;
-    private DetailsResponse details;
-    private ConditionsResponse conditions;
-    @JsonUnwrapped(prefix = "cooperation")
-    private EntityReferenceResponse cooperation;
-    @JsonUnwrapped(prefix = "line")
-    private EntityReferenceResponse line;
-    @JsonUnwrapped(prefix = "clientType")
-    private EntityReferenceResponse clientType;
-    @JsonUnwrapped(prefix = "companyGroup")
-    private EntityReferenceResponse companyGroup;
+    private DetailsResponse detail;
+    private ConditionsResponse condition;
+    private CompanyGroupResponse companyGroup;
+    private ClientTypeResponse customerType;
+    private LineResponse line;
+    private CooperationResponse cooperation;
+
 }

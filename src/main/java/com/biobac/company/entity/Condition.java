@@ -1,16 +1,24 @@
 package com.biobac.company.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
-public class Conditions {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "conditions")
+public class Condition extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "company_id")

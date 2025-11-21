@@ -1,12 +1,13 @@
 package com.biobac.company.service.impl;
 
+import com.biobac.company.entity.CompanyType;
 import com.biobac.company.mapper.CompanyTypeMapper;
 import com.biobac.company.repository.CompanyTypeRepository;
-import com.biobac.company.response.CompanyTypeResponse;
+import com.biobac.company.request.CreateCompanyTypeRequest;
+import com.biobac.company.response.CreateCompanyTypeResponse;
 import com.biobac.company.service.CompanyTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,11 +18,14 @@ public class CompanyTypeServiceImpl implements CompanyTypeService {
     private final CompanyTypeRepository companyTypeRepository;
 
     @Override
-    @Transactional(readOnly = true)
-    public List<CompanyTypeResponse> getAll() {
-        return companyTypeRepository
-                .findAll()
-                .stream()
-                .map(companyTypeMapper::toResponse).toList();
+    public CreateCompanyTypeResponse createCompanyType(CreateCompanyTypeRequest request) {
+        CompanyType companyType = companyTypeMapper.toCompanyTypeEntity(request);
+        CompanyType savedCompanyType = companyTypeRepository.save(companyType);
+        return companyTypeMapper.toCompanyTypeResponse(savedCompanyType);
+    }
+
+    @Override
+    public List<CreateCompanyTypeResponse> getAllCompanyType() {
+        return companyTypeRepository.findAll().stream().map(companyTypeMapper::toCompanyTypeResponse).toList();
     }
 }

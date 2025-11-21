@@ -17,8 +17,12 @@ public interface DeliveryPayerService {
                                                                      Integer size,
                                                                      String sortBy,
                                                                      String sortDir);
+
     SimpleNameResponse getById(Long id);
+
     SimpleNameResponse create(CooperationRequest request);
+
     SimpleNameResponse update(Long id, CooperationRequest request);
+
     void delete(Long id);
 }

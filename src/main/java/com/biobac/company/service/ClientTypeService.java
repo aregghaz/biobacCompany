@@ -2,27 +2,28 @@ package com.biobac.company.service;
 
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.ClientTypeRequest;
+import com.biobac.company.request.CreateClientTypeRequest;
 import com.biobac.company.request.FilterCriteria;
-import com.biobac.company.response.SimpleNameResponse;
+import com.biobac.company.response.CreateClientTypeResponse;
 import org.springframework.data.util.Pair;
 
 import java.util.List;
 import java.util.Map;
 
 public interface ClientTypeService {
-    List<SimpleNameResponse> getAll();
+    List<CreateClientTypeResponse> getAllClientType();
 
-    Pair<List<SimpleNameResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters,
-                                                                     Integer page,
-                                                                     Integer size,
-                                                                     String sortBy,
-                                                                     String sortDir);
+    Pair<List<CreateClientTypeResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters,
+                                                                           Integer page,
+                                                                           Integer size,
+                                                                           String sortBy,
+                                                                           String sortDir);
 
-    SimpleNameResponse getById(Long id);
+    CreateClientTypeResponse getClientTypeById(Long id);
 
-    SimpleNameResponse create(ClientTypeRequest request);
+    CreateClientTypeResponse createClientType(CreateClientTypeRequest request);
 
-    SimpleNameResponse update(Long id, ClientTypeRequest request);
+    CreateClientTypeResponse update(Long id, ClientTypeRequest request);
 
     void delete(Long id);
 }

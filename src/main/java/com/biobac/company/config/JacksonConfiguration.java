@@ -12,7 +12,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.format.DateTimeFormatter;
 
-import static com.biobac.company.utils.DateUtil.*;
+import static com.biobac.company.utils.DateUtil.DATE_FORMAT;
+import static com.biobac.company.utils.DateUtil.DATE_TIME_FORMAT;
+import static com.biobac.company.utils.DateUtil.TIME_FORMAT;
 
 @Configuration
 public class JacksonConfiguration {

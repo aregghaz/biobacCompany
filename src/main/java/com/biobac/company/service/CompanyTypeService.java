@@ -1,9 +1,13 @@
 package com.biobac.company.service;
 
-import com.biobac.company.response.CompanyTypeResponse;
+import com.biobac.company.request.CreateCompanyTypeRequest;
+import com.biobac.company.response.CreateCompanyTypeResponse;
 
 import java.util.List;
 
 public interface CompanyTypeService {
-    List<CompanyTypeResponse> getAll();
+
+    CreateCompanyTypeResponse createCompanyType(CreateCompanyTypeRequest request);
+
+    List<CreateCompanyTypeResponse> getAllCompanyType();
 }

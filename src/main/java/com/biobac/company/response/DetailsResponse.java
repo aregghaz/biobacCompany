@@ -1,12 +1,14 @@
 package com.biobac.company.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DetailsResponse {
@@ -18,5 +20,6 @@ public class DetailsResponse {
     private String bik;
     private String ks;
     private String bankName;
+
 }
 

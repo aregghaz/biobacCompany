@@ -1,128 +1,110 @@
 package com.biobac.company.mapper;
 
-import com.biobac.company.client.AttributeClient;
-import com.biobac.company.entity.*;
-import com.biobac.company.exception.NotFoundException;
+import com.biobac.company.entity.ClientType;
+import com.biobac.company.entity.Company;
+import com.biobac.company.entity.CompanyGroup;
+import com.biobac.company.entity.CompanyType;
+import com.biobac.company.entity.ContactPerson;
+import com.biobac.company.entity.Cooperation;
+import com.biobac.company.entity.Line;
+import com.biobac.company.entity.Region;
+import com.biobac.company.entity.SaleType;
+import com.biobac.company.repository.ClientTypeRepository;
+import com.biobac.company.repository.CompanyGroupRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
+import com.biobac.company.repository.ContactPersonRepository;
+import com.biobac.company.repository.CooperationRepository;
+import com.biobac.company.repository.LineRepository;
+import com.biobac.company.repository.RegionRepository;
+import com.biobac.company.repository.SaleTypeRepository;
 import com.biobac.company.request.CompanyRequest;
-import com.biobac.company.response.*;
-import org.mapstruct.*;
+import com.biobac.company.response.CompanyResponse;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ConditionMapper.class})
 public abstract class CompanyMapper {
 
     @Autowired
-    protected AttributeClient attributeClient;
+    protected CompanyGroupRepository companyGroupRepository;
 
-    @Mapping(target = "types", ignore = true)
-    @Mapping(target = "conditions", ignore = true)
-    @Mapping(target = "details", ignore = true)
-    public abstract Company toEntity(CompanyRequest dto);
+    @Autowired
+    protected SaleTypeRepository saleTypeRepository;
 
-    @Mapping(target = "attributes", expression = "java(fetchAttributes(company.getId()))")
-    @Mapping(target = "details", expression = "java(toDetailsResponse(company.getDetails()))")
-    @Mapping(target = "conditions", expression = "java(toConditionsResponse(company.getConditions()))")
-    @Mapping(target = "cooperation", source = "cooperation")
-    @Mapping(target = "line", source = "line")
-    @Mapping(target = "clientType", source = "customerType")
-    @Mapping(target = "companyGroup", source = "companyGroup")
-    public abstract CompanyResponse toResponse(Company company);
+    @Autowired
+    protected RegionRepository regionRepository;
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "types", ignore = true)
-    @Mapping(target = "details", ignore = true)
-    @Mapping(target = "conditions", ignore = true)
-    public abstract void updateEntityFromDto(CompanyRequest dto, @MappingTarget Company entity);
+    @Autowired
+    protected CompanyTypeRepository companyTypeRepository;
 
-    protected DetailsResponse toDetailsResponse(Details details) {
-        if (details == null) return null;
-        return new DetailsResponse(
-                details.getInn(),
-                details.getKpp(),
-                details.getOgrn(),
-                details.getOkpo(),
-                details.getBankAccount(),
-                details.getBik(),
-                details.getKs(),
-                details.getBankName()
-        );
+    @Autowired
+    protected ClientTypeRepository clientTypeRepository;
+
+    @Autowired
+    protected LineRepository lineRepository;
+
+    @Autowired
+    protected CooperationRepository cooperationRepository;
+
+    @Autowired
+    protected ContactPersonRepository contactPersonRepository;
+
+    @Mapping(source = "localAddress", target = "address.localAddress")
+    @Mapping(source = "actualAddress", target = "address.actualAddress")
+    @Mapping(source = "warehouseAddress", target = "address.warehouseAddress")
+    @Mapping(target = "companyGroup", expression = "java(getCompanyGroup(request.getCompanyGroupId()))")
+    @Mapping(target = "saleType", expression = "java(getSaleType(request.getSaleTypeId()))")
+    @Mapping(target = "region", expression = "java(getRegion(request.getRegionId()))")
+    @Mapping(target = "types", expression = "java(getCompanyType(request.getTypeIds()))")
+    @Mapping(target = "customerType", expression = "java(getClientType(request.getCustomerTypeId()))")
+    @Mapping(target = "line", expression = "java(getLine(request.getLineId()))")
+    @Mapping(target = "cooperation", expression = "java(getCooperation(request.getCooperationId()))")
+    @Mapping(target = "contactPerson", expression = "java(getContactPerson(request.getContactPersonIds()))")
+    public abstract Company toCompanyEntity(CompanyRequest request);
+
+    @Mapping(source = "address.localAddress", target = "localAddress")
+    @Mapping(source = "address.actualAddress", target = "actualAddress")
+    @Mapping(source = "address.warehouseAddress", target = "warehouseAddress")
+    public abstract CompanyResponse toCompanyResponse(Company company);
+
+    protected CompanyGroup getCompanyGroup(Long id) {
+        return companyGroupRepository.findById(id)
+                .orElse(null);
     }
 
-    protected ConditionsResponse toConditionsResponse(Conditions conditions) {
-        if (conditions == null) return null;
-
-        return new ConditionsResponse(
-                conditions.getDeliveryMethod() != null ? conditions.getDeliveryMethod().getId() : null,
-                conditions.getDeliveryMethod() != null ? conditions.getDeliveryMethod().getName() : null,
-
-                conditions.getDeliveryPayer() != null ? conditions.getDeliveryPayer().getId() : null,
-                conditions.getDeliveryPayer() != null ? conditions.getDeliveryPayer().getName() : null,
-
-                conditions.getFinancialTerms() != null ? conditions.getFinancialTerms().getId() : null,
-                conditions.getFinancialTerms() != null ? conditions.getFinancialTerms().getName() : null,
-
-                conditions.getContractForm() != null ? conditions.getContractForm().getId() : null,
-                conditions.getContractForm() != null ? conditions.getContractForm().getName() : null,
-
-                conditions.getBonus()
-        );
+    protected SaleType getSaleType(Long id) {
+        return saleTypeRepository.findById(id)
+                .orElse(null);
     }
 
-    protected EntityReferenceResponse mapCooperation(Cooperation entity) {
-        if (entity == null) return null;
-        EntityReferenceResponse dto = new EntityReferenceResponse();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        return dto;
+    protected Region getRegion(Long id) {
+        return regionRepository.findById(id)
+                .orElse(null);
     }
 
-    protected EntityReferenceResponse mapLine(Line entity) {
-        if (entity == null) return null;
-        EntityReferenceResponse dto = new EntityReferenceResponse();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        return dto;
+    protected List<CompanyType> getCompanyType(List<Long> id) {
+        return companyTypeRepository.findAllById(id);
     }
 
-    protected EntityReferenceResponse mapClientType(ClientType entity) {
-        if (entity == null) return null;
-        EntityReferenceResponse dto = new EntityReferenceResponse();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        return dto;
+    protected ClientType getClientType(Long id) {
+        return clientTypeRepository.findById(id)
+                .orElse(null);
     }
 
-    protected EntityReferenceResponse mapCompanyGroup(CompanyGroup entity) {
-        if (entity == null) return null;
-        EntityReferenceResponse dto = new EntityReferenceResponse();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        return dto;
+    protected Line getLine(Long id) {
+        return lineRepository.findById(id)
+                .orElse(null);
     }
 
-    protected abstract RegionResponse toResponse(Region region);
-
-    protected List<AttributeResponse> fetchAttributes(Long companyId) {
-        if (companyId == null) return Collections.emptyList();
-        try {
-            ApiResponse<List<AttributeResponse>> apiResponse =
-                    attributeClient.getValues(companyId, AttributeTargetType.COMPANY.name());
-            return apiResponse.getData();
-        } catch (Exception ex) {
-            return Collections.emptyList();
-        }
+    protected Cooperation getCooperation(Long id) {
+        return cooperationRepository.findById(id)
+                .orElse(null);
     }
 
-    public List<CompanyType> mapTypeIds(List<Long> typeIds, CompanyTypeRepository repo) {
-        if (typeIds == null) return null;
-        return typeIds.stream()
-                .map(id -> repo.findById(id)
-                        .orElseThrow(() -> new NotFoundException("Company Type not found")))
-                .collect(Collectors.toList());
+    protected List<ContactPerson> getContactPerson(List<Long> id) {
+        return contactPersonRepository.findAllById(id);
     }
 }

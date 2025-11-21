@@ -1,37 +1,62 @@
 package com.biobac.company.entity;
 
-import jakarta.persistence.*;
+import com.biobac.company.entity.embeddable.Address;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-public class Company extends BaseAuditable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Company extends BaseEntity {
+
     private String name;
-    private String legalAddress;
-    private String actualAddress;
-    private String warehouseAddress;
-    private String phoneNumber;
     private boolean advancePayment;
-    private String managerNumber;
     private List<Long> attributeGroupIds;
+
     @ManyToOne
     private CompanyGroup companyGroup;
+
     @ManyToOne
     private SaleType saleType;
-    private String email;
-    private String website;
+
+    @ElementCollection
+    private Set<String> email;
+
+    @ElementCollection
+    private Set<String> website;
+
+    @ElementCollection
+    @CollectionTable(name = "company_phone", joinColumns = @JoinColumn(name = "company_id"))
+    private List<String> phoneNumber;
+
+    @ElementCollection
+    private Set<String> addressTT;
+
     @ManyToOne
     @JoinColumn(name = "region_id")
     private Region region;
+
     @ManyToMany
     @JoinTable(
             name = "company_types_mapping",
@@ -40,7 +65,12 @@ public class Company extends BaseAuditable {
     )
     private List<CompanyType> types;
     private BigDecimal balance;
+    private BigDecimal bonus;
+    private String generalDirector;
     private boolean deleted = false;
+
+    @Embedded
+    private Address address;
 
     @ManyToOne
     private ClientType customerType;
@@ -51,12 +81,12 @@ public class Company extends BaseAuditable {
     @ManyToOne
     private Cooperation cooperation;
 
-    @OneToMany(mappedBy = "company")
-    private List<ContactPerson> contactPersons = new ArrayList<>();
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ContactPerson> contactPerson;
 
-    @OneToOne(mappedBy = "company")
-    private Details details;
+    @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Detail detail;
 
-    @OneToOne(mappedBy = "company")
-    private Conditions conditions;
+    @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Condition condition;
 }

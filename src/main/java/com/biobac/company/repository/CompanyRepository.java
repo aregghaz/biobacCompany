@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Long>, JpaSpecificationExecutor<Company> {
     Optional<Company> findById(Long id);
-    
+
     @Query("select c.name from Company c where c.id = :id")
     String findCompanyNameById(@Param("id") Long id);
 

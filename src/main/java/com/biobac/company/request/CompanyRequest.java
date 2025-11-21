@@ -1,33 +1,41 @@
 package com.biobac.company.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class CompanyRequest {
     private String name;
-    private String legalAddress;
+    private boolean advancePayment;
+    private String localAddress;
     private String actualAddress;
     private String warehouseAddress;
-    private String phoneNumber;
     private List<Long> attributeGroupIds;
-    private Long regionId;
-    private boolean advancePayment;
-    private Long saleTypeId;
-    private Long lineId;
-    private Long clientTypeId;
-    private Long cooperationId;
-    private String managerNumber;
-    private String email;
-    private String website;
-    private List<Long> typeIds;
-    private List<AttributeUpsertRequest> attributes;
     private Long companyGroupId;
+    private Long saleTypeId;
+    private Set<String> email;
+    private Set<String> website;
+    private List<String> phoneNumber;
+    private Long regionId;
+    private List<Long> typeIds;
+    private BigDecimal balance;
+    private BigDecimal bonus;
+    private String generalDirector;
+    private Long customerTypeId;
+    private Long lineId;
+    private Long cooperationId;
+    private List<Long> contactPersonIds;
+    private DetailRequest detail;
     private ConditionsRequest condition;
-    private DetailsRequest detail;
 }
