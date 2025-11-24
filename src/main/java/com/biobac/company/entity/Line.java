@@ -1,26 +1,21 @@
 package com.biobac.company.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
+@Entity
+@SuperBuilder
 @NoArgsConstructor
-public class Line {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@AllArgsConstructor
+@Table(name = "line")
+public class Line extends BaseEntity {
     private String name;
-
-    public Line(String name) {
-        this.name = name;
-    }
 }
 

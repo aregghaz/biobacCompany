@@ -10,19 +10,24 @@ import java.util.List;
 import java.util.Map;
 
 public interface CompanyGroupService {
-    List<CompanyGroupResponse> getAll();
 
-    Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters,
-                                                                       Integer page,
-                                                                       Integer size,
-                                                                       String sortBy,
-                                                                       String sortDir);
+    CompanyGroupResponse createCompanyGroup(CompanyGroupRequest request);
 
-    CompanyGroupResponse getById(Long id);
-
-    CompanyGroupResponse create(CompanyGroupRequest request);
-
-    CompanyGroupResponse update(Long id, CompanyGroupRequest request);
-
-    void delete(Long id);
+//    List<CompanyGroupResponse> getAll();
+//
+//    Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(
+//            Map<String, FilterCriteria> filters,
+//            Integer page,
+//            Integer size,
+//            String sortBy,
+//            String sortDir
+//    );
+//
+//    CompanyGroupResponse getById(Long id);
+//
+//    CompanyGroupResponse create(CompanyGroupRequest request);
+//
+//    CompanyGroupResponse update(Long id, CompanyGroupRequest request);
+//
+//    void delete(Long id);
 }

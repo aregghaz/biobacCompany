@@ -1,21 +1,18 @@
 package com.biobac.company.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
-public class CompanyGroup extends BaseAuditable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CompanyGroup extends BaseEntity {
     private String name;
-
-    @OneToMany(mappedBy = "companyGroup")
-    private List<Company> companies;
 }

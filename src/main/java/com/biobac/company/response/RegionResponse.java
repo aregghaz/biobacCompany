@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class RegionResponse {
-    private Integer id;
+    private Long id;
     private String name;
     private String code;
 }

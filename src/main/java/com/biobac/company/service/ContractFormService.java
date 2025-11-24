@@ -17,8 +17,12 @@ public interface ContractFormService {
                                                                      Integer size,
                                                                      String sortBy,
                                                                      String sortDir);
+
     SimpleNameResponse getById(Long id);
+
     SimpleNameResponse create(ContractFormRequest request);
+
     SimpleNameResponse update(Long id, ContractFormRequest request);
+
     void delete(Long id);
 }

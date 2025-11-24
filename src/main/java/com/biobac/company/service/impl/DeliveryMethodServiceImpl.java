@@ -3,10 +3,11 @@ package com.biobac.company.service.impl;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.DeliveryMethod;
 import com.biobac.company.exception.NotFoundException;
+import com.biobac.company.mapper.DeliveryMethodMapper;
 import com.biobac.company.repository.DeliveryMethodRepository;
 import com.biobac.company.request.DeliveryMethodRequest;
 import com.biobac.company.request.FilterCriteria;
-import com.biobac.company.response.SimpleNameResponse;
+import com.biobac.company.response.DeliveryMethodResponse;
 import com.biobac.company.service.DeliveryMethodService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DeliveryMethodServiceImpl implements DeliveryMethodService {
     private final DeliveryMethodRepository repository;
+    private final DeliveryMethodMapper deliveryMethodMapper;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -45,23 +47,22 @@ public class DeliveryMethodServiceImpl implements DeliveryMethodService {
         return PageRequest.of(safePage, safeSize, sort);
     }
 
-    private SimpleNameResponse toResponse(DeliveryMethod entity) {
-        return new SimpleNameResponse(entity.getId(), entity.getName());
+    @Override
+    @Transactional(readOnly = true)
+    public List<DeliveryMethodResponse> getAllDeliveryMethods() {
+        return repository.findAll().stream()
+                .map(deliveryMethodMapper::toDeliveryResponse)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SimpleNameResponse> getAll() {
-        return repository.findAll().stream().map(this::toResponse).toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Pair<List<SimpleNameResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+    public Pair<List<DeliveryMethodResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
         Pageable pageable = buildPageable(page, size, sortBy, sortDir);
         Specification<DeliveryMethod> spec = SimpleEntitySpecification.buildSpecification(filters);
         Page<DeliveryMethod> pg = repository.findAll(spec, pageable);
-        List<SimpleNameResponse> content = pg.getContent().stream().map(this::toResponse).collect(Collectors.toList());
+        List<DeliveryMethodResponse> content = pg.getContent().stream().map(deliveryMethodMapper::toDeliveryResponse)
+                .collect(Collectors.toList());
         PaginationMetadata metadata = new PaginationMetadata(
                 pg.getNumber(),
                 pg.getSize(),
@@ -77,30 +78,25 @@ public class DeliveryMethodServiceImpl implements DeliveryMethodService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public SimpleNameResponse getById(Long id) {
-        DeliveryMethod entity = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("DeliveryMethod not found"));
-        return toResponse(entity);
+    public DeliveryMethodResponse getDeliveryMethodById(Long id) {
+        return null;
+    }
+
+    @Override
+    public DeliveryMethodResponse createDeliveryMethod(DeliveryMethodRequest request) {
+        DeliveryMethod deliveryMethod = deliveryMethodMapper.toDeliveryMethodEntity(request);
+        DeliveryMethod saved = repository.save(deliveryMethod);
+        return deliveryMethodMapper.toDeliveryResponse(saved);
     }
 
     @Override
     @Transactional
-    public SimpleNameResponse create(DeliveryMethodRequest request) {
-        DeliveryMethod entity = new DeliveryMethod();
-        entity.setName(request.getName());
-        DeliveryMethod saved = repository.save(entity);
-        return toResponse(saved);
-    }
-
-    @Override
-    @Transactional
-    public SimpleNameResponse update(Long id, DeliveryMethodRequest request) {
+    public DeliveryMethodResponse update(Long id, DeliveryMethodRequest request) {
         DeliveryMethod entity = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("DeliveryMethod not found"));
         entity.setName(request.getName());
         DeliveryMethod saved = repository.save(entity);
-        return toResponse(saved);
+        return deliveryMethodMapper.toDeliveryResponse(saved);
     }
 
     @Override
