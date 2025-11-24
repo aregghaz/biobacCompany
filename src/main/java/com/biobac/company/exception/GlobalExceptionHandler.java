@@ -47,8 +47,9 @@ public class GlobalExceptionHandler {
             errorMessage = ex.getMessage();
         }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ResponseUtil.error(errorMessage));
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(ResponseUtil.error(errorMessage));
+        return null;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -95,10 +96,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseUtil.error(ex.getMessage()));
     }
 
-    @ExceptionHandler(ExternalServiceException.class)
-    public ResponseEntity<ApiResponse<Object>> handleExternalServiceException(ExternalServiceException ex) {
-        return ResponseEntity.status((HttpStatus.INTERNAL_SERVER_ERROR)).body(ResponseUtil.error(ex.getMessage()));
-    }
+//    @ExceptionHandler(ExternalServiceException.class)
+//    public ResponseEntity<ApiResponse<Object>> handleExternalServiceException(ExternalServiceException ex) {
+//        return ResponseEntity.status((HttpStatus.INTERNAL_SERVER_ERROR)).body(ResponseUtil.error(ex.getMessage()));
+//    }
 
     @ExceptionHandler({HttpMessageNotReadableException.class, MissingServletRequestParameterException.class})
     public ResponseEntity<ApiResponse<Object>> handleBadRequest(Exception ex) {
@@ -109,10 +110,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ResponseUtil.error("Access denied"));
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ResponseUtil.error("Internal server error"));
-    }
+//
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(ResponseUtil.error("Internal server error"));
+//    }
 }

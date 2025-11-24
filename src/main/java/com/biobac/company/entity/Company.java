@@ -33,6 +33,7 @@ public class Company extends BaseEntity {
     private String name;
     private boolean advancePayment;
     private List<Long> attributeGroupIds;
+    private String generalDirector;
 
     @ManyToOne
     private CompanyGroup companyGroup;
@@ -41,14 +42,20 @@ public class Company extends BaseEntity {
     private SaleType saleType;
 
     @ElementCollection
-    private Set<String> email;
-
-    @ElementCollection
-    private Set<String> website;
+    private Set<String> emails;
 
     @ElementCollection
     @CollectionTable(name = "company_phone", joinColumns = @JoinColumn(name = "company_id"))
-    private List<String> phoneNumber;
+    private List<String> phones;
+
+    @ElementCollection
+    private Set<String> externalEmails;
+
+    @ElementCollection
+    private List<String> externalPhones;
+
+    @ElementCollection
+    private Set<String> website;
 
     @ElementCollection
     private Set<String> addressTT;
@@ -66,7 +73,6 @@ public class Company extends BaseEntity {
     private List<CompanyType> types;
     private BigDecimal balance;
     private BigDecimal bonus;
-    private String generalDirector;
     private boolean deleted = false;
 
     @Embedded

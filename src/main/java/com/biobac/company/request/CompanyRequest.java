@@ -24,9 +24,11 @@ public class CompanyRequest {
     private List<Long> attributeGroupIds;
     private Long companyGroupId;
     private Long saleTypeId;
-    private Set<String> email;
+    private Set<String> emails;
+    private Set<String> externalEmails;
     private Set<String> website;
-    private List<String> phoneNumber;
+    private List<String> phones;
+    private List<String> externalPhones;
     private Long regionId;
     private List<Long> typeIds;
     private BigDecimal balance;

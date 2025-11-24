@@ -44,7 +44,6 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
         return companyGroupMapper.toResponse(saved);
     }
 
-
 //    private Pageable buildPageable(Integer page, Integer size, String sortBy, String sortDir) {
 //        int safePage = page == null || page < 0 ? DEFAULT_PAGE : page;
 //        int safeSize = size == null || size <= 0 ? DEFAULT_SIZE : size;
@@ -95,13 +94,13 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
 //        return Pair.of(content, metadata);
 //    }
 //
-//    @Override
-//    @Transactional(readOnly = true)
-//    public CompanyGroupResponse getById(Long id) {
-//        CompanyGroup companyGroup = companyGroupRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Company group not found"));
-//        return companyGroupMapper.toResponse(companyGroup);
-//    }
+    @Override
+    @Transactional(readOnly = true)
+    public CompanyGroupResponse getById(Long id) {
+        CompanyGroup companyGroup = companyGroupRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Company group not found"));
+        return companyGroupMapper.toResponse(companyGroup);
+    }
 //
 //    @Override
 //    @Transactional

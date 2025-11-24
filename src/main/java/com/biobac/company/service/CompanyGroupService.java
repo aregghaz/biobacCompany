@@ -23,7 +23,7 @@ public interface CompanyGroupService {
 //            String sortDir
 //    );
 //
-//    CompanyGroupResponse getById(Long id);
+    CompanyGroupResponse getById(Long id);
 //
 //    CompanyGroupResponse create(CompanyGroupRequest request);
 //
