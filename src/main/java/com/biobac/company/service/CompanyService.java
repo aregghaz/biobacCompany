@@ -7,9 +7,7 @@ public interface CompanyService {
 
     CompanyResponse registerCompany(CompanyRequest request);
 
-//    CompanyResponse registerCompany(CompanyRequest dto);
-//
-//    CompanyResponse getCompany(Long companyId);
+    CompanyResponse getCompanyById(Long companyId);
 //
 //    CompanyResponse updateCompany(Long id, CompanyRequest dto);
 //
