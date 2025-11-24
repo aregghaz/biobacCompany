@@ -15,6 +15,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public abstract class ConditionMapper {
 
@@ -36,19 +38,15 @@ public abstract class ConditionMapper {
     @Mapping(target = "contractForm", expression = "java(getContractForm(request.getContractFormId()))")
     public abstract Condition toConditionEntity(ConditionsRequest request);
 
-    @Mapping(source = "deliveryMethod.id", target = "deliveryMethodId")
     @Mapping(source = "deliveryPayer.id", target = "deliveryPayerId")
-    @Mapping(source = "financialTerms.id", target = "financialTermsId")
     @Mapping(source = "contractForm.id", target = "contractFormId")
-    @Mapping(source = "deliveryMethod.name", target = "deliveryMethodName")
     @Mapping(source = "deliveryPayer.name", target = "deliveryPayerName")
-    @Mapping(source = "financialTerms.name", target = "financialTermsName")
     @Mapping(source = "contractForm.name", target = "contractFormName")
+    @Mapping(source = "financialTerms", target = "financialTerm")
     public abstract ConditionsResponse toConditionResponse(Condition condition);
 
-    protected DeliveryMethod getDeliveryMethod(Long id) {
-        return deliveryMethodRepository.findById(id)
-                .orElse(null);
+    protected List<DeliveryMethod> getDeliveryMethod(List<Long> id) {
+        return deliveryMethodRepository.findAllById(id);
     }
 
     protected DeliveryPayer getDeliveryPayer(Long id) {
@@ -56,9 +54,8 @@ public abstract class ConditionMapper {
                 .orElse(null);
     }
 
-    protected FinancialTerms getFinancialTerms(Long id) {
-        return financialTermsRepository.findById(id)
-                .orElse(null);
+    protected List<FinancialTerms> getFinancialTerms(List<Long> id) {
+        return financialTermsRepository.findAllById(id);
     }
 
     protected ContractForm getContractForm(Long id) {

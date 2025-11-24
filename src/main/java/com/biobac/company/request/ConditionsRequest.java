@@ -6,15 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConditionsRequest {
-    private Long deliveryMethodId;
+    private List<Long> deliveryMethodId;
     private Long deliveryPayerId;
-    private Long financialTermsId;
+    private List<Long> financialTermsId;
     private Long contractFormId;
     private Double bonus;
 }

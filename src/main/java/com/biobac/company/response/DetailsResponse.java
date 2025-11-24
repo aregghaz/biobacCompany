@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -20,6 +22,5 @@ public class DetailsResponse {
     private String bik;
     private String ks;
     private String bankName;
-
 }
 

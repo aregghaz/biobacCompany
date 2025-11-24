@@ -21,13 +21,16 @@ public class CompanyResponse {
     private String localAddress;
     private String actualAddress;
     private String warehouseAddress;
-    private List<String> phoneNumber;
+    private List<String> phones;
+    private List<String> externalPhones;
     private String managerNumber;
     private RegionResponse region;
     private SaleTypeResponse saleType;
     private List<Long> attributeGroupIds;
-    private Set<String> email;
+    private Set<String> emails;
+    private Set<String> externalEmails;
     private Set<String> website;
+    private String generalDirector;
     private boolean advancePayment;
     private List<CompanyTypeResponse> types;
     private List<AttributeResponse> attributes;

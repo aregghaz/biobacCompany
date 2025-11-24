@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -25,6 +27,8 @@ public class Detail extends BaseEntity {
     private String bik;
     private String ks;
     private String bankName;
+    private String source;
+    private List<String> responsibleEmployee;
 
     @OneToOne
     @JoinColumn(name = "company_id")

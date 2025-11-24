@@ -4,11 +4,11 @@ import com.biobac.company.entity.Detail;
 import com.biobac.company.response.DetailsResponse;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+//@Mapper(componentModel = "spring")
 public interface DetailMapper {
 
-    Detail toDetailEntity(DetailsResponse detailsResponse);
-
-    DetailsResponse toDetailResponse(Detail detail);
+//    Detail toDetailEntity(DetailsResponse detailsResponse);
+//
+//    DetailsResponse toDetailResponse(Detail detail);
 
 }
