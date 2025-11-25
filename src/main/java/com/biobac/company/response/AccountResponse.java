@@ -7,8 +7,12 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class AccountResponse {
+public class AccountResponse extends AuditableResponse {
     private Long id;
     private String name;
     private BigDecimal balance;
+    private String bankAccount;
+    private String bik;
+    private String ks;
+    private String bankName;
 }
