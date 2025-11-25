@@ -1,14 +1,16 @@
 package com.biobac.company.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,7 +25,11 @@ public class ContactPerson extends BaseEntity {
     private String email;
     private String position;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @ManyToMany
+    @JoinTable(
+            name = "contact_person_company",
+            joinColumns = @JoinColumn(name = "contact_person_id"),
+            inverseJoinColumns = @JoinColumn(name = "company_id")
+    )
+    private List<Company> company;
 }

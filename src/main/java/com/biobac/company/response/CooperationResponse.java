@@ -12,5 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CooperationResponse {
+    private Long id;
     private String name;
 }

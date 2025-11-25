@@ -5,4 +5,5 @@ import com.biobac.company.response.ConditionsResponse;
 
 public interface ConditionService {
     ConditionsResponse createCondition(ConditionsRequest request);
+    ConditionsResponse getConditionById(Long id);
 }

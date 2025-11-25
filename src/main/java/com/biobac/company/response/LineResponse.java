@@ -12,5 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LineResponse {
+    private Long id;
     private String name;
 }
