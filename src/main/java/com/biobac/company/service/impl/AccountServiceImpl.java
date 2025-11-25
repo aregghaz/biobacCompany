@@ -91,7 +91,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-
     @Override
     @Transactional(readOnly = true)
     public Pair<List<AccountResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {

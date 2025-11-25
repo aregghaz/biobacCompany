@@ -1,28 +1,16 @@
 package com.biobac.company.service.impl;
 
-import com.biobac.company.client.AttributeClient;
 import com.biobac.company.entity.Company;
 import com.biobac.company.mapper.CompanyMapper;
-import com.biobac.company.repository.ClientTypeRepository;
-import com.biobac.company.repository.CompanyGroupRepository;
+import com.biobac.company.mapper.CompanyTypeMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
-import com.biobac.company.repository.ConditionsRepository;
-import com.biobac.company.repository.ContractFormRepository;
-import com.biobac.company.repository.CooperationRepository;
-import com.biobac.company.repository.DeliveryMethodRepository;
-import com.biobac.company.repository.DeliveryPayerRepository;
-import com.biobac.company.repository.DetailsRepository;
-import com.biobac.company.repository.FinancialTermsRepository;
-import com.biobac.company.repository.LineRepository;
-import com.biobac.company.repository.RegionRepository;
-import com.biobac.company.repository.SaleTypeRepository;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
-import com.biobac.company.utils.GroupUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -31,75 +19,23 @@ import java.util.Optional;
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanyTypeRepository companyTypeRepository;
-    private final RegionRepository regionRepository;
     private final CompanyMapper companyMapper;
-    private final AttributeClient attributeClient;
-    private final SaleTypeRepository saleTypeRepository;
-    private final CompanyGroupRepository companyGroupRepository;
-    private final DetailsRepository detailsRepository;
-    private final ConditionsRepository conditionsRepository;
-    private final ContractFormRepository contractFormRepository;
-    private final FinancialTermsRepository financialTermsRepository;
-    private final DeliveryPayerRepository deliveryPayerRepository;
-    private final DeliveryMethodRepository deliveryMethodRepository;
-    private final LineRepository lineRepository;
-    private final CooperationRepository cooperationRepository;
-    private final ClientTypeRepository clientTypeRepository;
-    private final GroupUtil groupUtil;
+    private final CompanyTypeMapper companyTypeMapper;
 
     @Override
+    @Transactional
     public CompanyResponse registerCompany(CompanyRequest request) {
         Company company = companyMapper.toCompanyEntity(request);
         Company savedCompany = companyRepository.save(company);
         return companyMapper.toCompanyResponse(savedCompany);
     }
 
+    @Transactional(readOnly = true)
     public CompanyResponse getCompanyById(Long id) {
         Optional<Company> company = companyRepository.findById(id);
         return company.map(companyMapper::toCompanyResponse).orElseThrow();
     }
 
-
-//    @Override
-//    @Transactional
-//    public CompanyResponse registerCompany(CompanyRequest request) {
-//        if (companyRepository.existsByName(request.getName())) {
-//            throw new DuplicateException("Company with name " + request.getName() + " already exists.");
-//        }
-//
-//        Company company = companyMapper.toCompanyEntity(request);
-//
-//        setCompanyRelations(company, request);
-//
-//        Company savedCompany = companyRepository.save(company);
-//
-//        if (request.getDetail() != null) {
-//            updateOrCreateDetails(savedCompany, request.getDetail());
-//        }
-//
-//        if (request.getCondition() != null) {
-//            updateOrCreateConditions(savedCompany, request.getCondition());
-//        }
-//
-//        if (request.getAttributes() != null && !request.getAttributes().isEmpty()) {
-//            attributeClient.createValues(
-//                    savedCompany.getId(),
-//                    AttributeTargetType.COMPANY.name(),
-//                    request.getAttributes()
-//            );
-//        }
-//
-//        return companyMapper.toResponse(savedCompany);
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public CompanyResponse getCompany(Long companyId) {
-//        return companyRepository.findById(companyId)
-//                .map(companyMapper::toResponse)
-//                .orElseThrow(() -> new NotFoundException("Company with ID " + companyId + " does not exist."));
-//    }
-//
 //    @Override
 //    @Transactional
 //    public CompanyResponse updateCompany(Long id, CompanyRequest request) {

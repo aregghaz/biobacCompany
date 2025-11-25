@@ -13,21 +13,23 @@ public interface CompanyGroupService {
 
     CompanyGroupResponse createCompanyGroup(CompanyGroupRequest request);
 
-//    List<CompanyGroupResponse> getAll();
-//
-//    Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(
-//            Map<String, FilterCriteria> filters,
-//            Integer page,
-//            Integer size,
-//            String sortBy,
-//            String sortDir
-//    );
-//
+    List<CompanyGroupResponse> getAll();
+
+    List<CompanyGroupResponse> getAllCompanyGroup();
+
+    Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(
+            Map<String, FilterCriteria> filters,
+            Integer page,
+            Integer size,
+            String sortBy,
+            String sortDir
+    );
+
     CompanyGroupResponse getById(Long id);
-//
-//    CompanyGroupResponse create(CompanyGroupRequest request);
-//
-//    CompanyGroupResponse update(Long id, CompanyGroupRequest request);
-//
-//    void delete(Long id);
+
+    CompanyGroupResponse create(CompanyGroupRequest request);
+
+    CompanyGroupResponse update(Long id, CompanyGroupRequest request);
+
+    void delete(Long id);
 }

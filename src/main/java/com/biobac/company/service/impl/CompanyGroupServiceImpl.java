@@ -44,56 +44,62 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
         return companyGroupMapper.toResponse(saved);
     }
 
-//    private Pageable buildPageable(Integer page, Integer size, String sortBy, String sortDir) {
-//        int safePage = page == null || page < 0 ? DEFAULT_PAGE : page;
-//        int safeSize = size == null || size <= 0 ? DEFAULT_SIZE : size;
-//        String safeSortBy = (sortBy == null || sortBy.isBlank()) ? DEFAULT_SORT_BY : sortBy;
-//        String sd = (sortDir == null || sortDir.isBlank()) ? DEFAULT_SORT_DIR : sortDir;
-//        Sort sort = sd.equalsIgnoreCase("asc") ? Sort.by(safeSortBy).ascending() : Sort.by(safeSortBy).descending();
-//        if (safeSize > 1000) {
-//            safeSize = 1000;
-//        }
-//        return PageRequest.of(safePage, safeSize, sort);
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<CompanyGroupResponse> getAll() {
-//        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
-//        Specification<CompanyGroup> spec = CompanyGroupSpecification.belongsToGroups(groupIds);
-//        return companyGroupRepository.findAll(spec).stream().map(companyGroupMapper::toResponse).toList();
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
-//        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
-//        Pageable pageable = buildPageable(page, size, sortBy, sortDir);
-//
-//        Specification<CompanyGroup> spec = CompanyGroupSpecification.buildSpecification(filters)
-//                .and(CompanyGroupSpecification.belongsToGroups(groupIds));
-//
-//        Page<CompanyGroup> companyGroupPage = companyGroupRepository.findAll(spec, pageable);
-//
-//        List<CompanyGroupResponse> content = companyGroupPage.getContent().stream()
-//                .map(companyGroupMapper::toResponse)
-//                .collect(Collectors.toList());
-//
-//        PaginationMetadata metadata = new PaginationMetadata(
-//                companyGroupPage.getNumber(),
-//                companyGroupPage.getSize(),
-//                companyGroupPage.getTotalElements(),
-//                companyGroupPage.getTotalPages(),
-//                companyGroupPage.isLast(),
-//                filters,
-//                pageable.getSort().toString().contains("ASC") ? "asc" : "desc",
-//                pageable.getSort().stream().findFirst().map(Sort.Order::getProperty).orElse(DEFAULT_SORT_BY),
-//                "companyGroupTable"
-//        );
-//
-//        return Pair.of(content, metadata);
-//    }
-//
+    private Pageable buildPageable(Integer page, Integer size, String sortBy, String sortDir) {
+        int safePage = page == null || page < 0 ? DEFAULT_PAGE : page;
+        int safeSize = size == null || size <= 0 ? DEFAULT_SIZE : size;
+        String safeSortBy = (sortBy == null || sortBy.isBlank()) ? DEFAULT_SORT_BY : sortBy;
+        String sd = (sortDir == null || sortDir.isBlank()) ? DEFAULT_SORT_DIR : sortDir;
+        Sort sort = sd.equalsIgnoreCase("asc") ? Sort.by(safeSortBy).ascending() : Sort.by(safeSortBy).descending();
+        if (safeSize > 1000) {
+            safeSize = 1000;
+        }
+        return PageRequest.of(safePage, safeSize, sort);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompanyGroupResponse> getAll() {
+        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
+        Specification<CompanyGroup> spec = CompanyGroupSpecification.belongsToGroups(groupIds);
+        return companyGroupRepository.findAll(spec).stream().map(companyGroupMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompanyGroupResponse> getAllCompanyGroup() {
+        return companyGroupRepository.findAll().stream().map(companyGroupMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
+        Pageable pageable = buildPageable(page, size, sortBy, sortDir);
+
+        Specification<CompanyGroup> spec = CompanyGroupSpecification.buildSpecification(filters)
+                .and(CompanyGroupSpecification.belongsToGroups(groupIds));
+
+        Page<CompanyGroup> companyGroupPage = companyGroupRepository.findAll(spec, pageable);
+
+        List<CompanyGroupResponse> content = companyGroupPage.getContent().stream()
+                .map(companyGroupMapper::toResponse)
+                .collect(Collectors.toList());
+
+        PaginationMetadata metadata = new PaginationMetadata(
+                companyGroupPage.getNumber(),
+                companyGroupPage.getSize(),
+                companyGroupPage.getTotalElements(),
+                companyGroupPage.getTotalPages(),
+                companyGroupPage.isLast(),
+                filters,
+                pageable.getSort().toString().contains("ASC") ? "asc" : "desc",
+                pageable.getSort().stream().findFirst().map(Sort.Order::getProperty).orElse(DEFAULT_SORT_BY),
+                "companyGroupTable"
+        );
+
+        return Pair.of(content, metadata);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public CompanyGroupResponse getById(Long id) {
@@ -101,31 +107,31 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
                 .orElseThrow(() -> new NotFoundException("Company group not found"));
         return companyGroupMapper.toResponse(companyGroup);
     }
-//
-//    @Override
-//    @Transactional
-//    public CompanyGroupResponse create(CompanyGroupRequest request) {
-//        CompanyGroup companyGroup = new CompanyGroup();
-//        companyGroup.setName(request.getName());
-//        CompanyGroup saved = companyGroupRepository.save(companyGroup);
-//        return companyGroupMapper.toResponse(saved);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public CompanyGroupResponse update(Long id, CompanyGroupRequest request) {
-//        CompanyGroup companyGroup = companyGroupRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Company group not found"));
-//        companyGroup.setName(request.getName());
-//        CompanyGroup saved = companyGroupRepository.save(companyGroup);
-//        return companyGroupMapper.toResponse(saved);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public void delete(Long id) {
-//        CompanyGroup companyGroup = companyGroupRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Company group not found"));
-//        companyGroupRepository.delete(companyGroup);
-//    }
+
+    @Override
+    @Transactional
+    public CompanyGroupResponse create(CompanyGroupRequest request) {
+        CompanyGroup companyGroup = new CompanyGroup();
+        companyGroup.setName(request.getName());
+        CompanyGroup saved = companyGroupRepository.save(companyGroup);
+        return companyGroupMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public CompanyGroupResponse update(Long id, CompanyGroupRequest request) {
+        CompanyGroup companyGroup = companyGroupRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Company group not found"));
+        companyGroup.setName(request.getName());
+        CompanyGroup saved = companyGroupRepository.save(companyGroup);
+        return companyGroupMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        CompanyGroup companyGroup = companyGroupRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Company group not found"));
+        companyGroupRepository.delete(companyGroup);
+    }
 }
