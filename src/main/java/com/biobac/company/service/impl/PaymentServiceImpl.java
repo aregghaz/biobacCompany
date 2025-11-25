@@ -170,7 +170,6 @@ public class PaymentServiceImpl implements PaymentService {
         dto.setIncreased(false);
         dto.setNotes(request.getNotes());
         dto.setSum(request.getSum());
-        dto.setUserId(null);
         paymentHistoryService.recordHistory(dto);
     }
 }

@@ -15,5 +15,4 @@ public class PaymentHistoryDto {
     private boolean increased;
     private String notes;
     private BigDecimal sum;
-    private Long userId;
 }
