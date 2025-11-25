@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountMapper.toEntity(request);
         account.setBalance(BigDecimal.valueOf(0));
         Account saved = accountRepository.save(account);
-        return accountMapper.toResponse(account);
+        return accountMapper.toResponse(saved);
     }
 
     @Override
