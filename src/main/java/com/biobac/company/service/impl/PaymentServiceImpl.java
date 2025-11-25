@@ -1,6 +1,8 @@
 package com.biobac.company.service.impl;
 
 import com.biobac.company.dto.PaginationMetadata;
+import com.biobac.company.dto.PaymentHistoryDto;
+import com.biobac.company.entity.Account;
 import com.biobac.company.entity.PaymentCategory;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.PaymentMapper;
@@ -11,6 +13,7 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.PaymentCategoryRequest;
 import com.biobac.company.request.PaymentRequest;
 import com.biobac.company.response.PaymentCategoryResponse;
+import com.biobac.company.service.PaymentHistoryService;
 import com.biobac.company.service.PaymentService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,6 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final AccountRepository accountRepository;
     private final PaymentCategoryRepository paymentCategoryRepository;
     private final PaymentMapper paymentMapper;
+    private final PaymentHistoryService paymentHistoryService;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -87,7 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Pair<List<PaymentCategoryResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+    public Pair<List<PaymentCategoryResponse>, PaginationMetadata> getCategoryPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
         Pageable pageable = buildPageable(page, size, sortBy, sortDir);
         Specification<PaymentCategory> spec = SimpleEntitySpecification.buildSpecification(filters);
         Page<PaymentCategory> pg = paymentCategoryRepository.findAll(spec, pageable);
@@ -136,7 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentCategoryResponse> getAll() {
+    public List<PaymentCategoryResponse> getCategoryAll() {
         return paymentCategoryRepository.findAll()
                 .stream()
                 .map(pc -> paymentMapper.toCategoryResponse(pc, new PaymentMapper.CycleAvoidingMappingContext()))
@@ -146,6 +151,26 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public void payment(PaymentRequest request) {
+        Account account = accountRepository.findById(request.getAccountId())
+                .orElseThrow(() -> new NotFoundException("Account not found"));
+        PaymentCategory category = paymentCategoryRepository.findById(request.getPaymentCategoryId())
+                .orElseThrow(() -> new NotFoundException("Payment Category not found"));
 
+        if (request.getSum() == null) {
+            throw new IllegalArgumentException("Payment sum is required");
+        }
+
+        account.setBalance(account.getBalance().subtract(request.getSum()));
+        accountRepository.save(account);
+
+        PaymentHistoryDto dto = new PaymentHistoryDto();
+        dto.setDate(request.getDate() == null ? LocalDateTime.now() : request.getDate());
+        dto.setAccountId(account.getId());
+        dto.setPaymentCategoryId(category.getId());
+        dto.setIncreased(false);
+        dto.setNotes(request.getNotes());
+        dto.setSum(request.getSum());
+        dto.setUserId(null);
+        paymentHistoryService.recordHistory(dto);
     }
 }

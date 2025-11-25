@@ -1,4 +1,4 @@
-package com.biobac.company.request;
+package com.biobac.company.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,10 +8,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PaymentRequest {
+public class PaymentHistoryDto {
     private LocalDateTime date;
     private Long accountId;
-    private BigDecimal sum;
-    private String notes;
     private Long paymentCategoryId;
+    private boolean increased;
+    private String notes;
+    private BigDecimal sum;
+    private Long userId;
 }
