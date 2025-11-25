@@ -6,10 +6,9 @@ import com.biobac.company.response.ContactPersonResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface ContactPersonMapper {
+public abstract class ContactPersonMapper {
 
-    ContactPerson toContactPersonEntity(ContactPersonRequest request);
+    public abstract ContactPerson toContactPersonEntity(ContactPersonRequest request);
 
-    ContactPersonResponse toContactPersonResponse(ContactPerson contactPerson);
-
+    public abstract ContactPersonResponse toContactPersonResponse(ContactPerson contactPerson);
 }

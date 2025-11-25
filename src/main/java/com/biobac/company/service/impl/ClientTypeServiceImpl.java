@@ -66,7 +66,9 @@ public class ClientTypeServiceImpl implements ClientTypeService {
 
     @Override
     public List<CreateClientTypeResponse> getAllClientType() {
-        return List.of();
+        return repository.findAll().stream()
+                .map(clientTypeMapper::toClientTypeResponse)
+                .toList();
     }
 
     @Override

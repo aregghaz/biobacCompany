@@ -22,4 +22,11 @@ public class ConditionServiceImpl implements ConditionService {
         Condition saved = conditionsRepository.save(condition);
         return conditionMapper.toConditionResponse(saved);
     }
+
+    @Override
+    public ConditionsResponse getConditionById(Long id) {
+        return conditionsRepository.findById(id)
+                .map(conditionMapper::toConditionResponse)
+                .orElseThrow(() -> new RuntimeException("Condition not found"));
+    }
 }

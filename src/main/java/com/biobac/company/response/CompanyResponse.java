@@ -1,5 +1,6 @@
 package com.biobac.company.response;
 
+import com.biobac.company.entity.Cooperation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,30 +17,31 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyResponse {
-    private Long id;
     private String name;
+    private boolean advancePayment;
     private String localAddress;
     private String actualAddress;
     private String warehouseAddress;
-    private List<String> phones;
-    private List<String> externalPhones;
-    private String managerNumber;
-    private RegionResponse region;
-    private SaleTypeResponse saleType;
     private List<Long> attributeGroupIds;
-    private Set<String> emails;
-    private Set<String> externalEmails;
-    private Set<String> website;
     private String generalDirector;
-    private boolean advancePayment;
-    private List<CompanyTypeResponse> types;
-    private List<AttributeResponse> attributes;
-    private BigDecimal balance;
-    private DetailsResponse detail;
-    private ConditionsResponse condition;
     private CompanyGroupResponse companyGroup;
+    private SaleTypeResponse saleType;
+    private Set<String> emails;
+    private List<String> phones;
+    private Set<String> externalEmails;
+    private List<String> externalPhones;
+    private Set<String> website;
+    private Set<String> addressTT;
+    private RegionResponse region;
+    private List<CompanyTypeResponse> types;
+    private BigDecimal balance;
+    private BigDecimal bonus;
+    private boolean deleted = false;
     private ClientTypeResponse customerType;
     private LineResponse line;
-    private CooperationResponse cooperation;
+    private Cooperation cooperation;
+    private List<ContactPersonResponse> contactPerson;
+    private DetailsResponse detail;
+    private ConditionsResponse condition;
 
 }

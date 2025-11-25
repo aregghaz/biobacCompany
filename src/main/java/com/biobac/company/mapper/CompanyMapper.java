@@ -12,8 +12,10 @@ import com.biobac.company.entity.SaleType;
 import com.biobac.company.repository.ClientTypeRepository;
 import com.biobac.company.repository.CompanyGroupRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
+import com.biobac.company.repository.ConditionsRepository;
 import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.repository.CooperationRepository;
+import com.biobac.company.repository.DetailsRepository;
 import com.biobac.company.repository.LineRepository;
 import com.biobac.company.repository.RegionRepository;
 import com.biobac.company.repository.SaleTypeRepository;
@@ -21,6 +23,7 @@ import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.response.CompanyResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -69,6 +72,19 @@ public abstract class CompanyMapper {
     @Mapping(source = "address.actualAddress", target = "actualAddress")
     @Mapping(source = "address.warehouseAddress", target = "warehouseAddress")
     public abstract CompanyResponse toCompanyResponse(Company company);
+
+    @Mapping(source = "request.localAddress", target = "address.localAddress")
+    @Mapping(source = "request.actualAddress", target = "address.actualAddress")
+    @Mapping(source = "request.warehouseAddress", target = "address.warehouseAddress")
+    @Mapping(target = "companyGroup", expression = "java(getCompanyGroup(request.getCompanyGroupId()))")
+    @Mapping(target = "saleType", expression = "java(getSaleType(request.getSaleTypeId()))")
+    @Mapping(target = "region", expression = "java(getRegion(request.getRegionId()))")
+    @Mapping(target = "types", expression = "java(getCompanyType(request.getTypeIds()))")
+    @Mapping(target = "customerType", expression = "java(getClientType(request.getCustomerTypeId()))")
+    @Mapping(target = "line", expression = "java(getLine(request.getLineId()))")
+    @Mapping(target = "cooperation", expression = "java(getCooperation(request.getCooperationId()))")
+    @Mapping(target = "contactPerson", expression = "java(getContactPerson(request.getContactPersonIds()))")
+    public abstract Company toUpdateCompany(CompanyRequest request, Long id);
 
     protected CompanyGroup getCompanyGroup(Long id) {
         return companyGroupRepository.findById(id)
