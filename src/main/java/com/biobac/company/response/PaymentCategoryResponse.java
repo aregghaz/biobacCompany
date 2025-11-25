@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 public class PaymentCategoryResponse extends AuditableResponse{
     private Long id;
+    private Long parentId;
     private String name;
     private List<PaymentCategoryResponse> children;
 }

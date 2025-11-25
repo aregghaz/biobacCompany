@@ -5,6 +5,7 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.PaymentCategoryRequest;
 import com.biobac.company.request.PaymentRequest;
 import com.biobac.company.response.PaymentCategoryResponse;
+import com.biobac.company.response.PaymentHistoryResponse;
 import org.springframework.data.util.Pair;
 
 import java.util.List;
@@ -15,11 +16,11 @@ public interface PaymentService {
 
     PaymentCategoryResponse updateCategory(Long id, PaymentCategoryRequest request);
 
-    Pair<List<PaymentCategoryResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters,
-                                                                          Integer page,
-                                                                          Integer size,
-                                                                          String sortBy,
-                                                                          String sortDir);
+    Pair<List<PaymentCategoryResponse>, PaginationMetadata> getCategoryPagination(Map<String, FilterCriteria> filters,
+                                                                                  Integer page,
+                                                                                  Integer size,
+                                                                                  String sortBy,
+                                                                                  String sortDir);
 
     PaymentCategoryResponse getById(Long id);
 
@@ -27,5 +28,5 @@ public interface PaymentService {
 
     void payment(PaymentRequest request);
 
-    List<PaymentCategoryResponse> getAll();
+    List<PaymentCategoryResponse> getCategoryAll();
 }

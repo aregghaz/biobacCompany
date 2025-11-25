@@ -9,6 +9,7 @@ import java.util.Map;
 
 @Mapper(componentModel = "spring")
 public interface PaymentMapper {
+    @Mapping(source = "parent.id", target = "parentId")
     PaymentCategoryResponse toCategoryResponse(PaymentCategory entity, @Context CycleAvoidingMappingContext context);
 
     class CycleAvoidingMappingContext {
