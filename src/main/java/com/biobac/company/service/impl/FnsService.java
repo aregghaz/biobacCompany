@@ -19,12 +19,13 @@ public class FnsService {
     @Value("${fns.api.key}")
     private String apiKey;
 
-    public FnsCompanyResponse getExtractedData(String req) {
-        RawFnsResponse response = fnsClient.getCompany(req, apiKey);
+    public Object getExtractedData(String req) {
+        Object response = fnsClient.getCompany(req, apiKey);
+        return response;
 
-        FnsCompany data = response.getItems().get(0).getUl();
+//        FnsCompany data = response.getItems().get(0).getUl();
 
-        return map(data);
+//        return map(data);
     }
 
     private FnsCompanyResponse map(FnsCompany data) {

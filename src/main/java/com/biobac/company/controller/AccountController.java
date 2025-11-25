@@ -6,9 +6,7 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.AccountBalanceMetadata;
 import com.biobac.company.response.AccountResponse;
 import com.biobac.company.response.ApiResponse;
-import com.biobac.company.response.FnsCompanyResponse;
 import com.biobac.company.service.AccountService;
-import com.biobac.company.service.impl.FnsService;
 import com.biobac.company.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -23,12 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
-    private final FnsService fnsService;
-
-    @GetMapping("/fns/{inn}")
-    public FnsCompanyResponse getCompanyInfo(@PathVariable String inn) {
-        return fnsService.getExtractedData(inn);
-    }
 
     @GetMapping
     public ApiResponse<List<AccountResponse>> getAll() {

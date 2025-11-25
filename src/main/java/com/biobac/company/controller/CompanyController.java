@@ -5,7 +5,9 @@ import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.CompanyResponse;
+import com.biobac.company.response.FnsCompanyResponse;
 import com.biobac.company.service.CompanyService;
+import com.biobac.company.service.impl.FnsService;
 import com.biobac.company.utils.ResponseUtil;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,12 @@ import java.util.Map;
 @Validated
 public class CompanyController {
     private final CompanyService companyService;
+    private final FnsService fnsService;
+
+    @GetMapping("/fns/{inn}")
+    public Object getCompanyInfo(@PathVariable String inn) {
+        return fnsService.getExtractedData(inn);
+    }
 
     @PostMapping("/all")
     public ApiResponse<List<CompanyResponse>> listCompaniesWithPagination(
