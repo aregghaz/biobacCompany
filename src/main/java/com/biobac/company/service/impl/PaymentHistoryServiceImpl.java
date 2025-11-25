@@ -1,5 +1,6 @@
 package com.biobac.company.service.impl;
 
+import com.biobac.company.client.UserClient;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.dto.PaymentHistoryDto;
 import com.biobac.company.entity.Account;
@@ -7,14 +8,15 @@ import com.biobac.company.entity.PaymentCategory;
 import com.biobac.company.entity.PaymentHistory;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.PaymentHistoryMapper;
-import com.biobac.company.mapper.PaymentMapper;
 import com.biobac.company.repository.AccountRepository;
 import com.biobac.company.repository.PaymentCategoryRepository;
 import com.biobac.company.repository.PaymentHistoryRepository;
 import com.biobac.company.request.FilterCriteria;
-import com.biobac.company.response.PaymentCategoryResponse;
+import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.PaymentHistoryResponse;
+import com.biobac.company.response.UserResponse;
 import com.biobac.company.service.PaymentHistoryService;
+import com.biobac.company.utils.SecurityUtil;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,8 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
     private final AccountRepository accountRepository;
     private final PaymentCategoryRepository paymentCategoryRepository;
     private final PaymentHistoryMapper paymentHistoryMapper;
+    private final UserClient userClient;
+    private final SecurityUtil securityUtil;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -62,6 +65,7 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
                 .orElseThrow(() -> new NotFoundException("Account not found"));
         PaymentCategory paymentCategory = paymentCategoryRepository.findById(dto.getPaymentCategoryId())
                 .orElseThrow(() -> new NotFoundException("Payment category not found"));
+        Long userId = securityUtil.getCurrentUserId();
 
         PaymentHistory history = new PaymentHistory();
         history.setSum(dto.getSum());
@@ -69,6 +73,7 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
         history.setDate(dto.getDate());
         history.setAccount(account);
         history.setPaymentCategory(paymentCategory);
+        history.setUserId(userId);
 
         paymentHistoryRepository.save(history);
     }
@@ -79,7 +84,31 @@ public class PaymentHistoryServiceImpl implements PaymentHistoryService {
         Pageable pageable = buildPageable(page, size, sortBy, sortDir);
         Specification<PaymentHistory> spec = SimpleEntitySpecification.buildSpecification(filters);
         Page<PaymentHistory> pg = paymentHistoryRepository.findAll(spec, pageable);
-        List<PaymentHistoryResponse> content = pg.getContent().stream().map(paymentHistoryMapper::toResponse).toList();
+        List<PaymentHistoryResponse> content = pg.getContent().stream().map(entity -> {
+            PaymentHistoryResponse resp = paymentHistoryMapper.toResponse(entity);
+            try {
+                ApiResponse<UserResponse> ur = userClient.getUser(entity.getUserId());
+                if (ur != null && Boolean.TRUE.equals(ur.getSuccess()) && ur.getData() != null) {
+                    String fn = ur.getData().getFirstname();
+                    String ln = ur.getData().getLastname();
+                    String un = ur.getData().getUsername();
+                    StringBuilder sb = new StringBuilder();
+                    if (fn != null && !fn.isBlank()) sb.append(fn);
+                    if (ln != null && !ln.isBlank()) {
+                        if (!sb.isEmpty()) sb.append(' ');
+                        sb.append(ln);
+                    }
+                    if (un != null && !un.isBlank()) {
+                        if (!sb.isEmpty()) sb.append(' ');
+                        sb.append('(').append(un).append(')');
+                    }
+                    resp.setUsername(sb.toString());
+                }
+            } catch (Exception ignored) {
+                // In case user service fails, leave username unset
+            }
+            return resp;
+        }).toList();
         PaginationMetadata metadata = new PaginationMetadata(
                 pg.getNumber(),
                 pg.getSize(),
