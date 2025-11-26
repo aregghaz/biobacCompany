@@ -12,17 +12,23 @@ import com.biobac.company.utils.ResponseUtil;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/company")
 @RequiredArgsConstructor
-@Validated
+@RequestMapping("/api/company")
 public class CompanyController {
     private final CompanyService companyService;
     private final FnsService fnsService;
@@ -30,6 +36,18 @@ public class CompanyController {
     @GetMapping("/fns/{inn}")
     public Object getCompanyInfo(@PathVariable String inn) {
         return fnsService.getExtractedData(inn);
+    }
+
+    @PostMapping("/register")
+    public ApiResponse<CompanyResponse> registerCompany(@RequestBody CompanyRequest request) {
+        CompanyResponse response = companyService.registerCompany(request);
+        return ResponseUtil.success("created", response);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<CompanyResponse> getCompanyById(@PathVariable Long id) {
+        CompanyResponse response = companyService.getCompanyById(id);
+        return ResponseUtil.success("success", response);
     }
 
     @PostMapping("/all")
@@ -62,22 +80,10 @@ public class CompanyController {
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<CompanyResponse> getCompany(@PathVariable Long id) {
-        CompanyResponse company = companyService.getCompany(id);
-        return ResponseUtil.success("Company retrieved successfully", company);
-    }
-
     @PutMapping("/{id}")
     public ApiResponse<CompanyResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyRequest request) {
         CompanyResponse updatedCompany = companyService.updateCompany(id, request);
         return ResponseUtil.success("Company updated successfully", updatedCompany);
-    }
-
-    @PostMapping
-    public ApiResponse<CompanyResponse> registerCompany(@RequestBody CompanyRequest request) {
-        CompanyResponse registeredCompany = companyService.registerCompany(request);
-        return ResponseUtil.success("Company registered successfully", registeredCompany);
     }
 
     @DeleteMapping("/{id}")

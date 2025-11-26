@@ -1,11 +1,17 @@
 package com.biobac.company.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CompanyGroupResponse extends AuditableResponse {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CompanyGroupResponse {
     private Long id;
     private String name;
 }

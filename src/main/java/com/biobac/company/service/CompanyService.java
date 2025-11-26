@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface CompanyService {
-    CompanyResponse registerCompany(CompanyRequest dto);
 
-    CompanyResponse getCompany(Long companyId);
+    CompanyResponse registerCompany(CompanyRequest request);
 
+    CompanyResponse getCompanyById(Long companyId);
     CompanyResponse updateCompany(Long id, CompanyRequest dto);
 
     void deleteCompany(Long companyId);

@@ -3,10 +3,11 @@ package com.biobac.company.service.impl;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Line;
 import com.biobac.company.exception.NotFoundException;
+import com.biobac.company.mapper.LineMapper;
 import com.biobac.company.repository.LineRepository;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.LineRequest;
-import com.biobac.company.response.SimpleNameResponse;
+import com.biobac.company.response.LineResponse;
 import com.biobac.company.service.LineService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +32,7 @@ public class LineServiceImpl implements LineService {
     private static final int DEFAULT_SIZE = 20;
     private static final String DEFAULT_SORT_BY = "id";
     private static final String DEFAULT_SORT_DIR = "desc";
+    private final LineMapper lineMapper;
 
     private Pageable buildPageable(Integer page, Integer size, String sortBy, String sortDir) {
         int safePage = page == null || page < 0 ? DEFAULT_PAGE : page;
@@ -45,23 +46,26 @@ public class LineServiceImpl implements LineService {
         return PageRequest.of(safePage, safeSize, sort);
     }
 
-    private SimpleNameResponse toResponse(Line entity) {
-        return new SimpleNameResponse(entity.getId(), entity.getName());
+    @Override
+    public LineResponse createLine(LineRequest request) {
+        Line entity = lineMapper.toLineEntity(request);
+        Line saved = repository.save(entity);
+        return lineMapper.toLineResponse(saved);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<SimpleNameResponse> getAll() {
-        return repository.findAll().stream().map(this::toResponse).toList();
+    public LineResponse getLineById(Long id) {
+        return repository.findById(id)
+                .map(lineMapper::toLineResponse)
+                .orElseThrow(() -> new NotFoundException("Line not found"));
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Pair<List<SimpleNameResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+    public Pair<List<LineResponse>, PaginationMetadata> getLinePagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
         Pageable pageable = buildPageable(page, size, sortBy, sortDir);
         Specification<Line> spec = SimpleEntitySpecification.buildSpecification(filters);
         Page<Line> pg = repository.findAll(spec, pageable);
-        List<SimpleNameResponse> content = pg.getContent().stream().map(this::toResponse).collect(Collectors.toList());
+        List<LineResponse> content = pg.getContent().stream().map(lineMapper::toLineResponse).toList();
         PaginationMetadata metadata = new PaginationMetadata(
                 pg.getNumber(),
                 pg.getSize(),
@@ -77,37 +81,18 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public SimpleNameResponse getById(Long id) {
-        Line entity = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Line not found"));
-        return toResponse(entity);
+    public LineResponse updateLine(Long id, LineRequest request) {
+        return null;
     }
 
     @Override
-    @Transactional
-    public SimpleNameResponse create(LineRequest request) {
-        Line entity = new Line();
-        entity.setName(request.getName());
-        Line saved = repository.save(entity);
-        return toResponse(saved);
+    public List<LineResponse> getAllLine() {
+        return repository.findAll().stream().map(lineMapper::toLineResponse).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
-    public SimpleNameResponse update(Long id, LineRequest request) {
-        Line entity = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Line not found"));
-        entity.setName(request.getName());
-        Line saved = repository.save(entity);
-        return toResponse(saved);
-    }
-
-    @Override
-    @Transactional
-    public void delete(Long id) {
-        Line entity = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Line not found"));
-        repository.delete(entity);
+    public void deleteLine(Long id) {
+        repository.findById(id)
+                .ifPresentOrElse((line) -> repository.delete(line), () -> new NotFoundException("Line not found"));
     }
 }

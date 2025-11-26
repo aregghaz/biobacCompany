@@ -1,42 +1,49 @@
 package com.biobac.company.response;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.biobac.company.entity.Cooperation;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class CompanyResponse extends AuditableResponse {
-    private Long id;
+public class CompanyResponse {
     private String name;
-    private String legalAddress;
+    private boolean advancePayment;
+    private String localAddress;
     private String actualAddress;
     private String warehouseAddress;
-    private String phoneNumber;
-    private String managerNumber;
-
-    private RegionResponse region;
-    private SaleTypeResponse saleType;
     private List<Long> attributeGroupIds;
-    private String email;
-    private String website;
-    private boolean advancePayment;
+    private String generalDirector;
+    private CompanyGroupResponse companyGroup;
+    private SaleTypeResponse saleType;
+    private Set<String> emails;
+    private List<String> phones;
+    private Set<String> externalEmails;
+    private List<String> externalPhones;
+    private Set<String> website;
+    private Set<String> addressTT;
+    private RegionResponse region;
     private List<CompanyTypeResponse> types;
-    private List<AttributeResponse> attributes;
     private BigDecimal balance;
-    private DetailsResponse details;
-    private ConditionsResponse conditions;
-    @JsonUnwrapped(prefix = "cooperation")
-    private EntityReferenceResponse cooperation;
-    @JsonUnwrapped(prefix = "line")
-    private EntityReferenceResponse line;
-    @JsonUnwrapped(prefix = "clientType")
-    private EntityReferenceResponse clientType;
-    @JsonUnwrapped(prefix = "companyGroup")
-    private EntityReferenceResponse companyGroup;
+    private BigDecimal bonus;
+    private boolean deleted = false;
+    private ClientTypeResponse customerType;
+    private List<LineResponse> lines;
+    private Cooperation cooperation;
+    private List<ContactPersonResponse> contactPerson;
+    private DetailsResponse detail;
+    private ConditionsResponse condition;
+    private List<SourceResponse> source;
+    private Long responsibleEmployeeId;
+    private String seo;
 }

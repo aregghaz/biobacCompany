@@ -11,5 +11,6 @@ public interface AccountMapper {
     AccountResponse toResponse(Account entity);
 
     void updateAccountFromRequest(AccountRequest request, @MappingTarget Account account);
+
     Account toEntity(AccountRequest request);
 }

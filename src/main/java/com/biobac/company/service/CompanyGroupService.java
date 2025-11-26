@@ -10,13 +10,20 @@ import java.util.List;
 import java.util.Map;
 
 public interface CompanyGroupService {
+
+    CompanyGroupResponse createCompanyGroup(CompanyGroupRequest request);
+
     List<CompanyGroupResponse> getAll();
 
-    Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters,
-                                                                       Integer page,
-                                                                       Integer size,
-                                                                       String sortBy,
-                                                                       String sortDir);
+    List<CompanyGroupResponse> getAllCompanyGroup();
+
+    Pair<List<CompanyGroupResponse>, PaginationMetadata> getPagination(
+            Map<String, FilterCriteria> filters,
+            Integer page,
+            Integer size,
+            String sortBy,
+            String sortDir
+    );
 
     CompanyGroupResponse getById(Long id);
 

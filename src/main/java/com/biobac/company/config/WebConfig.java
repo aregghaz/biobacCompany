@@ -1,9 +1,9 @@
 package com.biobac.company.config;
 
+import com.biobac.company.utils.DateUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import com.biobac.company.utils.DateUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

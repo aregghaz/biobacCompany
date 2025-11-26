@@ -37,6 +37,13 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
     private static final String DEFAULT_SORT_BY = "id";
     private static final String DEFAULT_SORT_DIR = "desc";
 
+    @Override
+    public CompanyGroupResponse createCompanyGroup(CompanyGroupRequest request) {
+        CompanyGroup companyGroup = companyGroupMapper.toEntity(request);
+        CompanyGroup saved = companyGroupRepository.save(companyGroup);
+        return companyGroupMapper.toResponse(saved);
+    }
+
     private Pageable buildPageable(Integer page, Integer size, String sortBy, String sortDir) {
         int safePage = page == null || page < 0 ? DEFAULT_PAGE : page;
         int safeSize = size == null || size <= 0 ? DEFAULT_SIZE : size;
@@ -55,6 +62,12 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<CompanyGroup> spec = CompanyGroupSpecification.belongsToGroups(groupIds);
         return companyGroupRepository.findAll(spec).stream().map(companyGroupMapper::toResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompanyGroupResponse> getAllCompanyGroup() {
+        return companyGroupRepository.findAll().stream().map(companyGroupMapper::toResponse).toList();
     }
 
     @Override
@@ -100,7 +113,7 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
     public CompanyGroupResponse create(CompanyGroupRequest request) {
         CompanyGroup companyGroup = new CompanyGroup();
         companyGroup.setName(request.getName());
-        CompanyGroup saved =  companyGroupRepository.save(companyGroup);
+        CompanyGroup saved = companyGroupRepository.save(companyGroup);
         return companyGroupMapper.toResponse(saved);
     }
 
@@ -110,7 +123,7 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
         CompanyGroup companyGroup = companyGroupRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Company group not found"));
         companyGroup.setName(request.getName());
-        CompanyGroup saved =  companyGroupRepository.save(companyGroup);
+        CompanyGroup saved = companyGroupRepository.save(companyGroup);
         return companyGroupMapper.toResponse(saved);
     }
 

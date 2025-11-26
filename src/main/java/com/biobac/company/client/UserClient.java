@@ -1,6 +1,7 @@
 package com.biobac.company.client;
 
 import com.biobac.company.response.ApiResponse;
+import com.biobac.company.response.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,4 +21,7 @@ public interface UserClient {
 
     @GetMapping("/roles/company-groups/{userId}")
     ApiResponse<List<Long>> getCompanyGroupIds(@PathVariable Long userId);
+
+    @GetMapping("/admin/users/{userId}")
+    ApiResponse<UserResponse> getUser(@PathVariable Long userId);
 }

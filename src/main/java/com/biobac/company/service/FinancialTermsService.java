@@ -1,8 +1,8 @@
 package com.biobac.company.service;
 
 import com.biobac.company.dto.PaginationMetadata;
-import com.biobac.company.request.FinancialTermsRequest;
 import com.biobac.company.request.FilterCriteria;
+import com.biobac.company.request.FinancialTermsRequest;
 import com.biobac.company.response.SimpleNameResponse;
 import org.springframework.data.util.Pair;
 
@@ -17,8 +17,12 @@ public interface FinancialTermsService {
                                                                      Integer size,
                                                                      String sortBy,
                                                                      String sortDir);
+
     SimpleNameResponse getById(Long id);
+
     SimpleNameResponse create(FinancialTermsRequest request);
+
     SimpleNameResponse update(Long id, FinancialTermsRequest request);
+
     void delete(Long id);
 }

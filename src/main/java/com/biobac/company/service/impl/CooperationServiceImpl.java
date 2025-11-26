@@ -3,9 +3,11 @@ package com.biobac.company.service.impl;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Cooperation;
 import com.biobac.company.exception.NotFoundException;
+import com.biobac.company.mapper.CooperationMapper;
 import com.biobac.company.repository.CooperationRepository;
 import com.biobac.company.request.CooperationRequest;
 import com.biobac.company.request.FilterCriteria;
+import com.biobac.company.response.CooperationResponse;
 import com.biobac.company.response.SimpleNameResponse;
 import com.biobac.company.service.CooperationService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CooperationServiceImpl implements CooperationService {
     private final CooperationRepository repository;
+    private final CooperationMapper cooperationMapper;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -51,17 +54,18 @@ public class CooperationServiceImpl implements CooperationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SimpleNameResponse> getAll() {
-        return repository.findAll().stream().map(this::toResponse).toList();
+    public List<CooperationResponse> getAllCooperation() {
+        return repository.findAll().stream().map(cooperationMapper::toCooperationResponse).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Pair<List<SimpleNameResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+    public Pair<List<CooperationResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
         Pageable pageable = buildPageable(page, size, sortBy, sortDir);
         Specification<Cooperation> spec = SimpleEntitySpecification.buildSpecification(filters);
         Page<Cooperation> pg = repository.findAll(spec, pageable);
-        List<SimpleNameResponse> content = pg.getContent().stream().map(this::toResponse).collect(Collectors.toList());
+        List<CooperationResponse> content = pg.getContent().stream().map(cooperationMapper::toCooperationResponse)
+                .collect(Collectors.toList());
         PaginationMetadata metadata = new PaginationMetadata(
                 pg.getNumber(),
                 pg.getSize(),
@@ -78,29 +82,24 @@ public class CooperationServiceImpl implements CooperationService {
 
     @Override
     @Transactional(readOnly = true)
-    public SimpleNameResponse getById(Long id) {
-        Cooperation entity = repository.findById(id)
+    public CooperationResponse getCooperationById(Long id) {
+        return repository.findById(id)
+                .map(cooperationMapper::toCooperationResponse)
                 .orElseThrow(() -> new NotFoundException("Cooperation not found"));
-        return toResponse(entity);
     }
 
     @Override
     @Transactional
-    public SimpleNameResponse create(CooperationRequest request) {
-        Cooperation entity = new Cooperation();
-        entity.setName(request.getName());
-        Cooperation saved = repository.save(entity);
-        return toResponse(saved);
+    public CooperationResponse create(CooperationRequest request) {
+        Cooperation cooperation = cooperationMapper.toCooperationEntity(request);
+        Cooperation saved = repository.save(cooperation);
+        return cooperationMapper.toCooperationResponse(saved);
     }
 
     @Override
     @Transactional
-    public SimpleNameResponse update(Long id, CooperationRequest request) {
-        Cooperation entity = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Cooperation not found"));
-        entity.setName(request.getName());
-        Cooperation saved = repository.save(entity);
-        return toResponse(saved);
+    public CooperationResponse update(Long id, CooperationRequest request) {
+        return null;
     }
 
     @Override

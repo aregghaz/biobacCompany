@@ -9,7 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.biobac.company.utils.SpecificationUtil.*;
+import static com.biobac.company.utils.SpecificationUtil.buildBetween;
+import static com.biobac.company.utils.SpecificationUtil.buildContains;
+import static com.biobac.company.utils.SpecificationUtil.buildEquals;
+import static com.biobac.company.utils.SpecificationUtil.buildGreaterThanOrEqualTo;
+import static com.biobac.company.utils.SpecificationUtil.buildLessThanOrEqualTo;
+import static com.biobac.company.utils.SpecificationUtil.buildNotEquals;
 
 public class SimpleEntitySpecification {
     public static <T> Specification<T> buildSpecification(Map<String, FilterCriteria> filters) {
@@ -35,7 +40,8 @@ public class SimpleEntitySpecification {
                         case "equals" -> predicate = buildEquals(cb, path, criteria.getValue());
                         case "notEquals" -> predicate = buildNotEquals(cb, path, criteria.getValue());
                         case "contains" -> predicate = buildContains(cb, path, criteria.getValue());
-                        case "greaterThanOrEqualTo" -> predicate = buildGreaterThanOrEqualTo(cb, path, criteria.getValue());
+                        case "greaterThanOrEqualTo" ->
+                                predicate = buildGreaterThanOrEqualTo(cb, path, criteria.getValue());
                         case "lessThanOrEqualTo" -> predicate = buildLessThanOrEqualTo(cb, path, criteria.getValue());
                         case "between" -> predicate = buildBetween(cb, path, criteria.getValue());
                         default -> predicate = null;

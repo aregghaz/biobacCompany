@@ -1,7 +1,25 @@
 package com.biobac.company.seeder;
 
-import com.biobac.company.entity.*;
-import com.biobac.company.repository.*;
+import com.biobac.company.entity.ClientType;
+import com.biobac.company.entity.CompanyType;
+import com.biobac.company.entity.ContractForm;
+import com.biobac.company.entity.Cooperation;
+import com.biobac.company.entity.DeliveryMethod;
+import com.biobac.company.entity.DeliveryPayer;
+import com.biobac.company.entity.FinancialTerms;
+import com.biobac.company.entity.Line;
+import com.biobac.company.entity.Region;
+import com.biobac.company.entity.SaleType;
+import com.biobac.company.repository.ClientTypeRepository;
+import com.biobac.company.repository.CompanyTypeRepository;
+import com.biobac.company.repository.ContractFormRepository;
+import com.biobac.company.repository.CooperationRepository;
+import com.biobac.company.repository.DeliveryMethodRepository;
+import com.biobac.company.repository.DeliveryPayerRepository;
+import com.biobac.company.repository.FinancialTermsRepository;
+import com.biobac.company.repository.LineRepository;
+import com.biobac.company.repository.RegionRepository;
+import com.biobac.company.repository.SaleTypeRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -189,7 +207,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             clientTypes.forEach(type -> clientTypeRepository.save(new ClientType(type)));
         }
 
-        if(saleTypeRepository.count() == 0){
+        if (saleTypeRepository.count() == 0) {
             SaleType saleType1 = new SaleType("Оптовая торговля");
             saleTypeRepository.save(saleType1);
 

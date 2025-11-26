@@ -23,4 +23,5 @@ services:
   attribute-url: http://kinomino.ru:8050/api
   user-url: http://kinomino.ru:8070/api
   fns-url: https://api-fns.ru/api
+  warehouse-url: http://kinomino.ru:8080/api
 #  user-url: http://localhost:8070/api
