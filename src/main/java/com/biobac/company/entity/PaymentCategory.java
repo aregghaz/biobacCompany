@@ -21,6 +21,6 @@ public class PaymentCategory extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private PaymentCategory parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<PaymentCategory> children = new ArrayList<>();
 }

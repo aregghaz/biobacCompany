@@ -81,9 +81,21 @@ public class PaymentServiceImpl implements PaymentService {
         category.setName(request.getName());
 
         if (request.getParentId() != null) {
+            if (id.equals(request.getParentId())) {
+                throw new IllegalArgumentException("Category cannot be its own parent");
+            }
             PaymentCategory parent = paymentCategoryRepository.findById(request.getParentId())
                     .orElseThrow(() -> new NotFoundException("Parent not found"));
+            PaymentCategory cursor = parent;
+            while (cursor != null) {
+                if (id.equals(cursor.getId())) {
+                    throw new IllegalArgumentException("Parent cannot be a descendant of the category");
+                }
+                cursor = cursor.getParent();
+            }
             category.setParent(parent);
+        } else {
+            category.setParent(null);
         }
 
         PaymentCategory saved = paymentCategoryRepository.save(category);
