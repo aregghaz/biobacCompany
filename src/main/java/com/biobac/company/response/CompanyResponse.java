@@ -38,10 +38,12 @@ public class CompanyResponse {
     private BigDecimal bonus;
     private boolean deleted = false;
     private ClientTypeResponse customerType;
-    private LineResponse line;
+    private List<LineResponse> lines;
     private Cooperation cooperation;
     private List<ContactPersonResponse> contactPerson;
     private DetailsResponse detail;
     private ConditionsResponse condition;
-
+    private List<SourceResponse> source;
+    private Long responsibleEmployeeId;
+    private String seo;
 }

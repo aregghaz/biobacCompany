@@ -10,6 +10,7 @@ import com.biobac.company.entity.DeliveryPayer;
 import com.biobac.company.entity.Detail;
 import com.biobac.company.entity.FinancialTerms;
 import com.biobac.company.entity.embeddable.Address;
+import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
@@ -20,6 +21,7 @@ import com.biobac.company.repository.DeliveryMethodRepository;
 import com.biobac.company.repository.DeliveryPayerRepository;
 import com.biobac.company.repository.DetailsRepository;
 import com.biobac.company.repository.FinancialTermsRepository;
+import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.ConditionsRequest;
 import com.biobac.company.request.DetailRequest;
@@ -38,6 +40,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -96,11 +99,11 @@ public class CompanyServiceImpl implements CompanyService {
             updateOrCreateConditions(updatedCompany, request.getCondition());
         }
 
-//        List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty()
-//                ? Collections.emptyList()
-//                : request.getAttributes();
-//
-//        attributeClient.updateValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributeGroupIds(), attributes);
+        List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty()
+                ? Collections.emptyList()
+                : request.getAttributes();
+
+        attributeClient.updateValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributeGroupIds(), attributes);
 
         return companyMapper.toCompanyResponse(updatedCompany);
     }
@@ -215,9 +218,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     private Condition createCondition(ConditionsRequest request, Company company) {
         Condition condition = Condition.builder()
-                .deliveryMethod(createDeliveryMethod(request.getDeliveryMethodId()))
+                .deliveryMethods(createDeliveryMethod(request.getDeliveryMethodIds()))
                 .deliveryPayer(createDeliveryPayer(request.getDeliveryPayerId()))
-                .financialTerms(createFinancialTerms(request.getFinancialTermsId()))
+                .financialTerms(createFinancialTerms(request.getFinancialTermIds()))
                 .contractForm(createContractForm(request.getContractFormId()))
                 .company(company)
                 .bonus(request.getBonus())
@@ -265,9 +268,9 @@ public class CompanyServiceImpl implements CompanyService {
                 .orElseGet(Condition::new);
 
         condition.setCompany(company);
-        condition.setDeliveryMethod(createDeliveryMethod(dto.getDeliveryMethodId()));
+        condition.setDeliveryMethods(createDeliveryMethod(dto.getDeliveryMethodIds()));
         condition.setDeliveryPayer(createDeliveryPayer(dto.getDeliveryPayerId()));
-        condition.setFinancialTerms(createFinancialTerms(dto.getFinancialTermsId()));
+        condition.setFinancialTerms(createFinancialTerms(dto.getFinancialTermIds()));
         condition.setContractForm(createContractForm(dto.getContractFormId()));
         condition.setBonus(dto.getBonus());
 
