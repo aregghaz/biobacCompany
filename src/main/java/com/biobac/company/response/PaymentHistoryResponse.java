@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class PaymentHistoryResponse {
+public class PaymentHistoryResponse extends AuditableResponse {
     private LocalDateTime date;
     private AccountResponse account;
     private PaymentCategoryResponse paymentCategory;
