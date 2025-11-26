@@ -23,21 +23,17 @@ public class CompanyRequest {
     private String actualAddress;
     private String warehouseAddress;
     private List<Long> attributeGroupIds;
-    private String generalDirector;
     private Long companyGroupId;
     private Long saleTypeId;
     private Set<String> emails;
     private List<String> phones;
     private Set<String> externalEmails;
     private List<String> externalPhones;
-    private Set<String> website;
+    private Set<String> websites;
     private List<AttributeUpsertRequest> attributes;
     private Set<String> addressTT;
     private Long regionId;
     private List<Long> typeIds;
-    private BigDecimal balance;
-    private BigDecimal bonus;
-    private boolean deleted = false;
 
     @JsonProperty("clientTypeId")
     private Long customerTypeId;
@@ -46,7 +42,7 @@ public class CompanyRequest {
     private List<Long> contactPersonIds;
     private DetailRequest detail;
     private ConditionsRequest condition;
-    private List<Long> sourceIds;
+    private Long sourceId;
     private Long responsibleEmployeeId;
     private String seo;
 }
