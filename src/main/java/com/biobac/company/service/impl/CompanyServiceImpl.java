@@ -9,7 +9,6 @@ import com.biobac.company.entity.DeliveryMethod;
 import com.biobac.company.entity.DeliveryPayer;
 import com.biobac.company.entity.Detail;
 import com.biobac.company.entity.FinancialTerms;
-import com.biobac.company.entity.embeddable.Address;
 import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
@@ -113,7 +112,6 @@ public class CompanyServiceImpl implements CompanyService {
     public void deleteCompany(Long companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new NotFoundException("Company not found"));
-        company.setDeleted(true);
         companyRepository.save(company);
     }
 
