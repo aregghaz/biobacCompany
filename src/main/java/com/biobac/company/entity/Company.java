@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -80,8 +81,8 @@ public class Company extends BaseEntity {
     @ManyToOne
     private ClientType customerType;
 
-    @ManyToOne
-    private Line line;
+    @OneToMany
+    private List<Line> lines;
 
     @ManyToOne
     private Cooperation cooperation;
@@ -94,4 +95,9 @@ public class Company extends BaseEntity {
 
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Condition condition;
+
+    @OneToMany
+    private List<Source> sources;
+    private Long responsibleEmployeeId;
+    private String seo;
 }

@@ -34,7 +34,7 @@ public class Condition extends BaseEntity {
             joinColumns = @JoinColumn(name = "condition_id"),
             inverseJoinColumns = @JoinColumn(name = "delivery_method_id")
     )
-    private List<DeliveryMethod> deliveryMethod;
+    private List<DeliveryMethod> deliveryMethods;
 
     @ManyToOne
     private DeliveryPayer deliveryPayer;

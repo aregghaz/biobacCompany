@@ -1,5 +1,6 @@
 package com.biobac.company.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConditionsResponse {
-    private List<DeliveryMethodResponse> deliveryMethod;
+    private List<DeliveryMethodResponse> deliveryMethods;
     private Long deliveryPayerId;
     private String deliveryPayerName;
-    private List<FinancialTermsResponse> financialTerm;
+    private List<FinancialTermsResponse> financialTerms;
     private Long contractFormId;
     private String contractFormName;
     private Double bonus;

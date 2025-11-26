@@ -1,5 +1,6 @@
 package com.biobac.company.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,10 +38,15 @@ public class CompanyRequest {
     private BigDecimal balance;
     private BigDecimal bonus;
     private boolean deleted = false;
+
+    @JsonProperty("clientTypeId")
     private Long customerTypeId;
-    private Long lineId;
+    private List<Long> lineIds;
     private Long cooperationId;
     private List<Long> contactPersonIds;
     private DetailRequest detail;
     private ConditionsRequest condition;
+    private List<Long> sourceIds;
+    private Long responsibleEmployeeId;
+    private String seo;
 }

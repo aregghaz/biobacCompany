@@ -32,9 +32,9 @@ public abstract class ConditionMapper {
     @Autowired
     protected ContractFormRepository contractFormRepository;
 
-    @Mapping(target = "deliveryMethod", expression = "java(getDeliveryMethod(request.getDeliveryMethodId()))")
+    @Mapping(target = "deliveryMethods", expression = "java(getDeliveryMethods(request.getDeliveryMethodIds()))")
     @Mapping(target = "deliveryPayer", expression = "java(getDeliveryPayer(request.getDeliveryPayerId()))")
-    @Mapping(target = "financialTerms", expression = "java(getFinancialTerms(request.getFinancialTermsId()))")
+    @Mapping(target = "financialTerms", expression = "java(getFinancialTerms(request.getFinancialTermIds()))")
     @Mapping(target = "contractForm", expression = "java(getContractForm(request.getContractFormId()))")
     public abstract Condition toConditionEntity(ConditionsRequest request);
 
@@ -42,10 +42,10 @@ public abstract class ConditionMapper {
     @Mapping(source = "contractForm.id", target = "contractFormId")
     @Mapping(source = "deliveryPayer.name", target = "deliveryPayerName")
     @Mapping(source = "contractForm.name", target = "contractFormName")
-    @Mapping(source = "financialTerms", target = "financialTerm")
+    @Mapping(source = "financialTerms", target = "financialTerms")
     public abstract ConditionsResponse toConditionResponse(Condition condition);
 
-    protected List<DeliveryMethod> getDeliveryMethod(List<Long> id) {
+    protected List<DeliveryMethod> getDeliveryMethods(List<Long> id) {
         return deliveryMethodRepository.findAllById(id);
     }
 

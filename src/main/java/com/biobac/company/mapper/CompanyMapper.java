@@ -9,6 +9,7 @@ import com.biobac.company.entity.Cooperation;
 import com.biobac.company.entity.Line;
 import com.biobac.company.entity.Region;
 import com.biobac.company.entity.SaleType;
+import com.biobac.company.entity.Source;
 import com.biobac.company.repository.ClientTypeRepository;
 import com.biobac.company.repository.CompanyGroupRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
@@ -19,6 +20,7 @@ import com.biobac.company.repository.DetailsRepository;
 import com.biobac.company.repository.LineRepository;
 import com.biobac.company.repository.RegionRepository;
 import com.biobac.company.repository.SaleTypeRepository;
+import com.biobac.company.repository.SourceRepository;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.response.CompanyResponse;
 import org.mapstruct.Mapper;
@@ -55,6 +57,9 @@ public abstract class CompanyMapper {
     @Autowired
     protected ContactPersonRepository contactPersonRepository;
 
+    @Autowired
+    private SourceRepository sourceRepository;
+
     @Mapping(source = "localAddress", target = "address.localAddress")
     @Mapping(source = "actualAddress", target = "address.actualAddress")
     @Mapping(source = "warehouseAddress", target = "address.warehouseAddress")
@@ -63,9 +68,10 @@ public abstract class CompanyMapper {
     @Mapping(target = "region", expression = "java(getRegion(request.getRegionId()))")
     @Mapping(target = "types", expression = "java(getCompanyType(request.getTypeIds()))")
     @Mapping(target = "customerType", expression = "java(getClientType(request.getCustomerTypeId()))")
-    @Mapping(target = "line", expression = "java(getLine(request.getLineId()))")
+    @Mapping(target = "lines", expression = "java(getLines(request.getLineIds()))")
     @Mapping(target = "cooperation", expression = "java(getCooperation(request.getCooperationId()))")
     @Mapping(target = "contactPerson", expression = "java(getContactPerson(request.getContactPersonIds()))")
+    @Mapping(target = "sources", expression = "java(getSources(request.getSourceIds()))")
     public abstract Company toCompanyEntity(CompanyRequest request);
 
     @Mapping(source = "address.localAddress", target = "localAddress")
@@ -81,10 +87,15 @@ public abstract class CompanyMapper {
     @Mapping(target = "region", expression = "java(getRegion(request.getRegionId()))")
     @Mapping(target = "types", expression = "java(getCompanyType(request.getTypeIds()))")
     @Mapping(target = "customerType", expression = "java(getClientType(request.getCustomerTypeId()))")
-    @Mapping(target = "line", expression = "java(getLine(request.getLineId()))")
+    @Mapping(target = "lines", expression = "java(getLines(request.getLineIds()))")
     @Mapping(target = "cooperation", expression = "java(getCooperation(request.getCooperationId()))")
     @Mapping(target = "contactPerson", expression = "java(getContactPerson(request.getContactPersonIds()))")
+    @Mapping(target = "sources", expression = "java(getSources(request.getSourceIds()))")
     public abstract Company toUpdateCompany(CompanyRequest request, Long id);
+
+    protected List<Source> getSources(List<Long> id) {
+        return sourceRepository.findAllById(id);
+    }
 
     protected CompanyGroup getCompanyGroup(Long id) {
         return companyGroupRepository.findById(id)
@@ -110,9 +121,8 @@ public abstract class CompanyMapper {
                 .orElse(null);
     }
 
-    protected Line getLine(Long id) {
-        return lineRepository.findById(id)
-                .orElse(null);
+    protected List<Line> getLines(List<Long> id) {
+        return lineRepository.findAllById(id);
     }
 
     protected Cooperation getCooperation(Long id) {
