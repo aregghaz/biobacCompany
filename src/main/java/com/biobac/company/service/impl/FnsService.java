@@ -4,11 +4,10 @@ import com.biobac.company.client.FnsClient;
 import com.biobac.company.response.FnsCompany;
 import com.biobac.company.response.FnsCompanyResponse;
 import com.biobac.company.response.RawFnsResponse;
+import com.biobac.company.utils.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,31 +18,30 @@ public class FnsService {
     @Value("${fns.api.key}")
     private String apiKey;
 
-    public Object getExtractedData(String req) {
-        Object response = fnsClient.getCompany(req, apiKey);
-        return response;
+    public FnsCompanyResponse getExtractedData(String req) {
+        RawFnsResponse response = fnsClient.getCompany(req, apiKey);
 
-//        FnsCompany data = response.getItems().get(0).getUl();
+        FnsCompany data = response.getItems().get(0).getUl();
 
-//        return map(data);
+        return map(data);
     }
 
     private FnsCompanyResponse map(FnsCompany data) {
         FnsCompanyResponse info = new FnsCompanyResponse();
 
-        info.setName(
-                data.getFullName() != null
-                        ? data.getFullName()
-                        : data.getShortName()
-        );
-
         info.setInn(data.getInn());
         info.setOgrn(data.getOgrn());
+        info.setKpp(data.getKpp());
+        info.setFullName(data.getFullName());
+        info.setShortName(data.getShortName());
+        info.setOkpo(data.getOkpo());
+        info.setWebsites(data.getContacts().getWebsites());
+        info.setPhones(data.getContacts().getPhones());
+        info.setEmails(data.getContacts().getEmails());
+        info.setSeo(data.getSeo());
+        info.setDateOfRegistration(DateUtil.toLocalDateTime(data.getDateOfRegistration()));
+        info.setDateOfOgrn(DateUtil.toLocalDateTime(data.getDateOfOgrn()));
 
         return info;
-    }
-
-    private String getFirst(List<String> list) {
-        return (list == null || list.isEmpty()) ? null : list.get(0);
     }
 }

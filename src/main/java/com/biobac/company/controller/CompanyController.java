@@ -34,7 +34,7 @@ public class CompanyController {
     private final FnsService fnsService;
 
     @GetMapping("/fns/{inn}")
-    public Object getCompanyInfo(@PathVariable String inn) {
+    public FnsCompanyResponse getCompanyInfo(@PathVariable String inn) {
         return fnsService.getExtractedData(inn);
     }
 

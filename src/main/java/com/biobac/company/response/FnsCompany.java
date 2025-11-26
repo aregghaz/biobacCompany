@@ -16,9 +16,24 @@ public class FnsCompany {
     @JsonProperty("ОГРН")
     private String ogrn;
 
+    @JsonProperty("КодОКОПФ")
+    private String okpo;
+
     @JsonProperty("НаимПолнЮЛ")
     private String fullName;
 
     @JsonProperty("НаимСокрЮЛ")
     private String shortName;
+
+    @JsonProperty("Руководитель.ФИОПолн")
+    private String seo;
+
+    @JsonProperty("Контакты")
+    private FnsContacts contacts;
+
+    @JsonProperty("ДатаРег")
+    private String dateOfRegistration;
+
+    @JsonProperty("ДатаОГРН")
+    private String dateOfOgrn;
 }
