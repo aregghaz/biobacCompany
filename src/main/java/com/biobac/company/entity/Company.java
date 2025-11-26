@@ -42,6 +42,8 @@ public class Company extends BaseEntity {
     @ElementCollection
     private Set<String> emails;
 
+    private boolean deleted = false;
+
     @ElementCollection
     @CollectionTable(name = "company_phone", joinColumns = @JoinColumn(name = "company_id"))
     private List<String> phones;
