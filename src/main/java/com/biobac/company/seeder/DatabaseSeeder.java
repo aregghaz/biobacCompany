@@ -112,7 +112,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                     "Ярославское ш"
             );
 
-            lines.forEach(name -> lineRepository.save(new Line(name)));
+            lines.forEach(name -> lineRepository.save(new Line(name, null)));
         }
 
         if (contractFormRepository.count() == 0) {

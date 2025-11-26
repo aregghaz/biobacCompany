@@ -33,7 +33,6 @@ public class Company extends BaseEntity {
     private String name;
     private boolean advancePayment;
     private List<Long> attributeGroupIds;
-    private String generalDirector;
 
     @ManyToOne
     private CompanyGroup companyGroup;
@@ -55,7 +54,7 @@ public class Company extends BaseEntity {
     private List<String> externalPhones;
 
     @ElementCollection
-    private Set<String> website;
+    private Set<String> websites;
 
     @ElementCollection
     private Set<String> addressTT;
@@ -71,9 +70,6 @@ public class Company extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "type_id")
     )
     private List<CompanyType> types;
-    private BigDecimal balance;
-    private BigDecimal bonus;
-    private boolean deleted = false;
 
     @Embedded
     private Address address;
@@ -82,6 +78,7 @@ public class Company extends BaseEntity {
     private ClientType customerType;
 
     @OneToMany
+    @JoinColumn(name = "company_id")
     private List<Line> lines;
 
     @ManyToOne
@@ -96,8 +93,8 @@ public class Company extends BaseEntity {
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Condition condition;
 
-    @OneToMany
-    private List<Source> sources;
+    @ManyToOne
+    private Source source;
     private Long responsibleEmployeeId;
     private String seo;
 }

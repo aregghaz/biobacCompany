@@ -19,5 +19,8 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "line")
 public class Line extends BaseEntity {
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Company company;
 }
 
