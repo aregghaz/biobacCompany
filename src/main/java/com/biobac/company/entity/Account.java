@@ -1,9 +1,6 @@
 package com.biobac.company.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,4 +23,8 @@ public class Account extends BaseEntity {
     private String bik;
     private String ks;
     private String bankName;
+
+    @ManyToOne
+    @JoinColumn(name = "our_company_id")
+    private OurCompany ourCompany;
 }

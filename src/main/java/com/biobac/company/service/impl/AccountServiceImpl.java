@@ -2,9 +2,11 @@ package com.biobac.company.service.impl;
 
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Account;
+import com.biobac.company.entity.OurCompany;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.AccountMapper;
 import com.biobac.company.repository.AccountRepository;
+import com.biobac.company.repository.OurCompanyRepository;
 import com.biobac.company.request.AccountRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.AccountResponse;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final OurCompanyRepository ourCompanyRepository;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -51,8 +54,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponse create(AccountRequest request) {
+        OurCompany ourCompany = ourCompanyRepository.findById(request.getOurCompanyId())
+                .orElseThrow(() -> new NotFoundException("Our company not found"));
         Account account = accountMapper.toEntity(request);
         account.setBalance(BigDecimal.valueOf(0));
+        account.setOurCompany(ourCompany);
         Account saved = accountRepository.save(account);
         return accountMapper.toResponse(saved);
     }
@@ -68,9 +74,12 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponse update(Long id, AccountRequest request) {
+        OurCompany ourCompany = ourCompanyRepository.findById(request.getOurCompanyId())
+                .orElseThrow(() -> new NotFoundException("Our company not found"));
         Account existingAccount = accountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Account not found"));
         accountMapper.updateAccountFromRequest(request, existingAccount);
+        existingAccount.setOurCompany(ourCompany);
         Account updated = accountRepository.save(existingAccount);
 
         return accountMapper.toResponse(updated);

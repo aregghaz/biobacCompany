@@ -11,4 +11,5 @@ public class AccountRequest {
     private String bik;
     private String ks;
     private String bankName;
+    private Long ourCompanyId;
 }
