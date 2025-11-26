@@ -13,10 +13,8 @@ import com.biobac.company.entity.Source;
 import com.biobac.company.repository.ClientTypeRepository;
 import com.biobac.company.repository.CompanyGroupRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
-import com.biobac.company.repository.ConditionsRepository;
 import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.repository.CooperationRepository;
-import com.biobac.company.repository.DetailsRepository;
 import com.biobac.company.repository.LineRepository;
 import com.biobac.company.repository.RegionRepository;
 import com.biobac.company.repository.SaleTypeRepository;
@@ -25,7 +23,6 @@ import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.response.CompanyResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

@@ -5,7 +5,6 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.PaymentCategoryRequest;
 import com.biobac.company.request.PaymentRequest;
 import com.biobac.company.response.PaymentCategoryResponse;
-import com.biobac.company.response.PaymentHistoryResponse;
 import org.springframework.data.util.Pair;
 
 import java.util.List;
