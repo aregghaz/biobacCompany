@@ -54,7 +54,7 @@ public abstract class ConditionMapper {
     protected DeliveryPayer getDeliveryPayer(Long id) {
         if (id == null) return null;
         return deliveryPayerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Delivery payer not found."));
+                .orElse(null);
     }
 
     protected List<FinancialTerms> getFinancialTerms(List<Long> id) {
