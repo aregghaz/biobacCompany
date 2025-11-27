@@ -2,13 +2,11 @@ package com.biobac.company.service.impl;
 
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.ContactPerson;
-import com.biobac.company.entity.Line;
 import com.biobac.company.mapper.ContactPersonMapper;
 import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.request.ContactPersonRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ContactPersonResponse;
-import com.biobac.company.response.LineResponse;
 import com.biobac.company.service.ContactPersonService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;

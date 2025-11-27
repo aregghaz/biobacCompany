@@ -5,7 +5,6 @@ import com.biobac.company.request.ContactPersonRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.ContactPersonResponse;
-import com.biobac.company.response.LineResponse;
 import com.biobac.company.service.ContactPersonService;
 import com.biobac.company.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +56,7 @@ public class ContactPersonController {
             @RequestBody Map<String, FilterCriteria> filters
     ) {
         Pair<List<ContactPersonResponse>, PaginationMetadata> result = contactPersonService.getAll(filters, page, size, sortBy, sortDir);
-        return ResponseUtil.success("Lines retrieved successfully", result.getFirst(), result.getSecond());
+        return ResponseUtil.success("Contact retrieved successfully", result.getFirst(), result.getSecond());
     }
 
     @PutMapping("/{id}")
