@@ -27,6 +27,7 @@ import com.biobac.company.request.DetailRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
+import com.biobac.company.service.DetailService;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final DeliveryPayerRepository deliveryPayerRepository;
     private final FinancialTermsRepository financialTermsRepository;
     private final ContractFormRepository contractFormRepository;
+    private final DetailService detailService;
     private final DetailsRepository detailRepository;
     private final AttributeClient attributeClient;
     private final GroupUtil groupUtil;
@@ -63,7 +65,7 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyResponse registerCompany(CompanyRequest request) {
         Company company = companyMapper.toCompanyEntity(request);
         Condition condition = createCondition(request.getCondition(), company);
-        Detail detail = createDetail(request, company);
+        Detail detail = detailService.createDetail(request.getDetail(), company);
         Company savedCompany = companyRepository.save(company);
         company.setCondition(condition);
         company.setDetail(detail);
@@ -196,22 +198,6 @@ public class CompanyServiceImpl implements CompanyService {
                 .stream()
                 .map(companyMapper::toCompanyResponse)
                 .toList();
-    }
-
-
-    private Detail createDetail(CompanyRequest request, Company company) {
-        Detail detail = Detail.builder()
-                .bankAccount(request.getDetail().getBankAccount())
-                .bik(request.getDetail().getBik())
-                .ks(request.getDetail().getKs())
-                .bankName(request.getDetail().getBankName())
-                .ogrn(request.getDetail().getOgrn())
-                .okpo(request.getDetail().getOkpo())
-                .kpp(request.getDetail().getKpp())
-                .inn(request.getDetail().getInn())
-                .company(company)
-                .build();
-        return detailRepository.save(detail);
     }
 
     private Condition createCondition(ConditionsRequest request, Company company) {

@@ -27,8 +27,6 @@ public interface CompanyGroupService {
 
     CompanyGroupResponse getById(Long id);
 
-    CompanyGroupResponse create(CompanyGroupRequest request);
-
     CompanyGroupResponse update(Long id, CompanyGroupRequest request);
 
     void delete(Long id);

@@ -16,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyResponse {
+    private Long id;
     private String name;
     private boolean advancePayment;
     private String localAddress;

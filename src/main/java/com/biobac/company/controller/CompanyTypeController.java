@@ -20,7 +20,7 @@ import java.util.List;
 public class CompanyTypeController {
     private final CompanyTypeService companyTypeService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse<CreateCompanyTypeResponse> create(@RequestBody CreateCompanyTypeRequest request) {
         CreateCompanyTypeResponse response = companyTypeService.createCompanyType(request);
         return ResponseUtil.success("Company Type created successfully", response);

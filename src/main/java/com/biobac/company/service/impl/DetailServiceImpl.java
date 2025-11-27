@@ -1,9 +1,10 @@
 package com.biobac.company.service.impl;
 
+import com.biobac.company.entity.Company;
 import com.biobac.company.entity.Detail;
 import com.biobac.company.mapper.DetailsMapper;
 import com.biobac.company.repository.DetailsRepository;
-import com.biobac.company.request.DetailsRequest;
+import com.biobac.company.request.DetailRequest;
 import com.biobac.company.response.DetailsResponse;
 import com.biobac.company.service.DetailService;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,11 @@ public class DetailServiceImpl implements DetailService {
     private final DetailsMapper detailsMapper;
 
     @Override
-    public DetailsResponse createDetail(DetailsRequest request) {
+    public Detail createDetail(DetailRequest request, Company company) {
         Detail detail = detailsMapper.toDetailEntity(request);
         Detail savedDetail = detailsRepository.save(detail);
-        return detailsMapper.toDetailsResponse(savedDetail);
+        company.setDetail(savedDetail);
+        return savedDetail;
     }
 
     @Override

@@ -22,7 +22,7 @@ import java.util.List;
 public class RegionController {
     private final RegionService regionService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<ApiResponse<CreateRegionResponse>> createRegion(@RequestBody CreateRegionRequest request) {
         CreateRegionResponse regionResponse = regionService.createRegion(request);
         return ResponseEntity.status(201).body(ResponseUtil.success("created", regionResponse));
