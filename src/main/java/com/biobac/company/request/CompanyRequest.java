@@ -52,10 +52,16 @@ public class CompanyRequest {
     @Min(value = 1, message = "Responsible employee ID must be greater than 0")
     private Long customerTypeId;
     private List<Long> lineIds;
+
+    @NotNull(message = "client type employee ID should not be null")
+    @Min(value = 1, message = "Responsible employee ID must be greater than 0")
     private Long cooperationId;
     private List<Long> contactPersonIds;
     private DetailRequest detail;
     private ConditionsRequest condition;
+
+    @NotNull(message = "Source ID should not be null")
+    @Min(value = 1, message = "Source ID must be greater than 0")
     private Long sourceId;
 
     @NotNull(message = "Responsible employee ID should not be null")
@@ -63,10 +69,7 @@ public class CompanyRequest {
     private Long responsibleEmployeeId;
 
     @NotNull(message = "OGRN date should not be null")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime ogrnDate;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime clientRegisteredDate;
     private String seo;
 }

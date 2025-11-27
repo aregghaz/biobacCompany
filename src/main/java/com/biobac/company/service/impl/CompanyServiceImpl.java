@@ -29,6 +29,7 @@ import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.service.ConditionService;
 import com.biobac.company.service.DetailService;
+import com.biobac.company.utils.DateUtil;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
@@ -66,11 +67,16 @@ public class CompanyServiceImpl implements CompanyService {
     @Transactional
     public CompanyResponse registerCompany(CompanyRequest request) {
         Company company = companyMapper.toCompanyEntity(request);
+
+        if (request.getDetail() == null) company.setDetail(new Detail());
+        if (request.getCondition() == null) company.setCondition(new Condition());
+
         Condition condition = conditionService.createCondition(request.getCondition(), company);
         Detail detail = detailService.createDetail(request.getDetail(), company);
         Company savedCompany = companyRepository.save(company);
         company.setCondition(condition);
         company.setDetail(detail);
+
         return companyMapper.toCompanyResponse(savedCompany);
     }
 
