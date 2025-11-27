@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class EmployeeResponse {
+public class EmployeeResponse extends AuditableResponse {
+    private Long id;
     private String firstname;
     private String lastname;
     private String middlename;

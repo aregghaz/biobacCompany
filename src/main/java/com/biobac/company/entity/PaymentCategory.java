@@ -1,10 +1,7 @@
 package com.biobac.company.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.biobac.company.entity.enums.Category;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,4 +24,7 @@ public class PaymentCategory extends BaseEntity {
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<PaymentCategory> children = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private Category category;
 }
