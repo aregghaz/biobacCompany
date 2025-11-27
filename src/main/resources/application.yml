@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/company
     username: root
-    password: root
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -15,7 +15,7 @@ server:
   port: 8060
 fns:
   api:
-    key: 620d8655236d5823a34ca3250c57b56220f7b528
+    key: be55d17a512f79f65d5e5afcef5c443e1f40a113
 jwt:
   secret: b10bac_super_secret_key_which_is_long_enough_please_change
   expiration-ms: 86400000
