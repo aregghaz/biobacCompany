@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Mapper(componentModel = "spring", uses = {ConditionMapper.class, DetailMapper.class})
 public abstract class CompanyMapper {
