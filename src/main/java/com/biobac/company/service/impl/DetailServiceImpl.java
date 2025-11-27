@@ -19,8 +19,7 @@ public class DetailServiceImpl implements DetailService {
     @Override
     public Detail createDetail(DetailRequest request, Company company) {
         Detail detail = detailsMapper.toDetailEntity(request);
-        Detail savedDetail = detailsRepository.save(detail);
-        company.setDetail(savedDetail);
-        return savedDetail;
+        detail.setCompany(company);
+        return detailsRepository.save(detail);
     }
 }
