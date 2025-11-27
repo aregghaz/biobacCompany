@@ -12,5 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientTypeResponse {
+    private Long id;
     private String name;
 }

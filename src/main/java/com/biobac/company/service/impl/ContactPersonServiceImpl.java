@@ -56,7 +56,17 @@ public class ContactPersonServiceImpl implements ContactPersonService {
 
     @Override
     public ContactPersonResponse updateContactPerson(Long id, ContactPersonRequest request) {
-        return contactPersonMapper.toContactPersonResponse(contactPersonRepository.save(contactPersonMapper.toContactPersonEntity(request)));
+        return contactPersonRepository.findById(id)
+                .map(contact -> {
+                    contact.setFirstName(request.getFirstName());
+                    contact.setLastName(request.getLastName());
+                    contact.setEmail(request.getEmail());
+                    contact.setPhone(request.getPhone());
+                    contact.setPosition(request.getPosition());
+                    contactPersonRepository.save(contact);
+                    return contactPersonMapper.toContactPersonResponse(contact);
+                })
+                .orElseThrow(() -> new RuntimeException("Contact not found"));
     }
 
     @Override
