@@ -15,7 +15,8 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyResponse {
+public class CompanyResponse extends AuditableResponse {
+    private Long id;
     private String name;
     private boolean advancePayment;
     private String localAddress;

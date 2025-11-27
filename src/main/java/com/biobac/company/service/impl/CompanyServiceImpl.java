@@ -27,6 +27,8 @@ import com.biobac.company.request.DetailRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
+import com.biobac.company.service.ConditionService;
+import com.biobac.company.service.DetailService;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +56,8 @@ public class CompanyServiceImpl implements CompanyService {
     private final DeliveryPayerRepository deliveryPayerRepository;
     private final FinancialTermsRepository financialTermsRepository;
     private final ContractFormRepository contractFormRepository;
+    private final DetailService detailService;
+    private final ConditionService conditionService;
     private final DetailsRepository detailRepository;
     private final AttributeClient attributeClient;
     private final GroupUtil groupUtil;
@@ -62,8 +66,8 @@ public class CompanyServiceImpl implements CompanyService {
     @Transactional
     public CompanyResponse registerCompany(CompanyRequest request) {
         Company company = companyMapper.toCompanyEntity(request);
-        Condition condition = createCondition(request.getCondition(), company);
-        Detail detail = createDetail(request, company);
+        Condition condition = conditionService.createCondition(request.getCondition(), company);
+        Detail detail = detailService.createDetail(request.getDetail(), company);
         Company savedCompany = companyRepository.save(company);
         company.setCondition(condition);
         company.setDetail(detail);
@@ -98,9 +102,10 @@ public class CompanyServiceImpl implements CompanyService {
             updateOrCreateConditions(updatedCompany, request.getCondition());
         }
 
-        List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty()
-                ? Collections.emptyList()
-                : request.getAttributes();
+        List<AttributeUpsertRequest> attributes =
+                (request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty())
+                        ? Collections.emptyList()
+                        : request.getAttributes();
 
         attributeClient.updateValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributeGroupIds(), attributes);
 
@@ -196,34 +201,6 @@ public class CompanyServiceImpl implements CompanyService {
                 .stream()
                 .map(companyMapper::toCompanyResponse)
                 .toList();
-    }
-
-
-    private Detail createDetail(CompanyRequest request, Company company) {
-        Detail detail = Detail.builder()
-                .bankAccount(request.getDetail().getBankAccount())
-                .bik(request.getDetail().getBik())
-                .ks(request.getDetail().getKs())
-                .bankName(request.getDetail().getBankName())
-                .ogrn(request.getDetail().getOgrn())
-                .okpo(request.getDetail().getOkpo())
-                .kpp(request.getDetail().getKpp())
-                .inn(request.getDetail().getInn())
-                .company(company)
-                .build();
-        return detailRepository.save(detail);
-    }
-
-    private Condition createCondition(ConditionsRequest request, Company company) {
-        Condition condition = Condition.builder()
-                .deliveryMethods(createDeliveryMethod(request.getDeliveryMethodIds()))
-                .deliveryPayer(createDeliveryPayer(request.getDeliveryPayerId()))
-                .financialTerms(createFinancialTerms(request.getFinancialTermIds()))
-                .contractForm(createContractForm(request.getContractFormId()))
-                .company(company)
-                .bonus(request.getBonus())
-                .build();
-        return conditionsRepository.save(condition);
     }
 
     private List<DeliveryMethod> createDeliveryMethod(List<Long> id) {

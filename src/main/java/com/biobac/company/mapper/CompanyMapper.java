@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ConditionMapper.class})
+@Mapper(componentModel = "spring", uses = {ConditionMapper.class, DetailMapper.class})
 public abstract class CompanyMapper {
 
     @Autowired
@@ -69,6 +69,8 @@ public abstract class CompanyMapper {
     @Mapping(target = "cooperation", expression = "java(getCooperation(request.getCooperationId()))")
     @Mapping(target = "contactPerson", expression = "java(getContactPerson(request.getContactPersonIds()))")
     @Mapping(target = "source", expression = "java(getSource(request.getSourceId()))")
+    @Mapping(target = "detail", ignore = true)
+    @Mapping(target = "condition", ignore = true)
     public abstract Company toCompanyEntity(CompanyRequest request);
 
     @Mapping(source = "address.localAddress", target = "localAddress")

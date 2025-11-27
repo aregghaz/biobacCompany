@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/company-groups")
+@RequestMapping("/api/company-group")
 @RequiredArgsConstructor
 public class CompanyGroupController {
     private final CompanyGroupService companyGroupService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse<CompanyGroupResponse> createCompanyGroup(@RequestBody CompanyGroupRequest request) {
         CompanyGroupResponse response = companyGroupService.createCompanyGroup(request);
         return ResponseUtil.success("Company group created successfully", response);
@@ -62,13 +62,6 @@ public class CompanyGroupController {
     public ApiResponse<CompanyGroupResponse> getById(@PathVariable Long id) {
         CompanyGroupResponse ingredientGroup = companyGroupService.getById(id);
         return ResponseUtil.success("Company group retrieved successfully", ingredientGroup);
-    }
-
-    @PostMapping
-    public ApiResponse<CompanyGroupResponse> create(@RequestBody CompanyGroupRequest request) {
-        CompanyGroupResponse createdGroup = companyGroupService.create(request);
-
-        return ResponseUtil.success("Company group created successfully", createdGroup);
     }
 
     @PutMapping("/{id}")

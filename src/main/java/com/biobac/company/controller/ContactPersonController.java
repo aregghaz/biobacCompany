@@ -1,19 +1,26 @@
 package com.biobac.company.controller;
 
+import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.ContactPersonRequest;
+import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.ContactPersonResponse;
 import com.biobac.company.service.ContactPersonService;
 import com.biobac.company.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +29,7 @@ public class ContactPersonController {
 
     private final ContactPersonService contactPersonService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse<ContactPersonResponse> createContact(@RequestBody ContactPersonRequest request) {
         ContactPersonResponse contact = contactPersonService.createContactPerson(request);
         return ResponseUtil.success("Contact created successfully", contact);
@@ -38,5 +45,29 @@ public class ContactPersonController {
     public ApiResponse<List<ContactPersonResponse>> getAllContactPersons(){
         List<ContactPersonResponse> responses = contactPersonService.getAllContactPerson();
         return ResponseUtil.success("Contacts retrieved successfully", responses);
+    }
+
+    @PostMapping("/all")
+    public ApiResponse<List<ContactPersonResponse>> getAll(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDir,
+            @RequestBody Map<String, FilterCriteria> filters
+    ) {
+        Pair<List<ContactPersonResponse>, PaginationMetadata> result = contactPersonService.getAll(filters, page, size, sortBy, sortDir);
+        return ResponseUtil.success("Contact retrieved successfully", result.getFirst(), result.getSecond());
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<ContactPersonResponse> updateContact(@PathVariable Long id, @RequestBody ContactPersonRequest request) {
+        ContactPersonResponse updatedContact = contactPersonService.updateContactPerson(id, request);
+        return ResponseUtil.success("Contact updated successfully", updatedContact);
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteContact(@PathVariable Long id) {
+        contactPersonService.deleteContactPerson(id);
+        return ResponseUtil.success("Contact deleted successfully");
     }
 }

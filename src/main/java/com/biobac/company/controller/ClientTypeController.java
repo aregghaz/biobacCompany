@@ -53,7 +53,7 @@ public class ClientTypeController {
         return ResponseUtil.success("Client type retrieved successfully", response);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse<CreateClientTypeResponse> create(@RequestBody CreateClientTypeRequest request) {
         CreateClientTypeResponse created = clientTypeService.createClientType(request);
         return ResponseUtil.success("Client type created successfully", created);

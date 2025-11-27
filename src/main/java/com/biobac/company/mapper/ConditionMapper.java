@@ -36,6 +36,7 @@ public abstract class ConditionMapper {
     @Mapping(target = "deliveryPayer", expression = "java(getDeliveryPayer(request.getDeliveryPayerId()))")
     @Mapping(target = "financialTerms", expression = "java(getFinancialTerms(request.getFinancialTermIds()))")
     @Mapping(target = "contractForm", expression = "java(getContractForm(request.getContractFormId()))")
+    @Mapping(target = "company", ignore = true)
     public abstract Condition toConditionEntity(ConditionsRequest request);
 
     @Mapping(source = "deliveryPayer.id", target = "deliveryPayerId")

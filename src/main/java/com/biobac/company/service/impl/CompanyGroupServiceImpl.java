@@ -110,15 +110,6 @@ public class CompanyGroupServiceImpl implements CompanyGroupService {
 
     @Override
     @Transactional
-    public CompanyGroupResponse create(CompanyGroupRequest request) {
-        CompanyGroup companyGroup = new CompanyGroup();
-        companyGroup.setName(request.getName());
-        CompanyGroup saved = companyGroupRepository.save(companyGroup);
-        return companyGroupMapper.toResponse(saved);
-    }
-
-    @Override
-    @Transactional
     public CompanyGroupResponse update(Long id, CompanyGroupRequest request) {
         CompanyGroup companyGroup = companyGroupRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Company group not found"));

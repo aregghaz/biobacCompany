@@ -1,12 +1,11 @@
 package com.biobac.company.service;
 
-import com.biobac.company.request.DetailsRequest;
-import com.biobac.company.response.DetailsResponse;
+import com.biobac.company.entity.Company;
+import com.biobac.company.entity.Detail;
+import com.biobac.company.request.DetailRequest;
 
 public interface DetailService {
 
-    DetailsResponse createDetail(DetailsRequest request);
-
-    DetailsResponse getDetailById(Long id);
+    Detail createDetail(DetailRequest request, Company company);
 
 }
