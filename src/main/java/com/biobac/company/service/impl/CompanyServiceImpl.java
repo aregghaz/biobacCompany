@@ -4,6 +4,7 @@ import com.biobac.company.client.AttributeClient;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.Condition;
+import com.biobac.company.entity.ContactPerson;
 import com.biobac.company.entity.ContractForm;
 import com.biobac.company.entity.DeliveryMethod;
 import com.biobac.company.entity.DeliveryPayer;
@@ -15,6 +16,7 @@ import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.ConditionsRepository;
+import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.repository.ContractFormRepository;
 import com.biobac.company.repository.DeliveryMethodRepository;
 import com.biobac.company.repository.DeliveryPayerRepository;
@@ -62,21 +64,22 @@ public class CompanyServiceImpl implements CompanyService {
     private final DetailsRepository detailRepository;
     private final AttributeClient attributeClient;
     private final GroupUtil groupUtil;
+    private final ContactPersonRepository contactPersonRepository;
+
 
     @Override
     @Transactional
     public CompanyResponse registerCompany(CompanyRequest request) {
+
+        List<ContactPerson> contactPersons = contactPersonRepository.findAllById(request.getContactPersonIds());
+
         Company company = companyMapper.toCompanyEntity(request);
-
-        if (request.getDetail() == null) company.setDetail(new Detail());
-        if (request.getCondition() == null) company.setCondition(new Condition());
-
         Condition condition = conditionService.createCondition(request.getCondition(), company);
         Detail detail = detailService.createDetail(request.getDetail(), company);
-        Company savedCompany = companyRepository.save(company);
         company.setCondition(condition);
         company.setDetail(detail);
-
+        company.setContactPerson(contactPersons);
+        Company savedCompany = companyRepository.save(company);
         return companyMapper.toCompanyResponse(savedCompany);
     }
 
@@ -89,9 +92,10 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     @Transactional
     public CompanyResponse updateCompany(Long id, CompanyRequest request) {
+        List<ContactPerson> contactPersons = contactPersonRepository.findAllById(request.getContactPersonIds());
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Company with ID " + id + " does not exist."));
-
+        company.setContactPerson(contactPersons);
         Company updateCompany = companyMapper.toUpdateCompany(request, company.getId());
 
         if (companyRepository.existsByNameAndIdNot(request.getName(), id)) {

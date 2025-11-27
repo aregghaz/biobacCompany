@@ -16,7 +16,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanyResponse extends AuditableResponse {
+public class CompanyResponse {
     private Long id;
     private String name;
     private boolean advancePayment;
@@ -34,7 +34,7 @@ public class CompanyResponse extends AuditableResponse {
     private Set<String> addressTT;
     private RegionResponse region;
     private List<CompanyTypeResponse> types;
-    private ClientTypeResponse customerType;
+    private ClientTypeResponse clientType;
     private List<LineResponse> lines;
     private Cooperation cooperation;
     private List<ContactPersonResponse> contactPerson;
@@ -44,5 +44,7 @@ public class CompanyResponse extends AuditableResponse {
     private Long responsibleEmployeeId;
     private LocalDateTime ogrnDate;
     private LocalDateTime clientRegisteredDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String seo;
 }

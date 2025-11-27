@@ -21,8 +21,7 @@ public class ConditionServiceImpl implements ConditionService {
     @Transactional
     public Condition createCondition(ConditionsRequest request, Company company) {
         Condition condition = conditionMapper.toConditionEntity(request);
-        Condition saved = conditionsRepository.save(condition);
-        company.setCondition(saved);
-        return condition;
+        condition.setCompany(company);
+        return conditionsRepository.save(condition);
     }
 }

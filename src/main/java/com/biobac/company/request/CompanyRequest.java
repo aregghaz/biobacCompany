@@ -1,6 +1,5 @@
 package com.biobac.company.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -21,7 +20,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyRequest {
-
     @NotBlank(message = "Company name should not be empty")
     private String name;
     private boolean advancePayment;
@@ -41,16 +39,15 @@ public class CompanyRequest {
     private Set<String> websites;
     private List<AttributeUpsertRequest> attributes;
     private Set<String> addressTT;
-
-    @NotNull(message = "Region ID should not be null")
-    @Min(value = 1, message = "Region ID must be greater than 0")
     private Long regionId;
+
+    @NotNull(message = "Types ID should not be null")
     private List<Long> typeIds;
 
     @JsonProperty("clientTypeId")
     @NotNull(message = "client type employee ID should not be null")
     @Min(value = 1, message = "Responsible employee ID must be greater than 0")
-    private Long customerTypeId;
+    private Long clientTypeId;
     private List<Long> lineIds;
 
     @NotNull(message = "client type employee ID should not be null")
