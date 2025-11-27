@@ -25,7 +25,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Mapper(componentModel = "spring", uses = {ConditionMapper.class, DetailMapper.class})
 public abstract class CompanyMapper {
@@ -93,44 +95,53 @@ public abstract class CompanyMapper {
     public abstract Company toUpdateCompany(CompanyRequest request, Long id);
 
     protected Source getSource(Long id) {
+        if (id == null) return null;
         return sourceRepository.findById(id)
                 .orElse(null);
     }
 
     protected CompanyGroup getCompanyGroup(Long id) {
+        if (id == null) return null;
         return companyGroupRepository.findById(id)
                 .orElse(null);
     }
 
     protected SaleType getSaleType(Long id) {
+        if (id == null) return null;
         return saleTypeRepository.findById(id)
                 .orElse(null);
     }
 
     protected Region getRegion(Long id) {
+        if (id == null) return null;
         return regionRepository.findById(id)
                 .orElse(null);
     }
 
     protected List<CompanyType> getCompanyType(List<Long> id) {
+        if (id == null) return Collections.emptyList();
         return companyTypeRepository.findAllById(id);
     }
 
     protected ClientType getClientType(Long id) {
+        if (id == null) return null;
         return clientTypeRepository.findById(id)
                 .orElse(null);
     }
 
     protected List<Line> getLines(List<Long> id) {
+        if (id == null) return Collections.emptyList();
         return lineRepository.findAllById(id);
     }
 
     protected Cooperation getCooperation(Long id) {
+        if (id == null) return null;
         return cooperationRepository.findById(id)
                 .orElse(null);
     }
 
     protected List<ContactPerson> getContactPerson(List<Long> id) {
+        if (id == null) return Collections.emptyList();
         return contactPersonRepository.findAllById(id);
     }
 }

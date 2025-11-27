@@ -9,6 +9,7 @@ import com.biobac.company.response.FnsCompanyResponse;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.service.impl.FnsService;
 import com.biobac.company.utils.ResponseUtil;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
@@ -39,7 +40,7 @@ public class CompanyController {
     }
 
     @PostMapping
-    public ApiResponse<CompanyResponse> registerCompany(@RequestBody CompanyRequest request) {
+    public ApiResponse<CompanyResponse> registerCompany(@RequestBody @Valid CompanyRequest request) {
         CompanyResponse response = companyService.registerCompany(request);
         return ResponseUtil.success("created", response);
     }

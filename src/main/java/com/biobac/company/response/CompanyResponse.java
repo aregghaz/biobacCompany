@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -41,5 +42,7 @@ public class CompanyResponse extends AuditableResponse {
     private ConditionsResponse condition;
     private SourceResponse source;
     private Long responsibleEmployeeId;
+    private LocalDateTime ogrnDate;
+    private LocalDateTime clientRegisteredDate;
     private String seo;
 }
