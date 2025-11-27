@@ -2,6 +2,7 @@ package com.biobac.company.config;
 
 import com.biobac.company.utils.DateUtil;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addFormatterForFieldType(LocalDateTime.class, new org.springframework.format.Formatter<LocalDateTime>() {
+        registry.addFormatterForFieldType(LocalDateTime.class, new Formatter<LocalDateTime>() {
             @Override
             public String print(LocalDateTime object, java.util.Locale locale) {
                 return object.format(DATE_TIME_FORMATTER);
@@ -31,7 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
             }
         });
 
-        registry.addFormatterForFieldType(LocalDate.class, new org.springframework.format.Formatter<LocalDate>() {
+        registry.addFormatterForFieldType(LocalDate.class, new Formatter<LocalDate>() {
             @Override
             public String print(LocalDate object, java.util.Locale locale) {
                 return object.format(DATE_FORMATTER);
@@ -43,7 +44,7 @@ public class WebConfig implements WebMvcConfigurer {
             }
         });
 
-        registry.addFormatterForFieldType(LocalTime.class, new org.springframework.format.Formatter<LocalTime>() {
+        registry.addFormatterForFieldType(LocalTime.class, new Formatter<LocalTime>() {
             @Override
             public String print(LocalTime object, java.util.Locale locale) {
                 return object.format(TIME_FORMATTER);

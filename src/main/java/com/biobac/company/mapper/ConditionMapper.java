@@ -47,19 +47,23 @@ public abstract class ConditionMapper {
     public abstract ConditionsResponse toConditionResponse(Condition condition);
 
     protected List<DeliveryMethod> getDeliveryMethods(List<Long> id) {
+        if (id == null) return List.of();
         return deliveryMethodRepository.findAllById(id);
     }
 
     protected DeliveryPayer getDeliveryPayer(Long id) {
+        if (id == null) return null;
         return deliveryPayerRepository.findById(id)
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Delivery payer not found."));
     }
 
     protected List<FinancialTerms> getFinancialTerms(List<Long> id) {
+        if (id == null) return List.of();
         return financialTermsRepository.findAllById(id);
     }
 
     protected ContractForm getContractForm(Long id) {
+        if (id == null) return null;
         return contractFormRepository.findById(id)
                 .orElse(null);
     }

@@ -4,6 +4,7 @@ import com.biobac.company.entity.embeddable.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -99,11 +100,7 @@ public class Company extends BaseEntity {
     @ManyToOne
     private Source source;
     private Long responsibleEmployeeId;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime ogrnDate;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime clientRegisteredDate;
     private String seo;
 }
