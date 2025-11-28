@@ -1,5 +1,6 @@
 package com.biobac.company.request;
 
+import com.biobac.company.entity.embeddable.BankInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -54,9 +55,13 @@ public class CompanyRequest {
     @Min(value = 1, message = "Responsible employee ID must be greater than 0")
     private Long cooperationId;
     private List<Long> contactPersonIds;
-    private DetailRequest detail;
+    private DetailsRequest detail;
     private ConditionsRequest condition;
 
+    private List<BankInfo> bankInformationList;
+    private String longitude;
+    private String latitude;
+    private String chainOfStore;
     @NotNull(message = "Source ID should not be null")
     @Min(value = 1, message = "Source ID must be greater than 0")
     private Long sourceId;

@@ -1,5 +1,6 @@
 package com.biobac.company.response;
 
+import com.biobac.company.entity.embeddable.BankInfo;
 import com.biobac.company.entity.Cooperation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,6 +41,10 @@ public class CompanyResponse {
     private List<ContactPersonResponse> contactPerson;
     private DetailsResponse detail;
     private ConditionsResponse condition;
+    private List<BankInfo> bankInformationList;
+    private String longitude;
+    private String latitude;
+    private String chainOfStore;
     private SourceResponse source;
     private Long responsibleEmployeeId;
     private LocalDateTime ogrnDate;

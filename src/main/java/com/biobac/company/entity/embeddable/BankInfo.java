@@ -1,23 +1,19 @@
-package com.biobac.company.request;
+package com.biobac.company.entity.embeddable;
 
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
-@Builder
+@Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetailRequest {
-    private String inn;
-    private String kpp;
-    private String ogrn;
-    private String okpo;
-    private String bankAccount;
+public class BankInfo {
     private String bik;
     private String ks;
     private String bankName;
+    private String bankAccount;
 }
