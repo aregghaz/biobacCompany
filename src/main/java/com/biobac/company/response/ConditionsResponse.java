@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConditionsResponse {
+    private Long id;
     private List<DeliveryMethodResponse> deliveryMethods;
     private Long deliveryPayerId;
     private String deliveryPayerName;

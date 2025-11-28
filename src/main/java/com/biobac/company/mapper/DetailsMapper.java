@@ -5,6 +5,7 @@ import com.biobac.company.request.DetailRequest;
 import com.biobac.company.response.DetailsResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface DetailsMapper {
@@ -13,4 +14,8 @@ public interface DetailsMapper {
     Detail toDetailEntity(DetailRequest detailsRequest);
 
     DetailsResponse toDetailsResponse(Detail detail);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "company", ignore = true)
+    Detail upadateDetail(DetailRequest detailsRequest, @MappingTarget Detail detail);
 }

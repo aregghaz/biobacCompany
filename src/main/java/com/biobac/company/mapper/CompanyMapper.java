@@ -4,7 +4,6 @@ import com.biobac.company.entity.ClientType;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
-import com.biobac.company.entity.ContactPerson;
 import com.biobac.company.entity.Cooperation;
 import com.biobac.company.entity.Line;
 import com.biobac.company.entity.Region;
@@ -13,7 +12,6 @@ import com.biobac.company.entity.Source;
 import com.biobac.company.repository.ClientTypeRepository;
 import com.biobac.company.repository.CompanyGroupRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
-import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.repository.CooperationRepository;
 import com.biobac.company.repository.LineRepository;
 import com.biobac.company.repository.RegionRepository;
@@ -23,6 +21,7 @@ import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.response.CompanyResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -90,7 +89,7 @@ public abstract class CompanyMapper {
     @Mapping(target = "condition", ignore = true)
     @Mapping(target = "detail", ignore = true)
     @Mapping(target = "contactPerson", ignore = true)
-    public abstract Company toUpdateCompany(CompanyRequest request, Long id);
+    public abstract Company toUpdateCompany(CompanyRequest request, @MappingTarget Company company);
 
     protected Source getSource(Long id) {
         if (id == null) return null;

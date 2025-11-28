@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DetailsResponse {
+    private Long id;
     private String inn;
     private String kpp;
     private String ogrn;

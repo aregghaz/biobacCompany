@@ -7,5 +7,6 @@ import com.biobac.company.request.DetailRequest;
 public interface DetailService {
 
     Detail createDetail(DetailRequest request, Company company);
-
+    Detail updateDetail(Long id, DetailRequest request, Company company);
+    Detail fetchDetailById(Long id);
 }

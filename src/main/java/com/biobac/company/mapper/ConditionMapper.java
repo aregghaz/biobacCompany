@@ -13,6 +13,7 @@ import com.biobac.company.request.ConditionsRequest;
 import com.biobac.company.response.ConditionsResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -32,11 +33,11 @@ public abstract class ConditionMapper {
     @Autowired
     protected ContractFormRepository contractFormRepository;
 
+    @Mapping(target = "company", ignore = true)
     @Mapping(target = "deliveryMethods", expression = "java(getDeliveryMethods(request.getDeliveryMethodIds()))")
     @Mapping(target = "deliveryPayer", expression = "java(getDeliveryPayer(request.getDeliveryPayerId()))")
     @Mapping(target = "financialTerms", expression = "java(getFinancialTerms(request.getFinancialTermIds()))")
     @Mapping(target = "contractForm", expression = "java(getContractForm(request.getContractFormId()))")
-    @Mapping(target = "company", ignore = true)
     public abstract Condition toConditionEntity(ConditionsRequest request);
 
     @Mapping(source = "deliveryPayer.id", target = "deliveryPayerId")
@@ -45,6 +46,14 @@ public abstract class ConditionMapper {
     @Mapping(source = "contractForm.name", target = "contractFormName")
     @Mapping(source = "financialTerms", target = "financialTerms")
     public abstract ConditionsResponse toConditionResponse(Condition condition);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "company", ignore = true)
+    @Mapping(target = "deliveryMethods", expression = "java(getDeliveryMethods(request.getDeliveryMethodIds()))")
+    @Mapping(target = "deliveryPayer", expression = "java(getDeliveryPayer(request.getDeliveryPayerId()))")
+    @Mapping(target = "financialTerms", expression = "java(getFinancialTerms(request.getFinancialTermIds()))")
+    @Mapping(target = "contractForm", expression = "java(getContractForm(request.getContractFormId()))")
+    public abstract Condition updateConditionFromRequest(@MappingTarget Condition condition, ConditionsRequest request);
 
     protected List<DeliveryMethod> getDeliveryMethods(List<Long> id) {
         if (id == null) return List.of();

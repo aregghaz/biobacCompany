@@ -6,4 +6,8 @@ import com.biobac.company.request.ConditionsRequest;
 
 public interface ConditionService {
     Condition createCondition(ConditionsRequest request, Company company);
+
+    Condition updatedCondition(Long id, ConditionsRequest request, Company company);
+
+    Condition fetchConditionById(Long id);
 }

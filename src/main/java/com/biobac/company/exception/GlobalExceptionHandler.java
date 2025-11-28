@@ -90,6 +90,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseUtil.error(ex.getMessage()));
     }
 
+    @ExceptionHandler(ConditionNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleNotFoundException(ConditionNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseUtil.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(DuplicateException.class)
     public ResponseEntity<ApiResponse<Object>> handleDuplicateException(DuplicateException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseUtil.error(ex.getMessage()));
