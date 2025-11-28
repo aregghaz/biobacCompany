@@ -22,4 +22,21 @@ public class DetailServiceImpl implements DetailService {
         detail.setCompany(company);
         return detailsRepository.save(detail);
     }
+
+    @Override
+    public Detail updateDetail(Long id, DetailRequest request, Company company) {
+        return detailsRepository.findByCompanyId(id)
+                .map(detail -> {
+                    Detail updatedDetail = detailsMapper.upadateDetail(request, company.getDetail());
+                    updatedDetail.setCompany(company);
+                    return detailsRepository.save(updatedDetail);
+                })
+                .orElseThrow(() -> new RuntimeException("Detail not found"));
+    }
+
+    @Override
+    public Detail fetchDetailById(Long id) {
+        return detailsRepository.findByCompanyId(id)
+                .orElseThrow(() -> new RuntimeException("Detail not found"));
+    }
 }

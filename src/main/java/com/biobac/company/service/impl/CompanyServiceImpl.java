@@ -5,33 +5,20 @@ import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.Condition;
 import com.biobac.company.entity.ContactPerson;
-import com.biobac.company.entity.ContractForm;
-import com.biobac.company.entity.DeliveryMethod;
-import com.biobac.company.entity.DeliveryPayer;
 import com.biobac.company.entity.Detail;
-import com.biobac.company.entity.FinancialTerms;
 import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
-import com.biobac.company.repository.ConditionsRepository;
 import com.biobac.company.repository.ContactPersonRepository;
-import com.biobac.company.repository.ContractFormRepository;
-import com.biobac.company.repository.DeliveryMethodRepository;
-import com.biobac.company.repository.DeliveryPayerRepository;
-import com.biobac.company.repository.DetailsRepository;
-import com.biobac.company.repository.FinancialTermsRepository;
 import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.CompanyRequest;
-import com.biobac.company.request.ConditionsRequest;
-import com.biobac.company.request.DetailRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.service.ConditionService;
 import com.biobac.company.service.DetailService;
-import com.biobac.company.utils.DateUtil;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
@@ -54,24 +41,19 @@ import java.util.Optional;
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanyMapper companyMapper;
-    private final DeliveryMethodRepository deliveryMethodRepository;
-    private final ConditionsRepository conditionsRepository;
-    private final DeliveryPayerRepository deliveryPayerRepository;
-    private final FinancialTermsRepository financialTermsRepository;
-    private final ContractFormRepository contractFormRepository;
     private final DetailService detailService;
     private final ConditionService conditionService;
-    private final DetailsRepository detailRepository;
     private final AttributeClient attributeClient;
     private final GroupUtil groupUtil;
     private final ContactPersonRepository contactPersonRepository;
-
 
     @Override
     @Transactional
     public CompanyResponse registerCompany(CompanyRequest request) {
 
-        List<ContactPerson> contactPersons = contactPersonRepository.findAllById(request.getContactPersonIds());
+        List<ContactPerson> contactPersons = request.getContactPersonIds() == null
+                ? Collections.emptyList()
+                : contactPersonRepository.findAllById(request.getContactPersonIds());
 
         Company company = companyMapper.toCompanyEntity(request);
         Condition condition = conditionService.createCondition(request.getCondition(), company);
@@ -86,31 +68,37 @@ public class CompanyServiceImpl implements CompanyService {
     @Transactional(readOnly = true)
     public CompanyResponse getCompanyById(Long id) {
         Optional<Company> company = companyRepository.findById(id);
-        return company.map(companyMapper::toCompanyResponse).orElseThrow();
+        return company.map(companyMapper::toCompanyResponse)
+                .orElseThrow(() -> new NotFoundException(String.format("Company with id %s not found", id)));
+    }
+
+    public Company getCompanyEntityById(Long id) {
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Company with id %s not found", id)));
     }
 
     @Override
     @Transactional
     public CompanyResponse updateCompany(Long id, CompanyRequest request) {
-        List<ContactPerson> contactPersons = contactPersonRepository.findAllById(request.getContactPersonIds());
-        Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Company with ID " + id + " does not exist."));
+        List<ContactPerson> contactPersons = request.getContactPersonIds() == null
+                ? Collections.emptyList()
+                : contactPersonRepository.findAllById(request.getContactPersonIds());
+
+        Company company = getCompanyEntityById(id);
+        Condition condition = conditionService.updatedCondition(company.getId(), request.getCondition(), company);
+        Detail detail = detailService.updateDetail(company.getId(), request.getDetail(), company);
+
         company.setContactPerson(contactPersons);
-        Company updateCompany = companyMapper.toUpdateCompany(request, company.getId());
+        company.setCondition(condition);
+        company.setDetail(detail);
+
+        Company updateCompany = companyMapper.toUpdateCompany(request, company);
 
         if (companyRepository.existsByNameAndIdNot(request.getName(), id)) {
             throw new DuplicateException("Company with name " + request.getName() + " already exists.");
         }
 
-        Company updatedCompany = companyRepository.save(updateCompany);
-
-        if (request.getDetail() != null) {
-            updateOrCreateDetails(updatedCompany, request.getDetail());
-        }
-
-        if (request.getCondition() != null) {
-            updateOrCreateConditions(updatedCompany, request.getCondition());
-        }
+        Company updatedCompany = companyRepository.save(updateCompany);;
 
         List<AttributeUpsertRequest> attributes =
                 (request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty())
@@ -211,54 +199,5 @@ public class CompanyServiceImpl implements CompanyService {
                 .stream()
                 .map(companyMapper::toCompanyResponse)
                 .toList();
-    }
-
-    private List<DeliveryMethod> createDeliveryMethod(List<Long> id) {
-        return deliveryMethodRepository.findAllById(id);
-    }
-
-    private DeliveryPayer createDeliveryPayer(Long id) {
-        return deliveryPayerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException());
-    }
-
-    private List<FinancialTerms> createFinancialTerms(List<Long> id) {
-        return financialTermsRepository.findAllById(id);
-    }
-
-    private ContractForm createContractForm(Long id) {
-        return contractFormRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException());
-    }
-
-    private void updateOrCreateDetails(Company company, DetailRequest dto) {
-        Detail detail = detailRepository.findByCompanyId(company.getId())
-                .orElseGet(Detail::new);
-
-        detail.setCompany(company);
-        detail.setInn(dto.getInn());
-        detail.setKpp(dto.getKpp());
-        detail.setOgrn(dto.getOgrn());
-        detail.setOkpo(dto.getOkpo());
-        detail.setBankAccount(dto.getBankAccount());
-        detail.setBik(dto.getBik());
-        detail.setKs(dto.getKs());
-        detail.setBankName(dto.getBankName());
-
-        detailRepository.save(detail);
-    }
-
-    private void updateOrCreateConditions(Company company, ConditionsRequest dto) {
-        Condition condition = conditionsRepository.findByCompanyId(company.getId())
-                .orElseGet(Condition::new);
-
-        condition.setCompany(company);
-        condition.setDeliveryMethods(createDeliveryMethod(dto.getDeliveryMethodIds()));
-        condition.setDeliveryPayer(createDeliveryPayer(dto.getDeliveryPayerId()));
-        condition.setFinancialTerms(createFinancialTerms(dto.getFinancialTermIds()));
-        condition.setContractForm(createContractForm(dto.getContractFormId()));
-        condition.setBonus(dto.getBonus());
-
-        conditionsRepository.save(condition);
     }
 }
