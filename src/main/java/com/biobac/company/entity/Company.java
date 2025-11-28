@@ -1,6 +1,8 @@
 package com.biobac.company.entity;
 
 import com.biobac.company.entity.embeddable.Address;
+import com.biobac.company.entity.embeddable.BankInfo;
+import com.biobac.company.entity.embeddable.Location;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
@@ -50,15 +52,19 @@ public class Company extends BaseEntity {
     private List<String> phones;
 
     @ElementCollection
+    @CollectionTable(name = "company_external_email", joinColumns = @JoinColumn(name = "company_id"))
     private Set<String> externalEmails;
 
     @ElementCollection
+    @CollectionTable(name = "company_external_phone", joinColumns = @JoinColumn(name = "company_id"))
     private List<String> externalPhones;
 
     @ElementCollection
+    @CollectionTable(name = "company_websites", joinColumns = @JoinColumn(name = "company_id"))
     private Set<String> websites;
 
     @ElementCollection
+    @CollectionTable(name = "company_phone", joinColumns = @JoinColumn(name = "company_id"))
     private Set<String> addressTT;
 
     @ManyToOne
@@ -99,6 +105,13 @@ public class Company extends BaseEntity {
 
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Condition condition;
+
+    @ElementCollection
+    private List<BankInfo> bankInformationList;
+
+    @Embedded
+    private Location location;
+    private String chainOfStore;
 
     @ManyToOne
     private Source source;

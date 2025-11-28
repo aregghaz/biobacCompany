@@ -23,10 +23,6 @@ public class Detail extends BaseEntity {
     private String kpp;
     private String ogrn;
     private String okpo;
-    private String bankAccount;
-    private String bik;
-    private String ks;
-    private String bankName;
     private String source;
     private List<String> responsibleEmployee;
 

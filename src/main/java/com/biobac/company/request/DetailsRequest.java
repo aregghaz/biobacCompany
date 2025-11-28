@@ -10,8 +10,4 @@ public class DetailsRequest {
     private String kpp;
     private String ogrn;
     private String okpo;
-    private String bankAccount;
-    private String bik;
-    private String ks;
-    private String bankName;
 }
