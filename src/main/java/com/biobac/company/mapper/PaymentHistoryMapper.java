@@ -2,11 +2,14 @@ package com.biobac.company.mapper;
 
 import com.biobac.company.entity.PaymentHistory;
 import com.biobac.company.response.PaymentHistoryResponse;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {PaymentCategoryMapper.class})
 public interface PaymentHistoryMapper {
-    @Mapping(source = "paymentCategory.parent.id", target = "paymentCategory.parentId")
-    PaymentHistoryResponse toResponse(PaymentHistory entity);
+    default PaymentHistoryResponse toResponse(PaymentHistory entity) {
+        return toResponse(entity, new PaymentCategoryMapper.CycleAvoidingMappingContext());
+    }
+
+    PaymentHistoryResponse toResponse(PaymentHistory entity, @Context PaymentCategoryMapper.CycleAvoidingMappingContext context);
 }

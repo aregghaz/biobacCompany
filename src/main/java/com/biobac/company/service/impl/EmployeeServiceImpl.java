@@ -1,5 +1,6 @@
 package com.biobac.company.service.impl;
 
+import com.biobac.company.dto.EmployeeHistoryDto;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Employee;
 import com.biobac.company.entity.OurCompany;
@@ -10,6 +11,7 @@ import com.biobac.company.repository.OurCompanyRepository;
 import com.biobac.company.request.EmployeeRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.EmployeeResponse;
+import com.biobac.company.service.EmployeeHistoryService;
 import com.biobac.company.service.EmployeeService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
     private final OurCompanyRepository ourCompanyRepository;
+    private final EmployeeHistoryService employeeHistoryService;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -49,6 +52,37 @@ public class EmployeeServiceImpl implements EmployeeService {
             safeSize = 1000;
         }
         return PageRequest.of(safePage, safeSize, sort);
+    }
+
+    private Pair<List<EmployeeResponse>, PaginationMetadata> buildEmployeePage(Map<String, FilterCriteria> filters,
+                                                                               Integer page,
+                                                                               Integer size,
+                                                                               String sortBy,
+                                                                               String sortDir,
+                                                                               Specification<Employee> extraSpec) {
+        Pageable pageable = buildPageable(page, size, sortBy, sortDir);
+        Specification<Employee> spec = SimpleEntitySpecification.buildSpecification(filters);
+        if (extraSpec != null) {
+            spec = spec.and(extraSpec);
+        }
+        Page<Employee> pg = employeeRepository.findAll(spec, pageable);
+        List<EmployeeResponse> content = pg.getContent().stream()
+                .map(employeeMapper::toResponse)
+                .collect(Collectors.toList());
+        String sortDirection = pageable.getSort().toString().contains("ASC") ? "asc" : "desc";
+        String sortProperty = pageable.getSort().stream().findFirst().map(Sort.Order::getProperty).orElse(DEFAULT_SORT_BY);
+        PaginationMetadata metadata = new PaginationMetadata(
+                pg.getNumber(),
+                pg.getSize(),
+                pg.getTotalElements(),
+                pg.getTotalPages(),
+                pg.isLast(),
+                filters,
+                sortDirection,
+                sortProperty,
+                "employeeTable"
+        );
+        return Pair.of(content, metadata);
     }
 
     @Override
@@ -82,13 +116,33 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee existingEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Employee not found"));
 
+        String oldWages = existingEmployee.getWages();
+        String oldCash = existingEmployee.getCash();
+        String oldCart = existingEmployee.getCart();
+
         employeeMapper.updateEmployeeFromRequest(existingEmployee, request);
 
         Optional<OurCompany> optionalOurCompany = request.getOurCompanyId() != null
                 ? ourCompanyRepository.findById(request.getOurCompanyId())
                 : Optional.empty();
         optionalOurCompany.ifPresent(existingEmployee::setOurCompany);
+
+        String newWages = existingEmployee.getWages();
+        String newCash = existingEmployee.getCash();
+        String newCart = existingEmployee.getCart();
+
         Employee updated = employeeRepository.save(existingEmployee);
+
+        EmployeeHistoryDto historyDto = EmployeeHistoryDto.builder()
+                .employeeId(updated.getId())
+                .wagesBefore(oldWages)
+                .wagesAfter(newWages)
+                .cashBefore(oldCash)
+                .cashAfter(newCash)
+                .cartBefore(oldCart)
+                .cartAfter(newCart)
+                .build();
+        employeeHistoryService.recordEmployeeHistory(historyDto);
 
         return employeeMapper.toResponse(updated);
     }
@@ -109,23 +163,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Pair<List<EmployeeResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
-        Pageable pageable = buildPageable(page, size, sortBy, sortDir);
-        Specification<Employee> spec = SimpleEntitySpecification.buildSpecification(filters);
-        Page<Employee> pg = employeeRepository.findAll(spec, pageable);
-        List<EmployeeResponse> content = pg.getContent().stream().map(employeeMapper::toResponse).collect(Collectors.toList());
-        PaginationMetadata metadata = new PaginationMetadata(
-                pg.getNumber(),
-                pg.getSize(),
-                pg.getTotalElements(),
-                pg.getTotalPages(),
-                pg.isLast(),
-                filters,
-                pageable.getSort().toString().contains("ASC") ? "asc" : "desc",
-                pageable.getSort().stream().findFirst().map(Sort.Order::getProperty).orElse(DEFAULT_SORT_BY),
-                "employeeTable"
-        );
-        return Pair.of(content, metadata);
+        return buildEmployeePage(filters, page, size, sortBy, sortDir, SimpleEntitySpecification.isActive());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Pair<List<EmployeeResponse>, PaginationMetadata> getFiredPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+        return buildEmployeePage(filters, page, size, sortBy, sortDir, SimpleEntitySpecification.isFired());
+    }
+
 }
