@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,10 +56,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeResponse create(EmployeeRequest request) {
         Employee employee = employeeMapper.toEntity(request);
 
-        OurCompany ourCompany = ourCompanyRepository.findById(request.getOurCompanyId())
-                .orElseThrow(() -> new NotFoundException("Our company not found"));
+        Optional<OurCompany> optionalOurCompany = request.getOurCompanyId() == null
+                ? Optional.empty()
+                : ourCompanyRepository.findById(request.getOurCompanyId());
 
-        employee.setOurCompany(ourCompany);
+        optionalOurCompany.ifPresent(employee::setOurCompany);
 
         Employee saved = employeeRepository.save(employee);
 
@@ -82,11 +84,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.updateEmployeeFromRequest(existingEmployee, request);
 
-        OurCompany ourCompany = ourCompanyRepository.findById(request.getOurCompanyId())
-                .orElseThrow(() -> new NotFoundException("Our company not found"));
-
-        existingEmployee.setOurCompany(ourCompany);
-
+        Optional<OurCompany> optionalOurCompany = request.getOurCompanyId() != null
+                ? ourCompanyRepository.findById(request.getOurCompanyId())
+                : Optional.empty();
+        optionalOurCompany.ifPresent(existingEmployee::setOurCompany);
         Employee updated = employeeRepository.save(existingEmployee);
 
         return employeeMapper.toResponse(updated);

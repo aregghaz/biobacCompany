@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,11 +55,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponse create(AccountRequest request) {
-        OurCompany ourCompany = ourCompanyRepository.findById(request.getOurCompanyId())
-                .orElseThrow(() -> new NotFoundException("Our company not found"));
         Account account = accountMapper.toEntity(request);
+        Optional<OurCompany> optionalOurCompany = request.getOurCompanyId() != null
+                ? ourCompanyRepository.findById(request.getOurCompanyId())
+                : Optional.empty();
+
         account.setBalance(BigDecimal.valueOf(0));
-        account.setOurCompany(ourCompany);
+        optionalOurCompany.ifPresent(account::setOurCompany);
         Account saved = accountRepository.save(account);
         return accountMapper.toResponse(saved);
     }
@@ -74,12 +77,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponse update(Long id, AccountRequest request) {
-        OurCompany ourCompany = ourCompanyRepository.findById(request.getOurCompanyId())
-                .orElseThrow(() -> new NotFoundException("Our company not found"));
+        Optional<OurCompany> optionalOurCompany = request.getOurCompanyId() != null
+                ? ourCompanyRepository.findById(request.getOurCompanyId())
+                : Optional.empty();
         Account existingAccount = accountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Account not found"));
         accountMapper.updateAccountFromRequest(request, existingAccount);
-        existingAccount.setOurCompany(ourCompany);
+        optionalOurCompany.ifPresent(existingAccount::setOurCompany);
         Account updated = accountRepository.save(existingAccount);
 
         return accountMapper.toResponse(updated);

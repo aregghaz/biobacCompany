@@ -23,7 +23,6 @@ public class EmployeeResponse extends AuditableResponse {
     private String passportSeries;
     private String passportNumber;
     private String passportIssuedBy;
-    private String organization;
     private DepartmentResponse department;
     private OurCompanyResponse ourCompany;
     private String jobTitle;
@@ -32,7 +31,7 @@ public class EmployeeResponse extends AuditableResponse {
     private String wages;
     private String cart;
     private String cash;
-    private String martialStatus;
+    private String maritalStatus;
     private String spouseFullName;
     private String children;
 }

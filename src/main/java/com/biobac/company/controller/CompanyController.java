@@ -35,8 +35,8 @@ public class CompanyController {
     private final FnsService fnsService;
 
     @GetMapping("/fns/{inn}")
-    public FnsCompanyResponse getCompanyInfo(@PathVariable String inn) {
-        return fnsService.getExtractedData(inn);
+    public ApiResponse<FnsCompanyResponse> getCompanyInfo(@PathVariable String inn) {
+        return ResponseUtil.success("FNS received" ,fnsService.getExtractedData(inn));
     }
 
     @PostMapping
