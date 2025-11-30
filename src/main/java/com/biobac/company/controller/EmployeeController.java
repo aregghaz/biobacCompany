@@ -7,6 +7,7 @@ import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.EmployeeResponse;
 import com.biobac.company.service.EmployeeService;
 import com.biobac.company.utils.ResponseUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +54,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ApiResponse<EmployeeResponse> create(@RequestBody EmployeeRequest request) {
+    public ApiResponse<EmployeeResponse> create(@RequestBody @Valid EmployeeRequest request) {
         EmployeeResponse created = employeeService.create(request);
         return ResponseUtil.success("Employee created successfully", created);
     }

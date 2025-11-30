@@ -22,6 +22,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,9 @@ public class OurCompanyServiceImpl implements OurCompanyService {
     @Override
     @Transactional
     public OurCompanyResponse create(OurCompanyRequest request) {
-        List<Account> accounts = accountRepository.findAllById(request.getAccountIds());
+        List<Account> accounts = request.getAccountIds() != null
+                ? accountRepository.findAllById(request.getAccountIds())
+                : Collections.emptyList();
 
         OurCompany ourCompany = new OurCompany();
         ourCompany.setName(request.getName());

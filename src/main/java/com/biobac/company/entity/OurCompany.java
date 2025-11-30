@@ -20,6 +20,6 @@ import java.util.List;
 public class OurCompany extends BaseEntity {
     private String name;
 
-    @OneToMany(mappedBy = "ourCompany", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "ourCompany", fetch = FetchType.LAZY)
     private List<Account> accounts;
 }

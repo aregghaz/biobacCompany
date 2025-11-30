@@ -15,4 +15,5 @@ public class AccountResponse extends AuditableResponse {
     private String bik;
     private String ks;
     private String bankName;
+    private Long companyId;
 }

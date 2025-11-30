@@ -1,5 +1,7 @@
 package com.biobac.company.entity;
 
+import com.biobac.company.entity.embeddable.BankInfo;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -21,10 +23,9 @@ public class Account extends BaseEntity {
     private Long id;
     private String name;
     private BigDecimal balance;
-    private String bankAccount;
-    private String bik;
-    private String ks;
-    private String bankName;
+
+    @Embedded
+    private BankInfo bankInfo;
 
     @ManyToOne
     @JoinColumn(name = "our_company_id")

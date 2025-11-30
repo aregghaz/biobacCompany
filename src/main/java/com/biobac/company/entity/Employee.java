@@ -31,7 +31,6 @@ public class Employee extends BaseEntity {
     private String passportSeries;
     private String passportNumber;
     private String passportIssuedBy;
-    private String organization;
     private Long departmentId;
     private String jobTitle;
     private LocalDateTime dateOfEmployment;
@@ -39,7 +38,7 @@ public class Employee extends BaseEntity {
     private String wages;
     private String cart;
     private String cash;
-    private String martialStatus;
+    private String maritalStatus;
     private String spouseFullName;
     private String children;
     @ManyToOne
