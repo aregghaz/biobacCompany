@@ -11,6 +11,7 @@ import java.util.List;
 public class PaymentCategoryResponse extends AuditableResponse{
     private Long id;
     private Long parentId;
+    private PaymentCategoryResponse parent;
     private String name;
     private Category category;
     private List<PaymentCategoryResponse> children;
