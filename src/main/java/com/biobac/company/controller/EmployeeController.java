@@ -47,6 +47,18 @@ public class EmployeeController {
         return ResponseUtil.success("Employee retrieved successfully", result.getFirst(), result.getSecond());
     }
 
+    @PostMapping("/fired/all")
+    public ApiResponse<List<EmployeeResponse>> getFiredAll(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDir,
+            @RequestBody Map<String, FilterCriteria> filters
+    ) {
+        Pair<List<EmployeeResponse>, PaginationMetadata> result = employeeService.getFiredPagination(filters, page, size, sortBy, sortDir);
+        return ResponseUtil.success("Employee retrieved successfully", result.getFirst(), result.getSecond());
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<EmployeeResponse> getById(@PathVariable Long id) {
         EmployeeResponse response = employeeService.getById(id);

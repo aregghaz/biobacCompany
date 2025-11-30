@@ -25,4 +25,10 @@ public interface EmployeeService {
                                                                   Integer size,
                                                                   String sortBy,
                                                                   String sortDir);
+
+    Pair<List<EmployeeResponse>, PaginationMetadata> getFiredPagination(Map<String, FilterCriteria> filters,
+                                                                   Integer page,
+                                                                   Integer size,
+                                                                   String sortBy,
+                                                                   String sortDir);
 }

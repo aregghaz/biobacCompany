@@ -51,6 +51,37 @@ public class EmployeeServiceImpl implements EmployeeService {
         return PageRequest.of(safePage, safeSize, sort);
     }
 
+    private Pair<List<EmployeeResponse>, PaginationMetadata> buildEmployeePage(Map<String, FilterCriteria> filters,
+                                                                               Integer page,
+                                                                               Integer size,
+                                                                               String sortBy,
+                                                                               String sortDir,
+                                                                               Specification<Employee> extraSpec) {
+        Pageable pageable = buildPageable(page, size, sortBy, sortDir);
+        Specification<Employee> spec = SimpleEntitySpecification.buildSpecification(filters);
+        if (extraSpec != null) {
+            spec = spec.and(extraSpec);
+        }
+        Page<Employee> pg = employeeRepository.findAll(spec, pageable);
+        List<EmployeeResponse> content = pg.getContent().stream()
+                .map(employeeMapper::toResponse)
+                .collect(Collectors.toList());
+        String sortDirection = pageable.getSort().toString().contains("ASC") ? "asc" : "desc";
+        String sortProperty = pageable.getSort().stream().findFirst().map(Sort.Order::getProperty).orElse(DEFAULT_SORT_BY);
+        PaginationMetadata metadata = new PaginationMetadata(
+                pg.getNumber(),
+                pg.getSize(),
+                pg.getTotalElements(),
+                pg.getTotalPages(),
+                pg.isLast(),
+                filters,
+                sortDirection,
+                sortProperty,
+                "employeeTable"
+        );
+        return Pair.of(content, metadata);
+    }
+
     @Override
     @Transactional
     public EmployeeResponse create(EmployeeRequest request) {
@@ -109,23 +140,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Pair<List<EmployeeResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
-        Pageable pageable = buildPageable(page, size, sortBy, sortDir);
-        Specification<Employee> spec = SimpleEntitySpecification.buildSpecification(filters);
-        Page<Employee> pg = employeeRepository.findAll(spec, pageable);
-        List<EmployeeResponse> content = pg.getContent().stream().map(employeeMapper::toResponse).collect(Collectors.toList());
-        PaginationMetadata metadata = new PaginationMetadata(
-                pg.getNumber(),
-                pg.getSize(),
-                pg.getTotalElements(),
-                pg.getTotalPages(),
-                pg.isLast(),
-                filters,
-                pageable.getSort().toString().contains("ASC") ? "asc" : "desc",
-                pageable.getSort().stream().findFirst().map(Sort.Order::getProperty).orElse(DEFAULT_SORT_BY),
-                "employeeTable"
-        );
-        return Pair.of(content, metadata);
+        return buildEmployeePage(filters, page, size, sortBy, sortDir, SimpleEntitySpecification.isActive());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Pair<List<EmployeeResponse>, PaginationMetadata> getFiredPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+        return buildEmployeePage(filters, page, size, sortBy, sortDir, SimpleEntitySpecification.isFired());
     }
 }

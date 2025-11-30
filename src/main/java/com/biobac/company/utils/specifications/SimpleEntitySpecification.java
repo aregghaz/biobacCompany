@@ -1,5 +1,6 @@
 package com.biobac.company.utils.specifications;
 
+import com.biobac.company.entity.Employee;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -9,12 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.biobac.company.utils.SpecificationUtil.buildBetween;
-import static com.biobac.company.utils.SpecificationUtil.buildContains;
-import static com.biobac.company.utils.SpecificationUtil.buildEquals;
-import static com.biobac.company.utils.SpecificationUtil.buildGreaterThanOrEqualTo;
-import static com.biobac.company.utils.SpecificationUtil.buildLessThanOrEqualTo;
-import static com.biobac.company.utils.SpecificationUtil.buildNotEquals;
+import static com.biobac.company.utils.SpecificationUtil.*;
 
 public class SimpleEntitySpecification {
     public static <T> Specification<T> buildSpecification(Map<String, FilterCriteria> filters) {
@@ -29,7 +25,6 @@ public class SimpleEntitySpecification {
                     try {
                         path = root.get(field);
                     } catch (IllegalArgumentException ex) {
-                        // skip unknown fields
                         continue;
                     }
 
@@ -54,5 +49,13 @@ public class SimpleEntitySpecification {
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    public static Specification<Employee> isFired() {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.isNotNull(root.get("dismissalDate")));
+    }
+
+    public static Specification<Employee> isActive() {
+        return ((root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("dismissalDate")));
     }
 }
