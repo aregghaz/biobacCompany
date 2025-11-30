@@ -1,5 +1,6 @@
 package com.biobac.company.service.impl;
 
+import com.biobac.company.dto.EmployeeHistoryDto;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Employee;
 import com.biobac.company.entity.OurCompany;
@@ -10,6 +11,7 @@ import com.biobac.company.repository.OurCompanyRepository;
 import com.biobac.company.request.EmployeeRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.EmployeeResponse;
+import com.biobac.company.service.EmployeeHistoryService;
 import com.biobac.company.service.EmployeeService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
     private final OurCompanyRepository ourCompanyRepository;
+    private final EmployeeHistoryService employeeHistoryService;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -113,13 +116,33 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee existingEmployee = employeeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Employee not found"));
 
+        String oldWages = existingEmployee.getWages();
+        String oldCash = existingEmployee.getCash();
+        String oldCart = existingEmployee.getCart();
+
         employeeMapper.updateEmployeeFromRequest(existingEmployee, request);
 
         Optional<OurCompany> optionalOurCompany = request.getOurCompanyId() != null
                 ? ourCompanyRepository.findById(request.getOurCompanyId())
                 : Optional.empty();
         optionalOurCompany.ifPresent(existingEmployee::setOurCompany);
+
+        String newWages = existingEmployee.getWages();
+        String newCash = existingEmployee.getCash();
+        String newCart = existingEmployee.getCart();
+
         Employee updated = employeeRepository.save(existingEmployee);
+
+        EmployeeHistoryDto historyDto = EmployeeHistoryDto.builder()
+                .employeeId(updated.getId())
+                .wagesBefore(oldWages)
+                .wagesAfter(newWages)
+                .cashBefore(oldCash)
+                .cashAfter(newCash)
+                .cartBefore(oldCart)
+                .cartAfter(newCart)
+                .build();
+        employeeHistoryService.recordEmployeeHistory(historyDto);
 
         return employeeMapper.toResponse(updated);
     }
@@ -150,4 +173,5 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Pair<List<EmployeeResponse>, PaginationMetadata> getFiredPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
         return buildEmployeePage(filters, page, size, sortBy, sortDir, SimpleEntitySpecification.isFired());
     }
+
 }
