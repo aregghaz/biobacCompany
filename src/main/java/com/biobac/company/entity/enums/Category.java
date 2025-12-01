@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 public enum Category {
     EMPLOYEE("Сотрдуники"),
-    SELLER("Поставшики");
+    SELLER("Поставшики"),
+    BUYER("Покупатель");
 
     private final String value;
 

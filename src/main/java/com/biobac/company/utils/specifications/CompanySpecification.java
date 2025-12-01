@@ -3,6 +3,7 @@ package com.biobac.company.utils.specifications;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
+import com.biobac.company.entity.Cooperation;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -105,5 +106,19 @@ public class CompanySpecification {
 
     public static Specification<Company> filterSeller() {
         return (root, query, cb) -> root.get("types").get("id").in(2);
+    }
+
+    public static Specification<Company> filterByCooperationYes() {
+        return (root, query, cb) -> {
+            Join<Company, Cooperation> cooperationJoin = root.join("cooperation", JoinType.INNER);
+            return cb.equal(cooperationJoin.get("name"), "Да");
+        };
+    }
+
+    public static Specification<Company> filterByCooperationNo() {
+        return (root, query, cb) -> {
+            Join<Company, Cooperation> cooperationJoin = root.join("cooperation", JoinType.INNER);
+            return cb.equal(cooperationJoin.get("name"), "Нет");
+        };
     }
 }

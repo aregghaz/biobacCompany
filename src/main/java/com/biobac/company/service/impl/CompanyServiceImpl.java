@@ -200,4 +200,31 @@ public class CompanyServiceImpl implements CompanyService {
                 .map(companyMapper::toCompanyResponse)
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompanyResponse> listAllCompaniesByBuyerYes() {
+        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
+        Specification<Company> spec = CompanySpecification.isDeleted()
+                .and(CompanySpecification.filterByCooperationYes())
+                .and(CompanySpecification.belongsToGroups(groupIds));
+        return companyRepository.findAll(spec)
+                .stream()
+                .map(companyMapper::toCompanyResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompanyResponse> listAllCompaniesByBuyerNo() {
+        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
+        Specification<Company> spec = CompanySpecification.isDeleted()
+                .and(CompanySpecification.filterByCooperationNo())
+                .and(CompanySpecification.belongsToGroups(groupIds));
+        return companyRepository.findAll(spec)
+                .stream()
+                .map(companyMapper::toCompanyResponse)
+                .toList();
+    }
+
 }
