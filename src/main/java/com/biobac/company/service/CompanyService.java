@@ -27,4 +27,6 @@ public interface CompanyService {
     List<CompanyResponse> listAllBuyersCompanies();
 
     List<CompanyResponse> listAllSellersCompanies();
+    List<CompanyResponse> listAllCompaniesByBuyer();
+    List<CompanyResponse> listAllCompaniesBySeller();
 }

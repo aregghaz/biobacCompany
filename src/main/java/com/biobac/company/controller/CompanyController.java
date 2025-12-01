@@ -81,6 +81,12 @@ public class CompanyController {
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 
+    @GetMapping("/buyer/yes")
+    public ApiResponse<List<CompanyResponse>> listAllCompanyByBuyerYes() {
+        List<CompanyResponse> companies = companyService.listAllCompaniesByBuyer();
+        return ResponseUtil.success("Companies retrieved successfully", companies);
+    }
+
     @PutMapping("/{id}")
     public ApiResponse<CompanyResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyRequest request) {
         CompanyResponse updatedCompany = companyService.updateCompany(id, request);

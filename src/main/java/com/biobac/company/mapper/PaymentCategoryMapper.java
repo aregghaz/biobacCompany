@@ -77,6 +77,18 @@ public abstract class PaymentCategoryMapper {
                         dto.getChildren().add(child);
                     }
                 }
+                case BUYER ->  {
+                    List<CompanyResponse> buyers = safeGetBuyer();
+                    for (CompanyResponse c : buyers) {
+                        PaymentCategoryResponse child = new PaymentCategoryResponse();
+                        child.setId(null);
+                        child.setParentId(dto.getId());
+                        child.setParent(toShallowParentFromResponse(dto));
+                        child.setName(c.getName());
+                        child.setChildren(Collections.emptyList());
+                        dto.getChildren().add(child);
+                    }
+                }
             }
         }
 
@@ -94,6 +106,14 @@ public abstract class PaymentCategoryMapper {
         return result;
     }
 
+    private List<CompanyResponse> safeGetBuyer() {
+        try {
+            return enricher != null ? enricher.getBuyersSafe() : Collections.emptyList();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
     private List<EmployeeResponse> safeGetEmployees() {
         try {
             return enricher != null ? enricher.getEmployeesSafe() : Collections.emptyList();
@@ -104,7 +124,7 @@ public abstract class PaymentCategoryMapper {
 
     private List<CompanyResponse> safeGetSellers() {
         try {
-            return enricher != null ? enricher.getSellersSafe() : Collections.emptyList();
+            return enricher != null ? enricher.getSafeSeller() : Collections.emptyList();
         } catch (Exception e) {
             return Collections.emptyList();
         }

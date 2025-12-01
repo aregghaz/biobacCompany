@@ -35,4 +35,23 @@ public class PaymentCategoryEnricher {
             return Collections.emptyList();
         }
     }
+
+    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+    public List<CompanyResponse> getBuyersSafe() {
+        try {
+            return companyService.listAllBuyersCompanies();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+    public List<CompanyResponse> getSafeSeller() {
+        try {
+            return companyService.listAllCompaniesBySeller();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
 }
