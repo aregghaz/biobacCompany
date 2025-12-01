@@ -124,7 +124,7 @@ public abstract class PaymentCategoryMapper {
 
     private List<CompanyResponse> safeGetSellers() {
         try {
-            return enricher != null ? enricher.getSellersSafe() : Collections.emptyList();
+            return enricher != null ? enricher.getSafeSeller() : Collections.emptyList();
         } catch (Exception e) {
             return Collections.emptyList();
         }

@@ -83,13 +83,7 @@ public class CompanyController {
 
     @GetMapping("/buyer/yes")
     public ApiResponse<List<CompanyResponse>> listAllCompanyByBuyerYes() {
-        List<CompanyResponse> companies = companyService.listAllCompaniesByBuyerYes();
-        return ResponseUtil.success("Companies retrieved successfully", companies);
-    }
-
-    @GetMapping("/buyer/no")
-    public ApiResponse<List<CompanyResponse>> listAllCompanyByBuyerNo() {
-        List<CompanyResponse> companies = companyService.listAllCompaniesByBuyerNo();
+        List<CompanyResponse> companies = companyService.listAllCompaniesByBuyer();
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 

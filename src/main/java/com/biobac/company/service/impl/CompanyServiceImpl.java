@@ -203,10 +203,10 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CompanyResponse> listAllCompaniesByBuyerYes() {
+    public List<CompanyResponse> listAllCompaniesByBuyer() {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
-                .and(CompanySpecification.filterByCooperationYes())
+                .and(CompanySpecification.filterByCooperation())
                 .and(CompanySpecification.belongsToGroups(groupIds));
         return companyRepository.findAll(spec)
                 .stream()
@@ -215,16 +215,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<CompanyResponse> listAllCompaniesByBuyerNo() {
+    public List<CompanyResponse> listAllCompaniesBySeller() {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
-                .and(CompanySpecification.filterByCooperationNo())
+                .and(CompanySpecification.filterByCooperation())
                 .and(CompanySpecification.belongsToGroups(groupIds));
         return companyRepository.findAll(spec)
                 .stream()
                 .map(companyMapper::toCompanyResponse)
                 .toList();
     }
-
 }

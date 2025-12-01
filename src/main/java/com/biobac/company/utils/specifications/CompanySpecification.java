@@ -108,17 +108,10 @@ public class CompanySpecification {
         return (root, query, cb) -> root.get("types").get("id").in(2);
     }
 
-    public static Specification<Company> filterByCooperationYes() {
+    public static Specification<Company> filterByCooperation() {
         return (root, query, cb) -> {
             Join<Company, Cooperation> cooperationJoin = root.join("cooperation", JoinType.INNER);
             return cb.equal(cooperationJoin.get("name"), "Да");
-        };
-    }
-
-    public static Specification<Company> filterByCooperationNo() {
-        return (root, query, cb) -> {
-            Join<Company, Cooperation> cooperationJoin = root.join("cooperation", JoinType.INNER);
-            return cb.equal(cooperationJoin.get("name"), "Нет");
         };
     }
 }
