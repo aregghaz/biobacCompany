@@ -4,7 +4,10 @@ import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.EmployeeRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ApiResponse;
+import com.biobac.company.response.EmployeeHistoryResponse;
 import com.biobac.company.response.EmployeeResponse;
+import com.biobac.company.response.PaymentHistoryResponse;
+import com.biobac.company.service.EmployeeHistoryService;
 import com.biobac.company.service.EmployeeService;
 import com.biobac.company.utils.ResponseUtil;
 import jakarta.validation.Valid;
@@ -28,6 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmployeeController {
     private final EmployeeService employeeService;
+    private final EmployeeHistoryService employeeHistoryService;
 
     @GetMapping
     public ApiResponse<List<EmployeeResponse>> getAll() {
@@ -81,5 +85,19 @@ public class EmployeeController {
     public ApiResponse<String> delete(@PathVariable Long id) {
         employeeService.delete(id);
         return ResponseUtil.success("Employee deleted successfully");
+    }
+
+    @PostMapping("/payment/history/{employeeId}")
+    public ApiResponse<List<EmployeeHistoryResponse>> getPaymentHistory(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDir,
+            @RequestBody Map<String, FilterCriteria> filters,
+            @PathVariable Long employeeId
+    ) {
+        Pair<List<EmployeeHistoryResponse>, PaginationMetadata> response = employeeHistoryService.getPagination(
+                filters, page, size, sortBy, sortDir, employeeId);
+        return ResponseUtil.success("payment history received successfully", response.getFirst(), response.getSecond());
     }
 }

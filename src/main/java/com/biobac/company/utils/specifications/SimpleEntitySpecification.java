@@ -29,7 +29,7 @@ public class SimpleEntitySpecification {
                     }
 
                     FilterCriteria criteria = entry.getValue();
-                    Predicate predicate = null;
+                    Predicate predicate;
 
                     switch (criteria.getOperator()) {
                         case "equals" -> predicate = buildEquals(cb, path, criteria.getValue());
