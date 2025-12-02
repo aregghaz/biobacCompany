@@ -61,8 +61,12 @@ public class AccountServiceImpl implements AccountService {
                 : Optional.empty();
 
         account.setBalance(BigDecimal.valueOf(0));
-        optionalOurCompany.ifPresent(account::setOurCompany);
         Account saved = accountRepository.save(account);
+
+        optionalOurCompany.ifPresent(company -> {
+            account.setOurCompany(company);
+            company.getAccounts().add(account);
+        });
         return accountMapper.toResponse(saved);
     }
 
