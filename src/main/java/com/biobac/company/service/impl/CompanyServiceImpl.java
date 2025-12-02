@@ -62,6 +62,13 @@ public class CompanyServiceImpl implements CompanyService {
         company.setDetail(detail);
         company.setContactPerson(contactPersons);
         Company savedCompany = companyRepository.save(company);
+
+        List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty()
+                ? Collections.emptyList()
+                : request.getAttributes();
+
+        attributeClient.updateValues(savedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributeGroupIds(), attributes);
+
         return companyMapper.toCompanyResponse(savedCompany);
     }
 

@@ -1,5 +1,6 @@
 package com.biobac.company.mapper;
 
+import com.biobac.company.client.AttributeClient;
 import com.biobac.company.entity.ClientType;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyGroup;
@@ -9,6 +10,7 @@ import com.biobac.company.entity.Line;
 import com.biobac.company.entity.Region;
 import com.biobac.company.entity.SaleType;
 import com.biobac.company.entity.Source;
+import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.repository.ClientTypeRepository;
 import com.biobac.company.repository.CompanyGroupRepository;
 import com.biobac.company.repository.CompanyTypeRepository;
@@ -18,6 +20,8 @@ import com.biobac.company.repository.RegionRepository;
 import com.biobac.company.repository.SaleTypeRepository;
 import com.biobac.company.repository.SourceRepository;
 import com.biobac.company.request.CompanyRequest;
+import com.biobac.company.response.ApiResponse;
+import com.biobac.company.response.AttributeResponse;
 import com.biobac.company.response.CompanyResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -54,6 +58,9 @@ public abstract class CompanyMapper {
     @Autowired
     protected SourceRepository sourceRepository;
 
+    @Autowired
+    protected AttributeClient attributeClient;
+
     @Mapping(source = "localAddress", target = "address.localAddress")
     @Mapping(source = "actualAddress", target = "address.actualAddress")
     @Mapping(source = "warehouseAddress", target = "address.warehouseAddress")
@@ -77,6 +84,7 @@ public abstract class CompanyMapper {
     @Mapping(source = "address.warehouseAddress", target = "warehouseAddress")
     @Mapping(source = "location.longitude", target = "longitude")
     @Mapping(source = "location.latitude", target = "latitude")
+    @Mapping(target = "attributes", expression = "java(fetchAttributes(company.getId()))")
     public abstract CompanyResponse toCompanyResponse(Company company);
 
     @Mapping(source = "request.localAddress", target = "address.localAddress")
@@ -141,5 +149,16 @@ public abstract class CompanyMapper {
     protected List<Line> getLines(List<Long> id) {
         if (id == null) return Collections.emptyList();
         return lineRepository.findAllById(id);
+    }
+
+    protected List<AttributeResponse> fetchAttributes(Long companyId) {
+        if (companyId == null) return Collections.emptyList();
+        try {
+            ApiResponse<List<AttributeResponse>> apiResponse =
+                    attributeClient.getValues(companyId, AttributeTargetType.COMPANY.name());
+            return apiResponse.getData();
+        } catch (Exception ex) {
+            return Collections.emptyList();
+        }
     }
 }
