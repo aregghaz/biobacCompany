@@ -53,11 +53,12 @@ public class OurCompanyServiceImpl implements OurCompanyService {
     @Override
     @Transactional
     public OurCompanyResponse create(OurCompanyRequest request) {
+        OurCompany ourCompany = ourCompanyMapper.toOurCompanyEntity(request);
+
         List<Account> accounts = request.getAccountIds() != null
                 ? accountRepository.findAllById(request.getAccountIds())
                 : Collections.emptyList();
 
-        OurCompany ourCompany = new OurCompany();
         ourCompany.setName(request.getName());
         ourCompany.setAccounts(accounts);
         OurCompany saved = ourCompanyRepository.save(ourCompany);
