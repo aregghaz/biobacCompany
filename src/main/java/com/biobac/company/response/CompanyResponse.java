@@ -42,6 +42,7 @@ public class CompanyResponse {
     private DetailsResponse detail;
     private ConditionsResponse condition;
     private List<BankInfo> bankInformationList;
+    private List<AttributeResponse> attributes;
     private String longitude;
     private String latitude;
     private String chainOfStore;
