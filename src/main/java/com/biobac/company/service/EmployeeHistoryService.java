@@ -17,6 +17,7 @@ public interface EmployeeHistoryService {
             Integer page,
             Integer size,
             String sortBy,
-            String sortDir
+            String sortDir,
+            Long employeeId
     );
 }

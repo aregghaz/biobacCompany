@@ -13,6 +13,8 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.EmployeeHistoryResponse;
 import com.biobac.company.service.EmployeeHistoryService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -99,9 +101,12 @@ public class EmployeeHistoryServiceImpl implements EmployeeHistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Pair<List<EmployeeHistoryResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+    public Pair<List<EmployeeHistoryResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir, Long employeeId) {
         Pageable pageable = buildPageable(page, size, sortBy, sortDir);
-        Specification<EmployeeHistory> spec = SimpleEntitySpecification.buildSpecification(filters);
+        Specification<EmployeeHistory> spec = SimpleEntitySpecification.<EmployeeHistory>buildSpecification(filters)
+                .and((root, query, cb) ->
+                        cb.equal(root.join("employee", JoinType.LEFT).get("id"), employeeId));
+
         Page<EmployeeHistory> pg = employeeHistoryRepository.findAll(spec, pageable);
         List<EmployeeHistoryResponse> content = pg.getContent().stream().map(employeeHistoryMapper::toResponse).toList();
         PaginationMetadata metadata = new PaginationMetadata(
