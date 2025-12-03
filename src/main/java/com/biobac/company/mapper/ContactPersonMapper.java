@@ -5,6 +5,7 @@ import com.biobac.company.request.ContactPersonRequest;
 import com.biobac.company.response.ContactPersonResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public abstract class ContactPersonMapper {
@@ -13,4 +14,10 @@ public abstract class ContactPersonMapper {
     public abstract ContactPerson toContactPersonEntity(ContactPersonRequest request);
 
     public abstract ContactPersonResponse toContactPersonResponse(ContactPerson contactPerson);
+
+    public abstract ContactPerson toUpdatedContactPersonResponse(
+            @MappingTarget ContactPerson contactPerson,
+            ContactPersonRequest contactPersonRequest
+    );
+
 }

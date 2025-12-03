@@ -40,6 +40,6 @@ public class OurCompany extends BaseEntity {
     @ElementCollection
     private List<BankInfo> bankInformationList;
 
-    @OneToMany(mappedBy = "ourCompany", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ourCompany", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts;
 }
