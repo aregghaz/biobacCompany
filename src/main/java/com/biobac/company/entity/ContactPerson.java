@@ -1,5 +1,6 @@
 package com.biobac.company.entity;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,12 @@ import java.util.List;
 public class ContactPerson extends BaseEntity {
     private String firstName;
     private String lastName;
-    private String phone;
-    private String email;
+
+    @ElementCollection
+    private List<String> phones;
+
+    @ElementCollection
+    private List<String> emails;
     private String position;
 
     @ManyToMany(mappedBy = "contactPerson")

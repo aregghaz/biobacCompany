@@ -3,9 +3,11 @@ package com.biobac.company.service.impl;
 import com.biobac.company.client.AttributeClient;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Account;
+import com.biobac.company.entity.Detail;
 import com.biobac.company.entity.OurCompany;
 import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.exception.NotFoundException;
+import com.biobac.company.mapper.DetailsMapper;
 import com.biobac.company.mapper.OurCompanyMapper;
 import com.biobac.company.repository.AccountRepository;
 import com.biobac.company.repository.OurCompanyRepository;
@@ -25,6 +27,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ public class OurCompanyServiceImpl implements OurCompanyService {
     private final OurCompanyMapper ourCompanyMapper;
     private final AccountRepository accountRepository;
     private final AttributeClient attributeClient;
+    private final DetailsMapper detailsMapper;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -63,6 +67,12 @@ public class OurCompanyServiceImpl implements OurCompanyService {
                 ? accountRepository.findAllById(request.getAccountIds())
                 : Collections.emptyList();
 
+        if (request.getDetail() != null) {
+            Detail detail = detailsMapper.toDetailEntity(request.getDetail());
+            detail.setOurCompany(ourCompany);
+            ourCompany.setDetail(detail);
+        }
+
         ourCompany.setName(request.getName());
         ourCompany.setAccounts(accounts);
         OurCompany saved = ourCompanyRepository.save(ourCompany);
@@ -89,29 +99,46 @@ public class OurCompanyServiceImpl implements OurCompanyService {
         OurCompany existing = ourCompanyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Our company not found"));
 
-        List<Account> newAccounts = accountRepository.findAllById(request.getAccountIds());
-        List<Account> oldAccounts = existing.getAccounts();
-
         existing.setName(request.getName());
+        ourCompanyMapper.updateOurCompanyFromRequest(request, existing);
 
-        for (Account oldAcc : oldAccounts) {
-            if (!newAccounts.contains(oldAcc)) {
-                oldAcc.setOurCompany(null);
+        List<Long> newIds = request.getAccountIds() == null
+                ? Collections.emptyList()
+                : request.getAccountIds();
+
+        List<Account> existingAccounts = existing.getAccounts();
+        List<Account> accountsToRemove = new ArrayList<>(existingAccounts);
+        Detail existingDetail = existing.getDetail();
+        accountsToRemove.removeIf(acc -> newIds.contains(acc.getId()));
+
+        if (request.getDetail() != null) {
+            if (existingDetail != null) {
+                detailsMapper.upadateDetail(request.getDetail(), existingDetail);
+            } else {
+                Detail newDetail = detailsMapper.toDetailEntity(request.getDetail());
+                newDetail.setOurCompany(existing);
+                existing.setDetail(newDetail);
+            }
+        } else if (existingDetail != null) {
+            existingDetail.setOurCompany(null);
+            existing.setDetail(null);
+        }
+
+        for (Account account : accountsToRemove) {
+            account.setOurCompany(null);
+            existingAccounts.remove(account);
+        }
+
+        List<Account> allNewAccounts = accountRepository.findAllById(newIds);
+
+        for (Account newAccount : allNewAccounts) {
+            if (!existingAccounts.contains(newAccount)) {
+                newAccount.setOurCompany(existing);
+                existingAccounts.add(newAccount);
             }
         }
 
-        for (Account newAcc : newAccounts) {
-            if (newAcc.getOurCompany() == null || !newAcc.getOurCompany().getId().equals(id)) {
-                newAcc.setOurCompany(existing);
-            }
-        }
-
-        existing.setAccounts(newAccounts);
-
-        accountRepository.saveAll(oldAccounts);
-        accountRepository.saveAll(newAccounts);
         OurCompany updated = ourCompanyRepository.save(existing);
-
         return ourCompanyMapper.toResponse(updated);
     }
 

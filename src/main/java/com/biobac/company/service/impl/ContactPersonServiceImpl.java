@@ -58,13 +58,9 @@ public class ContactPersonServiceImpl implements ContactPersonService {
     public ContactPersonResponse updateContactPerson(Long id, ContactPersonRequest request) {
         return contactPersonRepository.findById(id)
                 .map(contact -> {
-                    contact.setFirstName(request.getFirstName());
-                    contact.setLastName(request.getLastName());
-                    contact.setEmail(request.getEmail());
-                    contact.setPhone(request.getPhone());
-                    contact.setPosition(request.getPosition());
-                    contactPersonRepository.save(contact);
-                    return contactPersonMapper.toContactPersonResponse(contact);
+                    ContactPerson contactPerson = contactPersonMapper.toUpdatedContactPersonResponse(contact, request);
+                    ContactPerson updatedContactPerson = contactPersonRepository.save(contactPerson);
+                    return contactPersonMapper.toContactPersonResponse(updatedContactPerson);
                 })
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
     }
