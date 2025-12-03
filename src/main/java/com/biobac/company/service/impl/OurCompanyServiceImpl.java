@@ -1,12 +1,15 @@
 package com.biobac.company.service.impl;
 
+import com.biobac.company.client.AttributeClient;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Account;
 import com.biobac.company.entity.OurCompany;
+import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.OurCompanyMapper;
 import com.biobac.company.repository.AccountRepository;
 import com.biobac.company.repository.OurCompanyRepository;
+import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.OurCompanyRequest;
 import com.biobac.company.response.OurCompanyResponse;
@@ -32,6 +35,7 @@ public class OurCompanyServiceImpl implements OurCompanyService {
     private final OurCompanyRepository ourCompanyRepository;
     private final OurCompanyMapper ourCompanyMapper;
     private final AccountRepository accountRepository;
+    private final AttributeClient attributeClient;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -64,6 +68,17 @@ public class OurCompanyServiceImpl implements OurCompanyService {
         OurCompany saved = ourCompanyRepository.save(ourCompany);
         accounts.forEach(a -> a.setOurCompany(saved));
         accountRepository.saveAll(accounts);
+
+        List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty()
+                ? Collections.emptyList()
+                : request.getAttributes();
+
+        attributeClient.updateValues(
+                saved.getId(),
+                AttributeTargetType.COMPANY.name(),
+                request.getAttributeGroupIds(),
+                attributes
+        );
 
         return ourCompanyMapper.toResponse(saved);
     }

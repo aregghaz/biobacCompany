@@ -29,4 +29,8 @@ public class Detail extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @OneToOne
+    @JoinColumn(name = "our_company_id")
+    private OurCompany ourCompany;
 }
