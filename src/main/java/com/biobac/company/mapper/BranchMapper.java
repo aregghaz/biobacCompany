@@ -5,6 +5,7 @@ import com.biobac.company.request.BranchRequest;
 import com.biobac.company.response.BranchResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface BranchMapper {
@@ -15,4 +16,8 @@ public interface BranchMapper {
 
     @Mapping(source = "address.localAddress", target = "localAddress")
     BranchResponse toBranchResponse(Branch branch);
+
+    @Mapping(target = "company", ignore = true)
+    @Mapping(target = "address.localAddress", source = "localAddress")
+    Branch updateBranch(BranchRequest request, @MappingTarget Branch branches);
 }

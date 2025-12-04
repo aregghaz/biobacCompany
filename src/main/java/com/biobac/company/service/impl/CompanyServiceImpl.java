@@ -110,7 +110,16 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = getCompanyEntityById(id);
         Condition condition = conditionService.updatedCondition(company.getId(), request.getCondition(), company);
         Detail detail = detailService.updateDetail(company.getId(), request.getDetail(), company);
+        List<Branch> branches = new ArrayList<>();
 
+        if (request.getBranches() != null && !request.getBranches().isEmpty()) {
+            request.getBranches().forEach(branchRequest -> {
+                Branch newBranch = branchService.updateBranch(company.getId(), branchRequest, company);
+                branches.add(newBranch);
+            });
+        }
+
+        company.setBranches(branches);
         company.setContactPerson(contactPersons);
         company.setCondition(condition);
         company.setDetail(detail);

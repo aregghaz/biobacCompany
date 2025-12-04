@@ -89,6 +89,7 @@ public abstract class CompanyMapper {
     @Mapping(target = "condition", ignore = true)
     @Mapping(target = "detail", ignore = true)
     @Mapping(target = "contactPerson", ignore = true)
+    @Mapping(target = "branches", ignore = true)
     public abstract Company toUpdateCompany(CompanyRequest request, @MappingTarget Company company);
 
     protected Source getSource(Long id) {
