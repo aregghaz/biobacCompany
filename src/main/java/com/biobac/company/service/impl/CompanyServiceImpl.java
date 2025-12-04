@@ -114,28 +114,7 @@ public class CompanyServiceImpl implements CompanyService {
         Detail detail = detailService.updateDetail(company.getId(), request.getDetail(), company);
         List<Branch> branches = new ArrayList<>();
 
-        if (request.getBranches() != null && !request.getBranches().isEmpty()) {
-            Set<Long> requestBranchIds = request.getBranches().stream()
-                    .map(BranchRequest::getId)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
-
-            company.getBranches().removeIf(branch ->
-                    branch.getId() != null && !requestBranchIds.contains(branch.getId()));
-
-            Map<Long, Branch> existingBranchesMap = company.getBranches().stream()
-                            .collect(Collectors.toMap(branch -> branch.getId(), branch -> branch));
-
-            request.getBranches().forEach(branchRequest -> {
-                Branch newBranch;
-                if (branchRequest.getId() != null && existingBranchesMap.containsKey(branchRequest.getId())) {
-                    newBranch = branchService.updateBranch(branchRequest.getId(), branchRequest, company);
-                } else {
-                    newBranch = branchService.createBranchForCompany(branchRequest, company);
-                }
-                branches.add(newBranch);
-            });
-        }
+        syncBranches(request, company, branches);
 
         company.setBranches(branches);
         company.setContactPerson(contactPersons);
@@ -159,6 +138,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         return companyMapper.toCompanyResponse(updatedCompany);
     }
+
 
     @Override
     @Transactional
@@ -274,5 +254,30 @@ public class CompanyServiceImpl implements CompanyService {
                 .stream()
                 .map(companyMapper::toCompanyResponse)
                 .toList();
+    }
+
+    private void syncBranches(CompanyRequest request, Company company, List<Branch> branches) {
+        if (request.getBranches() != null && !request.getBranches().isEmpty()) {
+            Set<Long> requestBranchIds = request.getBranches().stream()
+                    .map(BranchRequest::getId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
+            company.getBranches().removeIf(branch ->
+                    branch.getId() != null && !requestBranchIds.contains(branch.getId()));
+
+            Map<Long, Branch> existingBranchesMap = company.getBranches().stream()
+                    .collect(Collectors.toMap(branch -> branch.getId(), branch -> branch));
+
+            request.getBranches().forEach(branchRequest -> {
+                Branch newBranch;
+                if (branchRequest.getId() != null && existingBranchesMap.containsKey(branchRequest.getId())) {
+                    newBranch = branchService.updateBranch(branchRequest.getId(), branchRequest, company);
+                } else {
+                    newBranch = branchService.createBranchForCompany(branchRequest, company);
+                }
+                branches.add(newBranch);
+            });
+        }
     }
 }
