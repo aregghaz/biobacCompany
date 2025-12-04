@@ -13,6 +13,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Source extends BaseEntity{
+public class Source extends BaseEntity {
     private String name;
 }

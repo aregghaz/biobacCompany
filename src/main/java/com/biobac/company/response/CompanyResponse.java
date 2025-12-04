@@ -1,12 +1,8 @@
 package com.biobac.company.response;
 
-import com.biobac.company.entity.embeddable.BankInfo;
 import com.biobac.company.entity.Cooperation;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.biobac.company.entity.embeddable.BankInfo;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,4 +49,5 @@ public class CompanyResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String seo;
+    private List<BranchResponse> branches;
 }

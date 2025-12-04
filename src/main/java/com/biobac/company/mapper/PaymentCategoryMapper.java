@@ -4,20 +4,10 @@ import com.biobac.company.entity.PaymentCategory;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.response.EmployeeResponse;
 import com.biobac.company.response.PaymentCategoryResponse;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.BeforeMapping;
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.TargetType;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Mapper(componentModel = "spring")
 public abstract class PaymentCategoryMapper {
@@ -77,7 +67,7 @@ public abstract class PaymentCategoryMapper {
                         dto.getChildren().add(child);
                     }
                 }
-                case BUYER ->  {
+                case BUYER -> {
                     List<CompanyResponse> buyers = safeGetBuyer();
                     for (CompanyResponse c : buyers) {
                         PaymentCategoryResponse child = new PaymentCategoryResponse();

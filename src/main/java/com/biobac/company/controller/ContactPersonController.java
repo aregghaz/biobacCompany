@@ -9,15 +9,7 @@ import com.biobac.company.service.ContactPersonService;
 import com.biobac.company.utils.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +34,7 @@ public class ContactPersonController {
     }
 
     @GetMapping
-    public ApiResponse<List<ContactPersonResponse>> getAllContactPersons(){
+    public ApiResponse<List<ContactPersonResponse>> getAllContactPersons() {
         List<ContactPersonResponse> responses = contactPersonService.getAllContactPerson();
         return ResponseUtil.success("Contacts retrieved successfully", responses);
     }

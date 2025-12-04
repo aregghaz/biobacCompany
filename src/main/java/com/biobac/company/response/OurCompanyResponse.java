@@ -1,7 +1,6 @@
 package com.biobac.company.response;
 
 import com.biobac.company.entity.embeddable.BankInfo;
-import com.biobac.company.request.DetailsRequest;
 import lombok.Getter;
 import lombok.Setter;
 

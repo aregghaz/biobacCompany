@@ -7,6 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateClientTypeRequest {
+public class BranchRequest {
     private String name;
+    private String localAddress;
 }

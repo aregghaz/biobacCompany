@@ -13,12 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.biobac.company.utils.SpecificationUtil.buildBetween;
-import static com.biobac.company.utils.SpecificationUtil.buildContains;
-import static com.biobac.company.utils.SpecificationUtil.buildEquals;
-import static com.biobac.company.utils.SpecificationUtil.buildGreaterThanOrEqualTo;
-import static com.biobac.company.utils.SpecificationUtil.buildLessThanOrEqualTo;
-import static com.biobac.company.utils.SpecificationUtil.buildNotEquals;
+import static com.biobac.company.utils.SpecificationUtil.*;
 
 public class CompanyGroupSpecification {
     public static Specification<CompanyGroup> buildSpecification(Map<String, FilterCriteria> filters) {

@@ -5,23 +5,14 @@ import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.entity.Cooperation;
 import com.biobac.company.request.FilterCriteria;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.biobac.company.utils.SpecificationUtil.buildBetween;
-import static com.biobac.company.utils.SpecificationUtil.buildContains;
-import static com.biobac.company.utils.SpecificationUtil.buildEquals;
-import static com.biobac.company.utils.SpecificationUtil.buildGreaterThanOrEqualTo;
-import static com.biobac.company.utils.SpecificationUtil.buildLessThanOrEqualTo;
-import static com.biobac.company.utils.SpecificationUtil.buildNotEquals;
+import static com.biobac.company.utils.SpecificationUtil.*;
 
 public class CompanySpecification {
     private static String isTypeField(String field) {
