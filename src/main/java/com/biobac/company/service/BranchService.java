@@ -8,5 +8,5 @@ public interface BranchService {
 
     Branch createBranchForCompany(BranchRequest request, Company company);
 
-    Branch updateBranch(Long companyId, BranchRequest branchRequest, Company company);
+    Branch updateBranch(Long id, BranchRequest branchRequest, Company company);
 }

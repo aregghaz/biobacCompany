@@ -10,6 +10,7 @@ import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.request.AttributeUpsertRequest;
+import com.biobac.company.request.BranchRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,8 +115,24 @@ public class CompanyServiceImpl implements CompanyService {
         List<Branch> branches = new ArrayList<>();
 
         if (request.getBranches() != null && !request.getBranches().isEmpty()) {
+            Set<Long> requestBranchIds = request.getBranches().stream()
+                    .map(BranchRequest::getId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
+            company.getBranches().removeIf(branch ->
+                    branch.getId() != null && !requestBranchIds.contains(branch.getId()));
+
+            Map<Long, Branch> existingBranchesMap = company.getBranches().stream()
+                            .collect(Collectors.toMap(branch -> branch.getId(), branch -> branch));
+
             request.getBranches().forEach(branchRequest -> {
-                Branch newBranch = branchService.updateBranch(company.getId(), branchRequest, company);
+                Branch newBranch;
+                if (branchRequest.getId() != null && existingBranchesMap.containsKey(branchRequest.getId())) {
+                    newBranch = branchService.updateBranch(branchRequest.getId(), branchRequest, company);
+                } else {
+                    newBranch = branchService.createBranchForCompany(branchRequest, company);
+                }
                 branches.add(newBranch);
             });
         }
@@ -131,7 +149,6 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Company updatedCompany = companyRepository.save(updateCompany);
-        ;
 
         List<AttributeUpsertRequest> attributes =
                 (request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty())

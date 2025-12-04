@@ -24,8 +24,8 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public Branch updateBranch(Long companyId, BranchRequest request, Company company) {
-        return branchRepository.findByCompanyId(companyId)
+    public Branch updateBranch(Long id, BranchRequest request, Company company) {
+        return branchRepository.findById(id)
                 .map(branch -> {
                     Branch updatedBranch = branchMapper.updateBranch(request, company.getBranches().get(0));
                     updatedBranch.setCompany(company);
