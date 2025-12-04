@@ -3,17 +3,7 @@ package com.biobac.company.entity;
 import com.biobac.company.entity.embeddable.Address;
 import com.biobac.company.entity.embeddable.BankInfo;
 import com.biobac.company.entity.embeddable.Location;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -119,4 +109,7 @@ public class Company extends BaseEntity {
     private LocalDateTime ogrnDate;
     private LocalDateTime clientRegisteredDate;
     private String seo;
+
+    @OneToMany(mappedBy = "company")
+    private List<Branch> branches;
 }

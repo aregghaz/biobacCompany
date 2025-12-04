@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PaymentCategoryResponse extends AuditableResponse{
+public class PaymentCategoryResponse extends AuditableResponse {
     private Long id;
     private Long parentId;
     private PaymentCategoryResponse parent;

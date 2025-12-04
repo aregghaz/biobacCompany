@@ -14,6 +14,7 @@ public interface CompanyService {
     CompanyResponse registerCompany(CompanyRequest request);
 
     CompanyResponse getCompanyById(Long companyId);
+
     CompanyResponse updateCompany(Long id, CompanyRequest dto);
 
     void deleteCompany(Long companyId);
@@ -27,6 +28,8 @@ public interface CompanyService {
     List<CompanyResponse> listAllBuyersCompanies();
 
     List<CompanyResponse> listAllSellersCompanies();
+
     List<CompanyResponse> listAllCompaniesByBuyer();
+
     List<CompanyResponse> listAllCompaniesBySeller();
 }

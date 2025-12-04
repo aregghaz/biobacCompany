@@ -13,7 +13,6 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.EmployeeHistoryResponse;
 import com.biobac.company.service.EmployeeHistoryService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
-import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

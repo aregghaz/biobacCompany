@@ -1,20 +1,18 @@
 package com.biobac.company.response;
 
-import com.biobac.company.entity.enums.AttributeDataType;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Setter
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttributeResponse {
+public class BranchResponse {
     private Long id;
     private String name;
-    private AttributeDataType dataType;
-    private Object value;
-    private LocalDateTime updatedAt;
+    private String localAddress;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -2,10 +2,7 @@ package com.biobac.company.service.impl;
 
 import com.biobac.company.client.AttributeClient;
 import com.biobac.company.dto.PaginationMetadata;
-import com.biobac.company.entity.Company;
-import com.biobac.company.entity.Condition;
-import com.biobac.company.entity.ContactPerson;
-import com.biobac.company.entity.Detail;
+import com.biobac.company.entity.*;
 import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
@@ -16,6 +13,7 @@ import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
+import com.biobac.company.service.BranchService;
 import com.biobac.company.service.CompanyService;
 import com.biobac.company.service.ConditionService;
 import com.biobac.company.service.DetailService;
@@ -31,10 +29,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +41,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final AttributeClient attributeClient;
     private final GroupUtil groupUtil;
     private final ContactPersonRepository contactPersonRepository;
+    private final BranchService branchService;
 
     @Override
     @Transactional
@@ -56,18 +52,38 @@ public class CompanyServiceImpl implements CompanyService {
                 : contactPersonRepository.findAllById(request.getContactPersonIds());
 
         Company company = companyMapper.toCompanyEntity(request);
-        Condition condition = conditionService.createCondition(request.getCondition(), company);
-        Detail detail = detailService.createDetail(request.getDetail(), company);
+        Condition condition = request.getCondition() != null
+                ? conditionService.createCondition(request.getCondition(), company)
+                : new Condition();
+
+        Detail detail = request.getDetail() != null
+                ? detailService.createDetail(request.getDetail(), company)
+                : new Detail();
+        List<Branch> branches = new ArrayList<>();
+
+        if (request.getBranches() != null && !request.getBranches().isEmpty()) {
+            request.getBranches().forEach(branchRequest -> {
+                Branch newBranch = branchService.createBranchForCompany(branchRequest, company);
+                branches.add(newBranch);
+            });
+        }
+
         company.setCondition(condition);
+        company.setBranches(branches);
         company.setDetail(detail);
         company.setContactPerson(contactPersons);
         Company savedCompany = companyRepository.save(company);
 
-        List<AttributeUpsertRequest> attributes = request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty()
-                ? Collections.emptyList()
-                : request.getAttributes();
+        List<AttributeUpsertRequest> attributes =
+                request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty()
+                        ? Collections.emptyList()
+                        : request.getAttributes();
 
-        attributeClient.updateValues(savedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributeGroupIds(), attributes);
+        attributeClient.updateValues(
+                savedCompany.getId(),
+                AttributeTargetType.COMPANY.name(),
+                request.getAttributeGroupIds(), attributes
+        );
 
         return companyMapper.toCompanyResponse(savedCompany);
     }
@@ -105,7 +121,8 @@ public class CompanyServiceImpl implements CompanyService {
             throw new DuplicateException("Company with name " + request.getName() + " already exists.");
         }
 
-        Company updatedCompany = companyRepository.save(updateCompany);;
+        Company updatedCompany = companyRepository.save(updateCompany);
+        ;
 
         List<AttributeUpsertRequest> attributes =
                 (request.getAttributeGroupIds() == null || request.getAttributeGroupIds().isEmpty())

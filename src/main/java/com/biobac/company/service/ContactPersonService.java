@@ -11,8 +11,11 @@ import java.util.Map;
 
 public interface ContactPersonService {
     ContactPersonResponse createContactPerson(ContactPersonRequest request);
+
     ContactPersonResponse getContactPersonById(Long id);
+
     List<ContactPersonResponse> getAllContactPerson();
+
     ContactPersonResponse updateContactPerson(Long id, ContactPersonRequest request);
 
     Pair<List<ContactPersonResponse>, PaginationMetadata> getAll(

@@ -1,24 +1,9 @@
 package com.biobac.company.mapper;
 
 import com.biobac.company.client.AttributeClient;
-import com.biobac.company.entity.ClientType;
-import com.biobac.company.entity.Company;
-import com.biobac.company.entity.CompanyGroup;
-import com.biobac.company.entity.CompanyType;
-import com.biobac.company.entity.Cooperation;
-import com.biobac.company.entity.Line;
-import com.biobac.company.entity.Region;
-import com.biobac.company.entity.SaleType;
-import com.biobac.company.entity.Source;
+import com.biobac.company.entity.*;
 import com.biobac.company.entity.enums.AttributeTargetType;
-import com.biobac.company.repository.ClientTypeRepository;
-import com.biobac.company.repository.CompanyGroupRepository;
-import com.biobac.company.repository.CompanyTypeRepository;
-import com.biobac.company.repository.CooperationRepository;
-import com.biobac.company.repository.LineRepository;
-import com.biobac.company.repository.RegionRepository;
-import com.biobac.company.repository.SaleTypeRepository;
-import com.biobac.company.repository.SourceRepository;
+import com.biobac.company.repository.*;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.AttributeResponse;
@@ -31,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ConditionMapper.class, DetailsMapper.class})
+@Mapper(componentModel = "spring", uses = {ConditionMapper.class, DetailsMapper.class, BranchMapper.class})
 public abstract class CompanyMapper {
 
     @Autowired
@@ -77,6 +62,7 @@ public abstract class CompanyMapper {
     @Mapping(target = "condition", ignore = true)
     @Mapping(target = "detail", ignore = true)
     @Mapping(target = "contactPerson", ignore = true)
+    @Mapping(target = "branches", ignore = true)
     public abstract Company toCompanyEntity(CompanyRequest request);
 
     @Mapping(source = "address.localAddress", target = "localAddress")

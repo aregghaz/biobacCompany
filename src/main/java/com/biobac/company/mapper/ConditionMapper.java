@@ -1,10 +1,6 @@
 package com.biobac.company.mapper;
 
-import com.biobac.company.entity.Condition;
-import com.biobac.company.entity.ContractForm;
-import com.biobac.company.entity.DeliveryMethod;
-import com.biobac.company.entity.DeliveryPayer;
-import com.biobac.company.entity.FinancialTerms;
+import com.biobac.company.entity.*;
 import com.biobac.company.repository.ContractFormRepository;
 import com.biobac.company.repository.DeliveryMethodRepository;
 import com.biobac.company.repository.DeliveryPayerRepository;
