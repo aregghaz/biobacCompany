@@ -110,6 +110,6 @@ public class Company extends BaseEntity {
     private LocalDateTime clientRegisteredDate;
     private String seo;
 
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Branch> branches;
 }

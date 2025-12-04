@@ -21,6 +21,7 @@ import com.biobac.company.service.DetailService;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +32,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
@@ -116,7 +119,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         syncBranches(request, company, branches);
 
-        company.setBranches(branches);
         company.setContactPerson(contactPersons);
         company.setCondition(condition);
         company.setDetail(detail);
@@ -275,6 +277,7 @@ public class CompanyServiceImpl implements CompanyService {
                     newBranch = branchService.updateBranch(branchRequest.getId(), branchRequest, company);
                 } else {
                     newBranch = branchService.createBranchForCompany(branchRequest, company);
+                    company.getBranches().add(newBranch);
                 }
                 branches.add(newBranch);
             });
