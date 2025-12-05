@@ -154,14 +154,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         if (cooperationRepository.count() == 0) {
 
             List<String> statuses = List.of(
-                    "Сотрудничество",
                     "Да",
                     "Нет",
                     "Закрыт",
                     "Должник",
                     "Реанимация"
             );
-
             statuses.forEach(s -> cooperationRepository.save(new Cooperation(s)));
         }
 
