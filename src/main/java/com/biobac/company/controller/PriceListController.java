@@ -4,7 +4,6 @@ import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.PriceListWrapperRequest;
 import com.biobac.company.response.ApiResponse;
-import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.service.PriceListWrapperService;
 import com.biobac.company.utils.ResponseUtil;
@@ -19,7 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/price-list")
+@RequestMapping("/api/company/price-list")
 public class PriceListController {
 
     private final PriceListWrapperService priceListWrapperService;

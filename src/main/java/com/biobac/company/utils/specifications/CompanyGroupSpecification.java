@@ -49,13 +49,4 @@ public class CompanyGroupSpecification {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
-
-    public static Specification<CompanyGroup> belongsToGroups(List<Long> groupIds) {
-        return (root, query, cb) -> {
-            if (groupIds == null || groupIds.isEmpty()) {
-                return cb.disjunction();
-            }
-            return root.get("id").in(groupIds);
-        };
-    }
 }

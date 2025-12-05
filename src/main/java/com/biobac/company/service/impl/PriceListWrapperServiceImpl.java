@@ -72,15 +72,13 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
 
     @Override
     public Pair<List<PriceListWrapperResponse>, PaginationMetadata> getPriceListWrapperPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
-        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Sort sort = sortDir.equalsIgnoreCase("asc") ?
                 Sort.by(sortBy).ascending() :
                 Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Specification<PriceListWrapper> spec = PriceListWrapperSpecification.buildSpecification(filters)
-                .and(PriceListWrapperSpecification.belongsToGroups(groupIds));
+        Specification<PriceListWrapper> spec = PriceListWrapperSpecification.buildSpecification(filters);
 
         Page<PriceListWrapper> companyPage = priceListWrapperRepository.findAll(spec, pageable);
 
