@@ -22,9 +22,10 @@ public class PaymentCategory extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private PaymentCategory parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaymentCategory> children = new ArrayList<>();
 
+    @Column(length = 30)
     @Enumerated(EnumType.STRING)
     private Category category;
 }

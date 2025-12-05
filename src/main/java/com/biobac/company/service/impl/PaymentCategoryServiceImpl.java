@@ -13,6 +13,7 @@ import com.biobac.company.service.EmployeeService;
 import com.biobac.company.service.PaymentCategoryService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Cache;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -77,6 +78,7 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
         PaymentCategory category = paymentCategoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Payment Category not found"));
         category.setName(request.getName());
+        category.setCategory(request.getCategory());
 
         if (request.getParentId() != null) {
             if (id.equals(request.getParentId())) {
@@ -84,13 +86,11 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
             }
             PaymentCategory parent = paymentCategoryRepository.findById(request.getParentId())
                     .orElseThrow(() -> new NotFoundException("Parent not found"));
-            PaymentCategory cursor = parent;
-            while (cursor != null) {
-                if (id.equals(cursor.getId())) {
-                    throw new IllegalArgumentException("Parent cannot be a descendant of the category");
-                }
-                cursor = cursor.getParent();
+
+            if (isDescendant(category, category.getId())) {
+                throw new IllegalArgumentException("Category cannot be its own descendant");
             }
+
             category.setParent(parent);
         } else {
             category.setParent(null);
@@ -157,5 +157,15 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
         return categories.stream()
                 .map(pc -> paymentCategoryMapper.toCategoryResponse(pc, ctx))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isDescendant(PaymentCategory category, Long parentId) {
+        if (category == null) return false;
+
+        for (PaymentCategory child : category.getChildren()) {
+            if (parentId.equals(child.getId())) return true;
+            if (isDescendant(child, parentId)) return true;
+        }
+        return false;
     }
 }
