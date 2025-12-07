@@ -3,6 +3,7 @@ package com.biobac.company.utils.specifications;
 import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
+import com.biobac.company.entity.PriceListWrapper;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -14,9 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 import static com.biobac.company.utils.SpecificationUtil.*;
+import static com.biobac.company.utils.SpecificationUtil.buildBetween;
+import static com.biobac.company.utils.SpecificationUtil.buildGreaterThanOrEqualTo;
+import static com.biobac.company.utils.SpecificationUtil.buildLessThanOrEqualTo;
 
-public class CompanyGroupSpecification {
-    public static Specification<CompanyGroup> buildSpecification(Map<String, FilterCriteria> filters) {
+public class PriceListWrapperSpecification {
+    public static Specification<PriceListWrapper> buildSpecification(Map<String, FilterCriteria> filters) {
         return (root, query, cb) -> {
             query.distinct(true);
             List<Predicate> predicates = new ArrayList<>();
@@ -47,17 +51,6 @@ public class CompanyGroupSpecification {
                 }
             }
             return cb.and(predicates.toArray(new Predicate[0]));
-        };
-    }
-
-
-    // TODO remove belongs to method
-    public static Specification<CompanyGroup> belongsToGroups(List<Long> groupIds) {
-        return (root, query, cb) -> {
-            if (groupIds == null || groupIds.isEmpty()) {
-                return cb.disjunction();
-            }
-            return root.get("id").in(groupIds);
         };
     }
 }

@@ -55,13 +55,13 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
     @Override
     @Transactional
     public PaymentCategoryResponse createCategory(PaymentCategoryRequest request) {
-        PaymentCategory category = new PaymentCategory();
-        category.setName(request.getName());
+        PaymentCategory category = paymentCategoryMapper.toEntity(request);
+//        category.setName(request.getName());
 
         if (request.getParentId() != null) {
             PaymentCategory parent = paymentCategoryRepository.findById(request.getParentId())
                     .orElseThrow(() -> new NotFoundException("Parent not found"));
-            category.setParent(parent);
+            parent.addChild(category);
         }
 
         if (request.getCategory() != null) {
@@ -69,7 +69,10 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
         }
 
         PaymentCategory saved = paymentCategoryRepository.save(category);
-        return paymentCategoryMapper.toCategoryResponse(saved, new PaymentCategoryMapper.CycleAvoidingMappingContext());
+        PaymentCategory loadChildren = paymentCategoryRepository.findByIdWithChildren(saved.getId())
+                .orElseThrow();
+
+        return paymentCategoryMapper.toCategoryResponse(loadChildren, new PaymentCategoryMapper.CycleAvoidingContext());
     }
 
     @Override
@@ -97,7 +100,7 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
         }
 
         PaymentCategory saved = paymentCategoryRepository.save(category);
-        return paymentCategoryMapper.toCategoryResponse(saved, new PaymentCategoryMapper.CycleAvoidingMappingContext());
+        return paymentCategoryMapper.toCategoryResponse(saved, new PaymentCategoryMapper.CycleAvoidingContext());
     }
 
     @Override
@@ -106,7 +109,7 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
         Pageable pageable = buildPageable(page, size, sortBy, sortDir);
         Specification<PaymentCategory> spec = SimpleEntitySpecification.buildSpecification(filters);
         Page<PaymentCategory> pg = paymentCategoryRepository.findAll(spec, pageable);
-        List<PaymentCategoryResponse> content = pg.getContent().stream().map(pc -> paymentCategoryMapper.toCategoryResponse(pc, new PaymentCategoryMapper.CycleAvoidingMappingContext()))
+        List<PaymentCategoryResponse> content = pg.getContent().stream().map(pc -> paymentCategoryMapper.toCategoryResponse(pc, new PaymentCategoryMapper.CycleAvoidingContext()))
                 .collect(Collectors.toList());
         PaginationMetadata metadata = new PaginationMetadata(
                 pg.getNumber(),
@@ -127,7 +130,7 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
     public PaymentCategoryResponse getById(Long id) {
         PaymentCategory category = paymentCategoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Payment Category not found"));
-        return paymentCategoryMapper.toCategoryResponse(category, new PaymentCategoryMapper.CycleAvoidingMappingContext());
+        return paymentCategoryMapper.toCategoryResponse(category, new PaymentCategoryMapper.CycleAvoidingContext());
     }
 
     @Override
@@ -153,7 +156,7 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
     @Transactional(readOnly = true)
     public List<PaymentCategoryResponse> getCategoryAll() {
         List<PaymentCategory> categories = paymentCategoryRepository.findAll();
-        PaymentCategoryMapper.CycleAvoidingMappingContext ctx = new PaymentCategoryMapper.CycleAvoidingMappingContext();
+        PaymentCategoryMapper.CycleAvoidingContext ctx = new PaymentCategoryMapper.CycleAvoidingContext();
         return categories.stream()
                 .map(pc -> paymentCategoryMapper.toCategoryResponse(pc, ctx))
                 .collect(Collectors.toList());
