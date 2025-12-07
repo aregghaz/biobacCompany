@@ -8,8 +8,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring", uses = {PaymentCategoryMapper.class, AccountMapper.class})
 public interface PaymentMapper {
     default PaymentResponse toResponse(Payment entity) {
-        return toResponse(entity, new PaymentCategoryMapper.CycleAvoidingMappingContext());
+        return toResponse(entity, new PaymentCategoryMapper.CycleAvoidingContext());
     }
 
-    PaymentResponse toResponse(Payment entity, @Context PaymentCategoryMapper.CycleAvoidingMappingContext context);
+    PaymentResponse toResponse(Payment entity, @Context PaymentCategoryMapper.CycleAvoidingContext context);
 }

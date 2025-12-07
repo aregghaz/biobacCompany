@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class PriceListItem extends BaseEntity {
     private BigDecimal price;
+    private Long productId;
 
     @ManyToOne
     @JoinColumn(name = "price_list_id")

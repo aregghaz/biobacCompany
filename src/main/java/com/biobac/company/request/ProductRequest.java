@@ -9,8 +9,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceListItemRequest {
-    private Long id;
-    private Long productId;
+public class ProductRequest {
+    private String name;
     private BigDecimal price;
 }

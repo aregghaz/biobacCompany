@@ -2,15 +2,15 @@ package com.biobac.company.response;
 
 import lombok.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Setter
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceListWrapperResponse {
+public class ProductResponse {
     private Long id;
-    private String name;
-    private List<ProductResponse> product;
+    private String name;    
+    private BigDecimal price;
 }

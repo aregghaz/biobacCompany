@@ -1,11 +1,13 @@
 package com.biobac.company.entity;
 
 import com.biobac.company.entity.enums.Category;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +16,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class PaymentCategory extends BaseEntity {
     private String name;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private PaymentCategory parent;
@@ -28,4 +30,15 @@ public class PaymentCategory extends BaseEntity {
     @Column(length = 30)
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    public void addChild(PaymentCategory child) {
+        children.add(child);
+        child.setParent(this);
+    }
+
+    public void removeChild(PaymentCategory child) {
+        children.remove(child);
+        child.setParent(null);
+    }
+
 }

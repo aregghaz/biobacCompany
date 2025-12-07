@@ -1,13 +1,17 @@
 package com.biobac.company.response;
 
 import com.biobac.company.entity.enums.Category;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Getter
 @Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentCategoryResponse extends AuditableResponse {
     private Long id;
     private Long parentId;
