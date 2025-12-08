@@ -5,6 +5,7 @@ import com.biobac.company.request.PaymentCategoryRequest;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.response.EmployeeResponse;
 import com.biobac.company.response.PaymentCategoryResponse;
+import com.biobac.company.response.PaymentResponse;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -29,23 +30,25 @@ public abstract class PaymentCategoryMapper {
 //        PaymentCategoryResponse existing = context.getMappedInstance(entity, PaymentCategoryResponse.class);
         if (existing != null) return existing;
 
-        PaymentCategoryResponse dto = PaymentCategoryResponse.builder()
+        PaymentCategoryResponse response = PaymentCategoryResponse.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
-                .parent(toCategoryResponse(entity.getParent(), context))
+//                .parent(toCategoryResponse(entity.getParent(), context))
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .category(entity.getCategory())
                 .children(new ArrayList<>())
                 .build();
 
+        context.put(entity, response);
+
         if (entity.getParent() != null) {
-            dto.setParent(toParentResponseWithChildren(entity.getParent()));
+            response.setParent(toParentResponseWithChildren(entity.getParent()));
         }
 
-        for(PaymentCategory child : entity.getChildren()) {
-            dto.getChildren().add(toCategoryResponse(child, context));
+        for (PaymentCategory child : entity.getChildren()) {
+            response.getChildren().add(toCategoryResponse(child, context));
         }
 
         if (entity.getCategory() != null) {
@@ -53,45 +56,51 @@ public abstract class PaymentCategoryMapper {
                 case EMPLOYEE -> {
                     List<EmployeeResponse> employees = safeGetEmployees();
                     for (EmployeeResponse e : employees) {
-                        PaymentCategoryResponse child = new PaymentCategoryResponse();
-                        child.setId(e.getId());
-                        child.setParentId(dto.getId());
-                        child.setParent(toShallowParentFromResponse(dto));
-                        String name = (e.getLastname() != null ? e.getLastname() : "")
+
+                        final String name = (e.getLastname() != null ? e.getLastname() : "")
                                 + (e.getFirstname() != null ? (" " + e.getFirstname()) : "");
-                        child.setName(name.trim());
-                        child.setChildren(Collections.emptyList());
-                        dto.getChildren().add(child);
+
+                        PaymentCategoryResponse child = PaymentCategoryResponse.builder()
+                                .id(e.getId())
+                                .parentId(e.getId())
+                                .parent(toShallowParentFromResponse(response))
+                                .name(name.trim())
+                                .children(Collections.emptyList())
+                                .build();
+                        response.getChildren().add(child);
                     }
                 }
                 case SELLER -> {
                     List<CompanyResponse> sellers = safeGetSellers();
-                    for (CompanyResponse c : sellers) {
-                        PaymentCategoryResponse child = new PaymentCategoryResponse();
-                        child.setId(null);
-                        child.setParentId(dto.getId());
-                        child.setParent(toShallowParentFromResponse(dto));
-                        child.setName(c.getName());
-                        child.setChildren(Collections.emptyList());
-                        dto.getChildren().add(child);
+                    for (CompanyResponse seller : sellers) {
+                        PaymentCategoryResponse child = PaymentCategoryResponse.builder()
+                                .id(null)
+                                .parentId(response.getId())
+                                .parent(toShallowParentFromResponse(response))
+                                .name(seller.getName())
+                                .children(Collections.emptyList())
+                                .build();
+                        response.getChildren().add(child);
                     }
                 }
                 case BUYER -> {
                     List<CompanyResponse> buyers = safeGetBuyer();
-                    for (CompanyResponse c : buyers) {
-                        PaymentCategoryResponse child = new PaymentCategoryResponse();
-                        child.setId(null);
-                        child.setParentId(dto.getId());
-                        child.setParent(toShallowParentFromResponse(dto));
-                        child.setName(c.getName());
-                        child.setChildren(Collections.emptyList());
-                        dto.getChildren().add(child);
+                    for (CompanyResponse buyer : buyers) {
+
+                        PaymentCategoryResponse child = PaymentCategoryResponse.builder()
+                                .id(null)
+                                .parentId(response.getId())
+                                .parent(toShallowParentFromResponse(response))
+                                .name(buyer.getName())
+                                .children(Collections.emptyList())
+                                .build();
+                        response.getChildren().add(child);
                     }
                 }
             }
         }
 
-        return dto;
+        return response;
     }
 
     private PaymentCategoryResponse toParentResponseWithChildren(PaymentCategory entity) {
@@ -100,52 +109,41 @@ public abstract class PaymentCategoryMapper {
         // We do NOT use the context cache here because we want a specialized "Parent View"
         // that behaves differently (doesn't link back to children's parents).
 
-        PaymentCategoryResponse dto = new PaymentCategoryResponse();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        dto.setCategory(entity.getCategory());
-        dto.setCreatedAt(entity.getCreatedAt());
-        dto.setUpdatedAt(entity.getUpdatedAt());
-        dto.setParentId(entity.getParent() != null ? entity.getParent().getId() : null);
-
-        // Important: Stop going up the tree. The parent of the parent is just an ID or null here.
-        dto.setParent(null);
-
-        dto.setChildren(new ArrayList<>());
+        PaymentCategoryResponse response = PaymentCategoryResponse.builder()
+                .id(entity.getId())
+                .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
+                .parent(null)
+                .name(entity.getName())
+                .category(entity.getCategory())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .children(new ArrayList<>())
+                .parent(null)
+                .build();
 
         if (entity.getChildren() != null) {
             for (PaymentCategory child : entity.getChildren()) {
                 // For siblings, we map them BUT we ensure they don't link back to this parent
                 // to avoid the cycle (Child -> Parent -> Child -> Parent)
-                dto.getChildren().add(toShallowChildResponse(child));
+                response.getChildren().add(toShallowChildResponse(child));
             }
         }
-        return dto;
+        return response;
     }
 
     private PaymentCategoryResponse toShallowChildResponse(PaymentCategory entity) {
         if (entity == null) return null;
-        PaymentCategoryResponse dto = new PaymentCategoryResponse();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        dto.setCategory(entity.getCategory());
-        dto.setCreatedAt(entity.getCreatedAt());
-        dto.setUpdatedAt(entity.getUpdatedAt());
-        dto.setParentId(entity.getParent() != null ? entity.getParent().getId() : null);
-        dto.setParent(null); // No parent link
-        dto.setChildren(null); // No deeper children
-        return dto;
-    }
 
-    protected List<PaymentCategoryResponse> mapChildren(List<PaymentCategory> children, @Context CycleAvoidingContext context) {
-        if (children == null || children.isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<PaymentCategoryResponse> result = new ArrayList<>(children.size());
-        for (PaymentCategory child : children) {
-            result.add(toCategoryResponse(child, context));
-        }
-        return result;
+        return PaymentCategoryResponse.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .category(entity.getCategory())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
+                .parent(null)    // No parent link
+                .children(null)   // No deeper children
+                .build();
     }
 
     private List<CompanyResponse> safeGetBuyer() {
@@ -172,38 +170,22 @@ public abstract class PaymentCategoryMapper {
         }
     }
 
-    private PaymentCategoryResponse toShallowParentResponse(PaymentCategory entity) {
-        if (entity == null) {
-            return null;
-        }
-        PaymentCategoryResponse dto = new PaymentCategoryResponse();
-        dto.setId(entity.getId());
-        dto.setName(entity.getName());
-        dto.setCategory(entity.getCategory());
-        dto.setCreatedAt(entity.getCreatedAt());
-        dto.setUpdatedAt(entity.getUpdatedAt());
-        dto.setParentId(entity.getParent() != null ? entity.getParent().getId() : null);
-        dto.setChildren(new ArrayList<>());
-        return dto;
-    }
-
     private PaymentCategoryResponse toShallowParentFromResponse(PaymentCategoryResponse parent) {
-        if (parent == null) {
-            return null;
-        }
-        PaymentCategoryResponse dto = new PaymentCategoryResponse();
-        dto.setId(parent.getId());
-        dto.setName(parent.getName());
-        dto.setCategory(parent.getCategory());
-        dto.setCreatedAt(parent.getCreatedAt());
-        dto.setUpdatedAt(parent.getUpdatedAt());
-        dto.setParentId(parent.getParentId());
-        dto.setChildren(new ArrayList<>());
-        return dto;
+        if (parent == null) return null;
+
+        return PaymentCategoryResponse.builder()
+                .id(parent.getId())
+                .name(parent.getName())
+                .category(parent.getCategory())
+                .createdAt(parent.getCreatedAt())
+                .updatedAt(parent.getUpdatedAt())
+                .parentId(parent.getParentId())
+                .children(new ArrayList<>())
+                .build();
     }
 
     public static class CycleAvoidingContext {
-        private final Map<Object, Object> map= new IdentityHashMap<>();
+        private final Map<Object, Object> map = new IdentityHashMap<>();
 
         public PaymentCategoryResponse get(PaymentCategory source) {
             return (PaymentCategoryResponse) map.get(source);
@@ -213,31 +195,4 @@ public abstract class PaymentCategoryMapper {
             map.put(source, target);
         }
     }
-
-//    public static class CycleAvoidingMappingContext {
-//        private Map<Object, Object> knownInstances = new IdentityHashMap<>();
-//        private Set<Object> visiting = Collections.newSetFromMap(new IdentityHashMap<>());
-//
-//        @BeforeMapping
-//        public <T> T getMappedInstance(Object source, @TargetType Class<T> targetType) {
-//            return (T) knownInstances.get(source);
-//        }
-//
-//        @AfterMapping
-//        public void storeMappedInstance(Object source, @MappingTarget Object target) {
-//            knownInstances.put(source, target);
-//        }
-//
-//        public void startVisiting(Object source) {
-//            visiting.add(source);
-//        }
-//
-//        public boolean isVisiting(Object source) {
-//            return visiting.contains(source);
-//        }
-//
-//        public void finishVisiting(Object source) {
-//            visiting.remove(source);
-//        }
-//    }
 }
