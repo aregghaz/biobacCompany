@@ -3,12 +3,9 @@ package com.biobac.company.mapper;
 import com.biobac.company.entity.PriceListWrapper;
 import com.biobac.company.request.PriceListWrapperRequest;
 import com.biobac.company.response.PriceListWrapperResponse;
-import com.biobac.company.response.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface PriceListWrapperMapper {

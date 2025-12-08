@@ -13,7 +13,6 @@ import com.biobac.company.service.EmployeeService;
 import com.biobac.company.service.PaymentCategoryService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Cache;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

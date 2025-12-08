@@ -11,6 +11,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ProductResponse {
     private Long id;
-    private String name;    
+    private String name;
     private BigDecimal price;
 }

@@ -2,19 +2,20 @@ package com.biobac.company.service.impl;
 
 import com.biobac.company.client.ProductClient;
 import com.biobac.company.dto.PaginationMetadata;
+import com.biobac.company.entity.PriceListItem;
 import com.biobac.company.entity.PriceListWrapper;
 import com.biobac.company.exception.NotFoundException;
-import com.biobac.company.mapper.PriceListItemMapper;
 import com.biobac.company.mapper.PriceListWrapperMapper;
 import com.biobac.company.repository.PriceListWrapperRepository;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.PriceListWrapperRequest;
+import com.biobac.company.request.ProductRequest;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
-import com.biobac.company.service.PriceListItemService;
 import com.biobac.company.service.PriceListWrapperService;
 import com.biobac.company.utils.specifications.PriceListWrapperSpecification;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,54 +26,33 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
 public class PriceListWrapperServiceImpl implements PriceListWrapperService {
 
     private final PriceListWrapperRepository priceListWrapperRepository;
-    private final PriceListItemService priceListItemService;
     private final PriceListWrapperMapper priceListWrapperMapper;
-    private final PriceListItemMapper priceListItemMapper;
     private final ProductClient productClient;
 
     @Override
     @Transactional
     public PriceListWrapperResponse createPriceListWrapper(PriceListWrapperRequest request) {
         PriceListWrapper priceListWrapper = priceListWrapperMapper.toPriceListWrapper(request);
-        PriceListWrapper save = priceListWrapperRepository.save(priceListWrapper);
 
         List<ProductResponse> products = new ArrayList<>();
+        List<PriceListItem> priceListItems = new ArrayList<>();
 
-        if (request.getProductIds() != null && !request.getProductIds().isEmpty()) {
-            List<ProductResponse> productResponses = request.getProductIds().stream()
-                    .map(productId -> {
-                        ApiResponse<ProductResponse> response = productClient.getProductById(productId);
-                        ProductResponse product = response.getData();
+        processProductRequests(request, products, priceListWrapper, priceListItems);
+        priceListWrapper.setPriceListItems(priceListItems);
 
-                        if (product == null) {
-                            throw new NotFoundException(String.format("Product with id %s not found", productId));
-                        }
-                        return product;
-                    })
-                    .toList();
-            products.addAll(productResponses);
-        }
+        PriceListWrapper save = priceListWrapperRepository.save(priceListWrapper);
 
-
-//        List<PriceListItem> priceListItems = new ArrayList<>();
-//
-//        if (request.getPriceListItems() != null && !request.getPriceListItems().isEmpty()) {
-//            request.getPriceListItems().forEach(priceListItem -> {
-//                PriceListItem item = priceListItemService.createPriceListItem(priceListItem, priceListWrapper);
-//                priceListItems.add(item);
-//            });
-//        }
-
-//        save.setPriceListItems(priceListItems);
         PriceListWrapperResponse response = priceListWrapperMapper.toPriceListWrapperResponse(save);
         response.setProduct(products);
         return response;
@@ -82,7 +62,7 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
     @Transactional(readOnly = true)
     public PriceListWrapperResponse getPriceListWrapperById(Long id) {
         return priceListWrapperRepository.findById(id)
-                .map(item -> priceListWrapperMapper.toPriceListWrapperResponse(item))
+                .map(buildPriceListResponse())
                 .orElseThrow(() -> new NotFoundException("Price list not found"));
     }
 
@@ -100,7 +80,7 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
 
         List<PriceListWrapperResponse> content = companyPage.getContent()
                 .stream()
-                .map(priceListWrapperMapper::toPriceListWrapperResponse)
+                .map(buildPriceListResponse())
                 .toList();
 
         PaginationMetadata metadata = new PaginationMetadata(
@@ -119,40 +99,28 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
 
     @Override
     public PriceListWrapperResponse updatePriceListWrapper(Long id, PriceListWrapperRequest request) {
-        PriceListWrapper wrapper = priceListWrapperRepository.findById(id)
+        PriceListWrapper priceListWrapper = priceListWrapperRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Price list not found"));
 
-        priceListWrapperMapper.updatePriceListWrapper(request, wrapper);
-        if (wrapper.getPriceListItems() == null) {
-            wrapper.setPriceListItems(new ArrayList<>());
+        priceListWrapperMapper.updatePriceListWrapper(request, priceListWrapper);
+
+        List<ProductResponse> products = new ArrayList<>();
+        List<PriceListItem> priceListItems = new ArrayList<>();
+
+        processProductRequests(request, products, priceListWrapper, priceListItems);
+
+
+        if (priceListWrapper.getPriceListItems() == null) {
+            priceListWrapper.setPriceListItems(new ArrayList<>());
         }
+        priceListWrapper.getPriceListItems().clear();
+        priceListWrapper.getPriceListItems().addAll(priceListItems);
 
-//        Map<Long, PriceListItem> existingItems = wrapper.getPriceListItems().stream()
-//                .collect(Collectors.toMap(PriceListItem::getId, i -> i));
-//
-//        List<PriceListItem> updatedList = new ArrayList<>();
-//
-//        for (PriceListItemRequest itemRequest : request.getPriceListItems()) {
-//
-//            if (itemRequest.getId() != null && existingItems.containsKey(itemRequest.getId())) {
-//                PriceListItem existing = existingItems.get(itemRequest.getId());
-//                priceListItemMapper.updatePriceListItem(itemRequest, existing);
-//                existing.setPriceListWrapper(wrapper);
-//                updatedList.add(existing);
-//
-//            } else {
-//                PriceListItem newItem = priceListItemMapper.toPriceListItemEntity(itemRequest);
-//                newItem.setPriceListWrapper(wrapper);
-//                updatedList.add(newItem);
-//            }
-//        }
-//
-//        wrapper.getPriceListItems().clear();
-//        wrapper.getPriceListItems().addAll(updatedList);
+        PriceListWrapper saved = priceListWrapperRepository.save(priceListWrapper);
 
-        PriceListWrapper saved = priceListWrapperRepository.save(wrapper);
-
-        return priceListWrapperMapper.toPriceListWrapperResponse(saved);
+        PriceListWrapperResponse response = priceListWrapperMapper.toPriceListWrapperResponse(saved);
+        response.setProduct(products);
+        return response;
     }
 
     @Override
@@ -160,4 +128,52 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
         priceListWrapperRepository.deleteById(id);
     }
 
+    private void processProductRequests(
+            PriceListWrapperRequest request,
+            List<ProductResponse> products,
+            PriceListWrapper priceListWrapper,
+            List<PriceListItem> priceListItems
+    ) {
+        if (request.getProducts() != null && !request.getProducts().isEmpty()) {
+            for (ProductRequest productReq : request.getProducts()) {
+                if (productReq.getId() == null) continue;
+
+                ApiResponse<ProductResponse> response = productClient.getProductById(productReq.getId());
+                ProductResponse product = response.getData();
+
+                BigDecimal priceToSet = productReq.getPrice() != null
+                        ? productReq.getPrice()
+                        : product.getPrice();
+
+                product.setPrice(priceToSet);
+                products.add(product);
+                PriceListItem item = PriceListItem.builder()
+                        .productId(product.getId())
+                        .price(priceToSet)
+                        .priceListWrapper(priceListWrapper)
+                        .build();
+                priceListItems.add(item);
+            }
+        }
+    }
+
+    private @NonNull Function<PriceListWrapper, PriceListWrapperResponse> buildPriceListResponse() {
+        return item -> {
+            PriceListWrapperResponse response = priceListWrapperMapper.toPriceListWrapperResponse(item);
+            if (item.getPriceListItems() != null) {
+                List<ProductResponse> products = item.getPriceListItems().stream()
+                        .filter(listItem -> listItem.getProductId() != null)
+                        .map(listItem -> {
+                            ProductResponse product = productClient.getProductById(listItem.getProductId()).getData();
+                            if (product != null && listItem.getPrice() != null) {
+                                product.setPrice(listItem.getPrice());
+                            }
+                            return product;
+                        })
+                        .toList();
+                response.setProduct(products);
+            }
+            return response;
+        };
+    }
 }
