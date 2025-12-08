@@ -55,7 +55,6 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
     @Transactional
     public PaymentCategoryResponse createCategory(PaymentCategoryRequest request) {
         PaymentCategory category = paymentCategoryMapper.toEntity(request);
-//        category.setName(request.getName());
 
         if (request.getParentId() != null) {
             PaymentCategory parent = paymentCategoryRepository.findById(request.getParentId())
@@ -86,11 +85,10 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
             if (id.equals(request.getParentId())) {
                 throw new IllegalArgumentException("Category cannot be its own parent");
             }
-            PaymentCategory parent = paymentCategoryRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new NotFoundException("Parent not found"));
+            PaymentCategory parent = paymentCategoryRepository.getReferenceById(request.getParentId());
 
-            if (isDescendant(category, category.getId())) {
-                throw new IllegalArgumentException("Category cannot be its own descendant");
+            if (paymentCategoryRepository.isDescendant(id, request.getParentId())) {
+                throw new IllegalArgumentException("Category cannot be its own descendant (cycle detected)");
             }
 
             category.setParent(parent);
@@ -99,7 +97,8 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
         }
 
         PaymentCategory saved = paymentCategoryRepository.save(category);
-        return paymentCategoryMapper.toCategoryResponse(saved, new PaymentCategoryMapper.CycleAvoidingContext());
+        PaymentCategory load = paymentCategoryRepository.findByIdWithChildren(saved.getId()).orElseThrow();
+        return paymentCategoryMapper.toCategoryResponse(load, new PaymentCategoryMapper.CycleAvoidingContext());
     }
 
     @Override
@@ -159,15 +158,5 @@ public class PaymentCategoryServiceImpl implements PaymentCategoryService {
         return categories.stream()
                 .map(pc -> paymentCategoryMapper.toCategoryResponse(pc, ctx))
                 .collect(Collectors.toList());
-    }
-
-    private boolean isDescendant(PaymentCategory category, Long parentId) {
-        if (category == null) return false;
-
-        for (PaymentCategory child : category.getChildren()) {
-            if (parentId.equals(child.getId())) return true;
-            if (isDescendant(child, parentId)) return true;
-        }
-        return false;
     }
 }

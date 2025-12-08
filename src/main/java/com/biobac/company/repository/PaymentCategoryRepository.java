@@ -16,4 +16,19 @@ public interface PaymentCategoryRepository extends JpaRepository<PaymentCategory
                 WHERE c.id = :id
             """)
     Optional<PaymentCategory> findByIdWithChildren(@Param("id") Long id);
+
+    @Query(value = """
+                WITH RECURSIVE subordinates AS (
+                    SELECT id FROM payment_category WHERE id = :currentId
+                    UNION ALL
+                    SELECT c.id FROM payment_category c
+                    INNER JOIN subordinates s ON s.id = c.parent_id
+                )
+                SELECT COUNT(*) FROM subordinates WHERE id = :targetParentId
+            """, nativeQuery = true)
+    Long countDescendants(@Param("currentId") Long currentId, @Param("targetParentId") Long targetParentId);
+
+    default boolean isDescendant(Long currentId, Long targetParentId) {
+        return countDescendants(currentId, targetParentId) > 0;
+    }
 }
