@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class PriceListWrapperRequest {
     private String name;
-    private List<Long> productIds;
+    private List<ProductRequest> products;
 }

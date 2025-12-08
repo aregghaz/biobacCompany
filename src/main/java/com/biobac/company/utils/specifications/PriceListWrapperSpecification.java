@@ -1,7 +1,6 @@
 package com.biobac.company.utils.specifications;
 
 import com.biobac.company.entity.Company;
-import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.entity.PriceListWrapper;
 import com.biobac.company.request.FilterCriteria;
@@ -15,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.biobac.company.utils.SpecificationUtil.*;
-import static com.biobac.company.utils.SpecificationUtil.buildBetween;
-import static com.biobac.company.utils.SpecificationUtil.buildGreaterThanOrEqualTo;
-import static com.biobac.company.utils.SpecificationUtil.buildLessThanOrEqualTo;
 
 public class PriceListWrapperSpecification {
     public static Specification<PriceListWrapper> buildSpecification(Map<String, FilterCriteria> filters) {
