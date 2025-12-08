@@ -21,8 +21,9 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final ClientTypeRepository clientTypeRepository;
     private final CooperationRepository cooperationRepository;
     private final LineRepository lineRepository;
+    private final SaleStatusRepository saleStatusRepository;
 
-    public DatabaseSeeder(CompanyTypeRepository companyTypeRepository, RegionRepository regionRepository, SaleTypeRepository saleTypeRepository, ContractFormRepository contractFormRepository, FinancialTermsRepository financialTermsRepository, DeliveryPayerRepository deliveryPayerRepository, DeliveryMethodRepository deliveryMethodRepository, ClientTypeRepository clientTypeRepository, CooperationRepository cooperationRepository, LineRepository lineRepository) {
+    public DatabaseSeeder(CompanyTypeRepository companyTypeRepository, RegionRepository regionRepository, SaleTypeRepository saleTypeRepository, ContractFormRepository contractFormRepository, FinancialTermsRepository financialTermsRepository, DeliveryPayerRepository deliveryPayerRepository, DeliveryMethodRepository deliveryMethodRepository, ClientTypeRepository clientTypeRepository, CooperationRepository cooperationRepository, LineRepository lineRepository, SaleStatusRepository saleStatusRepository) {
         this.companyTypeRepository = companyTypeRepository;
         this.regionRepository = regionRepository;
         this.saleTypeRepository = saleTypeRepository;
@@ -33,10 +34,21 @@ public class DatabaseSeeder implements CommandLineRunner {
         this.clientTypeRepository = clientTypeRepository;
         this.cooperationRepository = cooperationRepository;
         this.lineRepository = lineRepository;
+        this.saleStatusRepository = saleStatusRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        if (saleStatusRepository.count() == 0) {
+            List<String> statuses = List.of(
+                    "завершенные",
+                    "не оплачено",
+                    "незавершенные"
+            );
+
+            statuses.forEach(s -> saleStatusRepository.save(new SaleStatus(s)));
+        }
+
         if (companyTypeRepository.count() == 0) {
             CompanyType companyType1 = new CompanyType("Покупатели");
             companyTypeRepository.save(companyType1);
