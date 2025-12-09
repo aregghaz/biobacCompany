@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class SaleServiceImpl implements SaleService {
     private final CompanyRepository companyRepository;
     private final SaleStatusRepository saleStatusRepository;
     private final ProductClient productClient;
+    private final ContactPersonRepository contactPersonRepository;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -125,6 +127,9 @@ public class SaleServiceImpl implements SaleService {
         Sale sale = initializeSale(
                 request.getOurCompanyId(),
                 request.getBuyerCompanyId(),
+                request.getContactPersonId(),
+                request.getOrderDate(),
+                request.getSaleDate(),
                 request.getTotalAmount(),
                 resolveReceivedAmount(request.getReceivedAmount())
         );
@@ -143,6 +148,9 @@ public class SaleServiceImpl implements SaleService {
         Sale sale = initializeSale(
                 request.getOurCompanyId(),
                 request.getBuyerCompanyId(),
+                request.getContactPersonId(),
+                request.getOrderDate(),
+                null,
                 request.getTotalAmount(),
                 BigDecimal.ZERO
         );
@@ -161,6 +169,7 @@ public class SaleServiceImpl implements SaleService {
 
         BigDecimal received = resolveReceivedAmount(request.getReceivedAmount());
 
+        sale.setSaleDate(request.getSaleDate());
         sale.setReceivedAmount(received);
         sale.setStatus(resolveSaleStatus(received, sale.getTotalAmount()));
 
@@ -176,14 +185,21 @@ public class SaleServiceImpl implements SaleService {
 
     private Sale initializeSale(Long ourCompanyId,
                                 Long buyerCompanyId,
+                                Long contactPersonId,
+                                LocalDateTime orderDate,
+                                LocalDateTime saleDate,
                                 BigDecimal totalAmount,
                                 BigDecimal receivedAmount) {
 
         OurCompany ourCompany = fetchOurCompany(ourCompanyId);
         Company buyer = fetchBuyerCompany(buyerCompanyId);
+        ContactPerson contactPerson = fetchContactPerson(contactPersonId);
 
         Sale sale = new Sale();
         sale.setOurCompany(ourCompany);
+        sale.setContactPerson(contactPerson);
+        sale.setOrderDate(orderDate);
+        sale.setSaleDate(saleDate);
         sale.setBuyerCompany(buyer);
         sale.setTotalAmount(totalAmount);
         sale.setReceivedAmount(receivedAmount);
@@ -263,5 +279,10 @@ public class SaleServiceImpl implements SaleService {
     private Company fetchBuyerCompany(Long id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Buyer not found"));
+    }
+
+    private ContactPerson fetchContactPerson(Long id) {
+        return contactPersonRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Contact Person not found"));
     }
 }

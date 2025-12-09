@@ -1,9 +1,11 @@
 package com.biobac.company.request;
 
+import com.biobac.company.entity.ContactPerson;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,4 +16,7 @@ public class OnSiteSaleRequest {
     private List<SaleItemRequest> items;
     private BigDecimal totalAmount;
     private BigDecimal receivedAmount;
+    private Long contactPersonId;
+    private LocalDateTime orderDate;
+    private LocalDateTime saleDate;
 }
