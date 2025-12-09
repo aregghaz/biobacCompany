@@ -61,21 +61,27 @@ public class CompanyController {
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 
+    @GetMapping("/buyer/cooperation")
+    public ApiResponse<List<CompanyResponse>> listBuyerCompaniesWithCooperation() {
+        List<CompanyResponse> companies = companyService.listBuyerCompaniesWithCooperation();
+        return ResponseUtil.success("Companies retrieved successfully", companies);
+    }
+
+    @GetMapping("/seller/cooperation")
+    public ApiResponse<List<CompanyResponse>> listSellerCompaniesWithCooperation() {
+        List<CompanyResponse> companies = companyService.listSellerCompaniesWithCooperation();
+        return ResponseUtil.success("Companies retrieved successfully", companies);
+    }
+
     @GetMapping("/buyer")
-    public ApiResponse<List<CompanyResponse>> listAllBuyersCompanies() {
-        List<CompanyResponse> companies = companyService.listAllBuyersCompanies();
+    public ApiResponse<List<CompanyResponse>> listAllCompanyByBuyer() {
+        List<CompanyResponse> companies = companyService.listAllCompaniesByBuyer();
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 
     @GetMapping("/seller")
-    public ApiResponse<List<CompanyResponse>> listAllSellersCompanies() {
-        List<CompanyResponse> companies = companyService.listAllSellersCompanies();
-        return ResponseUtil.success("Companies retrieved successfully", companies);
-    }
-
-    @GetMapping("/buyer/yes")
-    public ApiResponse<List<CompanyResponse>> listAllCompanyByBuyerYes() {
-        List<CompanyResponse> companies = companyService.listAllCompaniesByBuyer();
+    public ApiResponse<List<CompanyResponse>> listAllCompanyBySeller() {
+        List<CompanyResponse> companies = companyService.listAllCompaniesBySeller();
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 

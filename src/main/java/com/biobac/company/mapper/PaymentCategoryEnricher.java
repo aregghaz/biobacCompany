@@ -30,7 +30,7 @@ public class PaymentCategoryEnricher {
     @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public List<CompanyResponse> getSellersSafe() {
         try {
-            return companyService.listAllSellersCompanies();
+            return companyService.listSellerCompaniesWithCooperation();
         } catch (Exception e) {
             return Collections.emptyList();
         }
@@ -39,19 +39,9 @@ public class PaymentCategoryEnricher {
     @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
     public List<CompanyResponse> getBuyersSafe() {
         try {
-            return companyService.listAllBuyersCompanies();
+            return companyService.listBuyerCompaniesWithCooperation();
         } catch (Exception e) {
             return Collections.emptyList();
         }
     }
-
-    @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
-    public List<CompanyResponse> getSafeSeller() {
-        try {
-            return companyService.listAllCompaniesBySeller();
-        } catch (Exception e) {
-            return Collections.emptyList();
-        }
-    }
-
 }
