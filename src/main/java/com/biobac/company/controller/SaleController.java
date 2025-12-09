@@ -28,7 +28,7 @@ public class SaleController {
         return ResponseUtil.success("Sale retrieved successfully", response);
     }
 
-    @PostMapping("/oni-site")
+    @PostMapping("/on-site")
     public ApiResponse<SaleResponse> createOnSiteSale(@RequestBody OnSiteSaleRequest request) {
         SaleResponse response = saleService.createOnSiteSale(request);
         return ResponseUtil.success("On Site sale created successfully", response);
@@ -46,15 +46,27 @@ public class SaleController {
         return ResponseUtil.success("Sale finalized successfully", response);
     }
 
-    @PostMapping("/all")
-    public ApiResponse<List<SaleResponse>> getAll(
+    @PostMapping("/success/all")
+    public ApiResponse<List<SaleResponse>> getFinalizedAll(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDir,
             @RequestBody Map<String, FilterCriteria> filters
     ) {
-        Pair<List<SaleResponse>, PaginationMetadata> result = saleService.getPagination(filters, page, size, sortBy, sortDir);
+        Pair<List<SaleResponse>, PaginationMetadata> result = saleService.getFinalizedPagination(filters, page, size, sortBy, sortDir);
+        return ResponseUtil.success("Sales retrieved successfully", result.getFirst(), result.getSecond());
+    }
+
+    @PostMapping("/pending/all")
+    public ApiResponse<List<SaleResponse>> getPendingAll(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDir,
+            @RequestBody Map<String, FilterCriteria> filters
+    ) {
+        Pair<List<SaleResponse>, PaginationMetadata> result = saleService.getPendingPagination(filters, page, size, sortBy, sortDir);
         return ResponseUtil.success("Sales retrieved successfully", result.getFirst(), result.getSecond());
     }
 }
