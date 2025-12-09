@@ -2,6 +2,7 @@ package com.biobac.company.service;
 
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.PriceListWrapper;
+import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.PriceListWrapperRequest;
 import com.biobac.company.response.PriceListWrapperResponse;
@@ -29,5 +30,4 @@ public interface PriceListWrapperService {
     PriceListWrapperResponse updatePriceListWrapper(Long id, PriceListWrapperRequest request);
 
     void deletePriceListWrapper(Long id);
-
 }
