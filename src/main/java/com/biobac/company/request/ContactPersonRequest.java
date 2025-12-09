@@ -2,6 +2,7 @@ package com.biobac.company.request;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Setter
@@ -16,4 +17,6 @@ public class ContactPersonRequest {
     private List<String> emails;
     private String position;
     private Long companyId;
+    private String notes;
+    private LocalDateTime dob;
 }
