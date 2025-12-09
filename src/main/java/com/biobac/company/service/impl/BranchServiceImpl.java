@@ -20,7 +20,7 @@ public class BranchServiceImpl implements BranchService {
     public Branch createBranchForCompany(BranchRequest request, Company company) {
         Branch branch = branchMapper.toBranchEntity(request);
         branch.setCompany(company);
-        return branchRepository.save(branch);
+        return branch;
     }
 
     @Override

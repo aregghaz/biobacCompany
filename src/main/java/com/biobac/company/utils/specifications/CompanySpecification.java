@@ -4,6 +4,7 @@ import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.entity.Cooperation;
+import com.biobac.company.entity.enums.Category;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -79,7 +80,8 @@ public class CompanySpecification {
     }
 
     public static Specification<Company> isDeleted() {
-        return ((root, query, criteriaBuilder) -> criteriaBuilder.isFalse(root.get("deleted")));
+        return ((root, query, criteriaBuilder) ->
+                criteriaBuilder.isFalse(root.get("deleted")));
     }
 
     public static Specification<Company> belongsToGroups(List<Long> groupIds) {
@@ -92,12 +94,17 @@ public class CompanySpecification {
     }
 
     public static Specification<Company> filterBuyer() {
-        return (root, query, cb) -> root.get("types").get("id").in(1);
-
+        return (root, query, cb) ->{
+            Join<Company, CompanyType> typesJoin = root.join("types", JoinType.INNER);
+            return cb.equal(typesJoin.get("id"), 1);
+        };
     }
 
     public static Specification<Company> filterSeller() {
-        return (root, query, cb) -> root.get("types").get("id").in(2);
+        return (root, query, cb) -> {
+            Join<Company, CompanyType> typesJoin = root.join("types", JoinType.INNER);
+            return cb.equal(typesJoin.get("id"), 2);
+        };
     }
 
     public static Specification<Company> filterByCooperation() {
