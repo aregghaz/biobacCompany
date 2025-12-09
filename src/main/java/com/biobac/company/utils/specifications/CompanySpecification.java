@@ -107,4 +107,8 @@ public class CompanySpecification {
             return cb.equal(cooperationNameUpper, "Да".toUpperCase());
         };
     }
+
+    public static Specification<Company> filterByLines(List<Long> lineIds) {
+        return (root, query, cb) -> root.get("lines").get("id").in(lineIds);
+    }
 }
