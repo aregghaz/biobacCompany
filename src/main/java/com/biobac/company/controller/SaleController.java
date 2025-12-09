@@ -28,7 +28,7 @@ public class SaleController {
         return ResponseUtil.success("Sale retrieved successfully", response);
     }
 
-    @PostMapping("/oni-site")
+    @PostMapping("/on-site")
     public ApiResponse<SaleResponse> createOnSiteSale(@RequestBody OnSiteSaleRequest request) {
         SaleResponse response = saleService.createOnSiteSale(request);
         return ResponseUtil.success("On Site sale created successfully", response);
