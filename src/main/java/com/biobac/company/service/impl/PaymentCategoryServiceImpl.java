@@ -2,6 +2,7 @@ package com.biobac.company.service.impl;
 
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.PaymentCategory;
+import com.biobac.company.entity.enums.Category;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.PaymentCategoryMapper;
 import com.biobac.company.repository.PaymentCategoryRepository;
