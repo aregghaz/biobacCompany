@@ -11,7 +11,13 @@ import com.biobac.company.request.*;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.SaleResponse;
 import com.biobac.company.service.SaleService;
+import com.biobac.company.utils.specifications.SaleSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,10 +38,76 @@ public class SaleServiceImpl implements SaleService {
     private final SaleStatusRepository saleStatusRepository;
     private final ProductClient productClient;
 
+    private static final int DEFAULT_PAGE = 0;
+    private static final int DEFAULT_SIZE = 20;
+    private static final String DEFAULT_SORT_BY = "id";
+    private static final String DEFAULT_SORT_DIR = "desc";
+
+    private Pageable buildPageable(Integer page, Integer size, String sortBy, String sortDir) {
+        int safePage = page == null || page < 0 ? DEFAULT_PAGE : page;
+        int safeSize = size == null || size <= 0 ? DEFAULT_SIZE : size;
+        String safeSortBy = (sortBy == null || sortBy.isBlank()) ? DEFAULT_SORT_BY : sortBy;
+        String sd = (sortDir == null || sortDir.isBlank()) ? DEFAULT_SORT_DIR : sortDir;
+        Sort sort = sd.equalsIgnoreCase("asc") ? Sort.by(safeSortBy).ascending() : Sort.by(safeSortBy).descending();
+        if (safeSize > 1000) {
+            safeSize = 1000;
+        }
+        return PageRequest.of(safePage, safeSize, sort);
+    }
+
+    private Pair<List<SaleResponse>, PaginationMetadata> paginateSales(
+            Map<String, FilterCriteria> filters,
+            Integer page, Integer size,
+            String sortBy, String sortDir,
+            Specification<Sale> extraSpec
+    ) {
+        Pageable pageable = buildPageable(page, size, sortBy, sortDir);
+
+        Specification<Sale> spec = SaleSpecification.buildSpecification(filters);
+        if (extraSpec != null) {
+            spec = spec.and(extraSpec);
+        }
+
+        Page<Sale> pg = saleRepository.findAll(spec, pageable);
+
+        List<SaleResponse> content =
+                pg.getContent().stream().map(saleMapper::toResponse).toList();
+
+        PaginationMetadata metadata = new PaginationMetadata(
+                pg.getNumber(),
+                pg.getSize(),
+                pg.getTotalElements(),
+                pg.getTotalPages(),
+                pg.isLast(),
+                filters,
+                pageable.getSort().toString().contains("ASC") ? "asc" : "desc",
+                pageable.getSort().stream().findFirst().map(Sort.Order::getProperty).orElse(DEFAULT_SORT_BY),
+                "saleTable"
+        );
+
+        return Pair.of(content, metadata);
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public Pair<List<SaleResponse>, PaginationMetadata> getPagination(Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
-        return null;
+    public Pair<List<SaleResponse>, PaginationMetadata> getFinalizedPagination(
+            Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+        return paginateSales(
+                filters,
+                page, size, sortBy, sortDir,
+                SaleSpecification.filterFinalizedSales()
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Pair<List<SaleResponse>, PaginationMetadata> getPendingPagination(
+            Map<String, FilterCriteria> filters, Integer page, Integer size, String sortBy, String sortDir) {
+        return paginateSales(
+                filters,
+                page, size, sortBy, sortDir,
+                SaleSpecification.filterPendingSales()
+        );
     }
 
     @Override

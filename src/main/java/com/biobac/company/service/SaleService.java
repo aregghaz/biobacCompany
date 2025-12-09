@@ -20,7 +20,15 @@ public interface SaleService {
 
     SaleResponse finalizeSale(FinalizeSaleRequest request);
 
-    Pair<List<SaleResponse>, PaginationMetadata> getPagination(
+    Pair<List<SaleResponse>, PaginationMetadata> getFinalizedPagination(
+            Map<String, FilterCriteria> filters,
+            Integer page,
+            Integer size,
+            String sortBy,
+            String sortDir
+    );
+
+    Pair<List<SaleResponse>, PaginationMetadata> getPendingPagination(
             Map<String, FilterCriteria> filters,
             Integer page,
             Integer size,
