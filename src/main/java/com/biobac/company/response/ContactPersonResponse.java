@@ -17,6 +17,8 @@ public class ContactPersonResponse {
     private List<String> phones;
     private List<String> emails;
     private String position;
+    private String notes;
+    private LocalDateTime dob;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

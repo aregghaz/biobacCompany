@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Setter
 public class SaleItemResponse extends AuditableResponse {
     private Long id;
-    private Long productId;
+    private SimpleNameResponse product;
     private Double quantity;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;

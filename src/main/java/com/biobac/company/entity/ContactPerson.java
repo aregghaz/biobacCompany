@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -30,4 +31,7 @@ public class ContactPerson extends BaseEntity {
 
     @ManyToMany(mappedBy = "contactPerson")
     private List<Company> company;
+
+    private String notes;
+    private LocalDateTime dob;
 }

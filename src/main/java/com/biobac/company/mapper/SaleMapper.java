@@ -5,7 +5,7 @@ import com.biobac.company.response.SaleResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {OurCompanyMapper.class, CompanyMapper.class})
+@Mapper(componentModel = "spring", uses = {OurCompanyMapper.class, CompanyMapper.class, SaleItemMapper.class})
 public interface SaleMapper {
     @Mapping(source = "buyerCompany", target = "company")
     SaleResponse toResponse(Sale entity);
