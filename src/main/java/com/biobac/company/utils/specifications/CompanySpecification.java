@@ -4,7 +4,6 @@ import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.entity.Cooperation;
-import com.biobac.company.entity.enums.Category;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;

@@ -263,8 +263,10 @@ public class CompanyServiceImpl implements CompanyService {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
                 .and(CompanySpecification.belongsToGroups(groupIds))
-                .and(CompanySpecification.filterBuyer())
-                .and(CompanySpecification.filterByLines(lineIds));
+                .and(CompanySpecification.filterBuyer());
+        if (lineIds != null && !lineIds.isEmpty()) {
+            spec = spec.and(CompanySpecification.filterByLines(lineIds));
+        }
         return companyRepository.findAll(spec)
                 .stream()
                 .map(companyMapper::toCompanyResponse)
