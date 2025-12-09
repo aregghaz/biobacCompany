@@ -11,6 +11,7 @@ import org.mapstruct.MappingTarget;
 public interface PriceListWrapperMapper {
 
     @Mapping(target = "priceListItems", ignore = true)
+    @Mapping(target = "companies", ignore = true)
     PriceListWrapper toPriceListWrapper(PriceListWrapperRequest request);
 
 //    @Mapping(target = "priceListItems", ignore = true)

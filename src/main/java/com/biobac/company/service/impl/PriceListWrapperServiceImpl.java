@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -44,7 +45,6 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
     @Transactional
     public PriceListWrapperResponse createPriceListWrapper(PriceListWrapperRequest request) {
         PriceListWrapper priceListWrapper = priceListWrapperMapper.toPriceListWrapper(request);
-
         List<ProductResponse> products = new ArrayList<>();
         List<PriceListItem> priceListItems = new ArrayList<>();
 
@@ -64,6 +64,12 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
         return priceListWrapperRepository.findById(id)
                 .map(buildPriceListResponse())
                 .orElseThrow(() -> new NotFoundException("Price list not found"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<PriceListWrapper> fetchPriceListById(Long id) {
+        return priceListWrapperRepository.fetchWithItems(id);
     }
 
     @Override

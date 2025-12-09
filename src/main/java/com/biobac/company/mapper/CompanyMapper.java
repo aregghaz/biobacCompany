@@ -16,7 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {ConditionMapper.class, DetailsMapper.class, BranchMapper.class})
+@Mapper(componentModel = "spring", uses = {
+        ConditionMapper.class,
+        DetailsMapper.class,
+        BranchMapper.class,
+        PriceListWrapperMapper.class
+})
 public abstract class CompanyMapper {
 
     @Autowired
@@ -63,6 +68,7 @@ public abstract class CompanyMapper {
     @Mapping(target = "detail", ignore = true)
     @Mapping(target = "contactPerson", ignore = true)
     @Mapping(target = "branches", ignore = true)
+    @Mapping(target = "priceList", ignore = true)
     public abstract Company toCompanyEntity(CompanyRequest request);
 
     @Mapping(source = "address.localAddress", target = "localAddress")
@@ -90,6 +96,7 @@ public abstract class CompanyMapper {
     @Mapping(target = "detail", ignore = true)
     @Mapping(target = "contactPerson", ignore = true)
     @Mapping(target = "branches", ignore = true)
+    @Mapping(target = "priceList", ignore = true)
     public abstract Company toUpdateCompany(CompanyRequest request, @MappingTarget Company company);
 
     protected Source getSource(Long id) {

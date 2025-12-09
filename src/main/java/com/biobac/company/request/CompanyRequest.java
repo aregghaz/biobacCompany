@@ -71,4 +71,5 @@ public class CompanyRequest {
     private LocalDateTime clientRegisteredDate;
     private String seo;
     private List<BranchRequest> branches;
+    private Long priceListId;
 }
