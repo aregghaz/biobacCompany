@@ -14,7 +14,6 @@ public interface PriceListWrapperMapper {
     @Mapping(target = "companies", ignore = true)
     PriceListWrapper toPriceListWrapper(PriceListWrapperRequest request);
 
-//    @Mapping(target = "priceListItems", ignore = true)
     PriceListWrapperResponse toPriceListWrapperResponse(PriceListWrapper priceListWrapper);
 
     void updatePriceListWrapper(PriceListWrapperRequest request, @MappingTarget PriceListWrapper wrapper);

@@ -20,7 +20,9 @@ import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
 import com.biobac.company.service.*;
 import com.biobac.company.utils.GroupUtil;
+import com.biobac.company.utils.ProductClientUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -47,7 +50,6 @@ public class CompanyServiceImpl implements CompanyService {
     private final GroupUtil groupUtil;
     private final ContactPersonRepository contactPersonRepository;
     private final BranchService branchService;
-    private final PriceListWrapperService priceListWrapperService;
     private final ProductClient productClient;
     private final PriceListWrapperMapper priceListWrapperMapper;
 
@@ -67,12 +69,6 @@ public class CompanyServiceImpl implements CompanyService {
         Detail detail = request.getDetail() != null
                 ? detailService.createDetail(request.getDetail(), company)
                 : new Detail();
-
-        Optional<PriceListWrapper> priceList = request.getPriceListId() == null
-                ? Optional.empty()
-                : priceListWrapperService.fetchPriceListById(request.getPriceListId());
-
-        priceList.ifPresent(price -> company.setPriceList(price));
 
         List<Branch> branches = new ArrayList<>();
 
@@ -100,36 +96,14 @@ public class CompanyServiceImpl implements CompanyService {
                 request.getAttributeGroupIds(), attributes
         );
 
-        CompanyResponse response = companyMapper.toCompanyResponse(savedCompany);
-
-        PriceListWrapper pl = savedCompany.getPriceList();
-        if (pl != null) {
-            List<ProductResponse> products = pl.getPriceListItems() == null
-                    ? Collections.emptyList()
-                    : pl.getPriceListItems().stream()
-                    .filter(li -> li.getProductId() != null)
-                    .map(li -> {
-                        ProductResponse product = productClient.getProductById(li.getProductId()).getData();
-                        if (product != null && li.getPrice() != null) {
-                            product.setPrice(li.getPrice());
-                        }
-                        return product;
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
-
-            PriceListWrapperResponse plResponse = priceListWrapperMapper.toPriceListWrapperResponse(pl);
-            plResponse.setProduct(products);
-            response.setPriceList(plResponse);
-        }
-        return response;
+        return getCompanyResponse(savedCompany);
     }
 
     @Transactional(readOnly = true)
     public CompanyResponse getCompanyById(Long id) {
-        Optional<Company> company = companyRepository.findById(id);
-        return company.map(companyMapper::toCompanyResponse)
+        Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Company with id %s not found", id)));
+        return getCompanyResponse(company);
     }
 
     public Company getCompanyEntityById(Long id) {
@@ -168,11 +142,14 @@ public class CompanyServiceImpl implements CompanyService {
                         ? Collections.emptyList()
                         : request.getAttributes();
 
-        attributeClient.updateValues(updatedCompany.getId(), AttributeTargetType.COMPANY.name(), request.getAttributeGroupIds(), attributes);
+        attributeClient.updateValues(
+                updatedCompany.getId(),
+                AttributeTargetType.COMPANY.name(),
+                request.getAttributeGroupIds(), attributes
+        );
 
-        return companyMapper.toCompanyResponse(updatedCompany);
+        return getCompanyResponse(updateCompany);
     }
-
 
     @Override
     @Transactional
@@ -190,7 +167,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .and(CompanySpecification.belongsToGroups(groupIds));
         return companyRepository.findAll(spec)
                 .stream()
-                .map(companyMapper::toCompanyResponse)
+                .map(this::getCompanyResponse)
                 .toList();
     }
 
@@ -211,7 +188,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<CompanyResponse> content = companyPage.getContent()
                 .stream()
-                .map(companyMapper::toCompanyResponse)
+                .map(this::getCompanyResponse)
                 .toList();
 
         PaginationMetadata metadata = new PaginationMetadata(
@@ -248,7 +225,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .and(CompanySpecification.filterBuyer());
         return companyRepository.findAll(spec)
                 .stream()
-                .map(companyMapper::toCompanyResponse)
+                .map(this::getCompanyResponse)
                 .toList();
     }
 
@@ -261,7 +238,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .and(CompanySpecification.filterSeller());
         return companyRepository.findAll(spec)
                 .stream()
-                .map(companyMapper::toCompanyResponse)
+                .map(this::getCompanyResponse)
                 .toList();
     }
 
@@ -274,7 +251,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .and(CompanySpecification.belongsToGroups(groupIds));
         return companyRepository.findAll(spec)
                 .stream()
-                .map(companyMapper::toCompanyResponse)
+                .map(this::getCompanyResponse)
                 .toList();
     }
 
@@ -286,7 +263,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .and(CompanySpecification.belongsToGroups(groupIds));
         return companyRepository.findAll(spec)
                 .stream()
-                .map(companyMapper::toCompanyResponse)
+                .map(this::getCompanyResponse)
                 .toList();
     }
 
@@ -302,7 +279,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
         return companyRepository.findAll(spec)
                 .stream()
-                .map(companyMapper::toCompanyResponse)
+                .map(this::getCompanyResponse)
                 .toList();
     }
 
@@ -331,4 +308,20 @@ public class CompanyServiceImpl implements CompanyService {
             });
         }
     }
+
+    private CompanyResponse getCompanyResponse(Company updateCompany) {
+        CompanyResponse response = companyMapper.toCompanyResponse(updateCompany);
+        PriceListWrapper priceList = updateCompany.getPriceList();
+        if (priceList != null) {
+            List<ProductResponse> products = priceList.getPriceListItems() != null
+                    ? ProductClientUtil.enrichProductsWithPrices(priceList.getPriceListItems(), productClient)
+                    : Collections.emptyList();
+
+            PriceListWrapperResponse priceListResponse = priceListWrapperMapper.toPriceListWrapperResponse(priceList);
+            priceListResponse.setProduct(products);
+            response.setPriceList(priceListResponse);
+        }
+        return response;
+    }
+
 }

@@ -7,6 +7,7 @@ import com.biobac.company.entity.PriceListWrapper;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.PriceListWrapperMapper;
 import com.biobac.company.repository.PriceListWrapperRepository;
+import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.request.PriceListWrapperRequest;
 import com.biobac.company.request.ProductRequest;
@@ -14,7 +15,9 @@ import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
 import com.biobac.company.service.PriceListWrapperService;
+import com.biobac.company.utils.ProductClientUtil;
 import com.biobac.company.utils.specifications.PriceListWrapperSpecification;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -166,17 +166,10 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
     private @NonNull Function<PriceListWrapper, PriceListWrapperResponse> buildPriceListResponse() {
         return item -> {
             PriceListWrapperResponse response = priceListWrapperMapper.toPriceListWrapperResponse(item);
-            if (item.getPriceListItems() != null) {
-                List<ProductResponse> products = item.getPriceListItems().stream()
-                        .filter(listItem -> listItem.getProductId() != null)
-                        .map(listItem -> {
-                            ProductResponse product = productClient.getProductById(listItem.getProductId()).getData();
-                            if (product != null && listItem.getPrice() != null) {
-                                product.setPrice(listItem.getPrice());
-                            }
-                            return product;
-                        })
-                        .toList();
+            if (response != null) {
+                List<ProductResponse> products = item.getPriceListItems() != null
+                        ? ProductClientUtil.enrichProductsWithPrices(item.getPriceListItems(), productClient)
+                        : Collections.emptyList();
                 response.setProduct(products);
             }
             return response;
