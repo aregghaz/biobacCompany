@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,4 +31,11 @@ public class Sale extends BaseEntity {
 
     @ManyToOne
     private SaleStatus status;
+
+    @ManyToOne
+    private ContactPerson contactPerson;
+
+    private LocalDateTime orderDate;
+
+    private LocalDateTime saleDate;
 }
