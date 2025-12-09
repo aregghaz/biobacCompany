@@ -25,9 +25,9 @@ public interface CompanyService {
 
     String getCompanyName(Long id);
 
-    List<CompanyResponse> listAllBuyersCompanies();
+    List<CompanyResponse> listBuyerCompaniesWithCooperation();
 
-    List<CompanyResponse> listAllSellersCompanies();
+    List<CompanyResponse> listSellerCompaniesWithCooperation();
 
     List<CompanyResponse> listAllCompaniesByBuyer();
 

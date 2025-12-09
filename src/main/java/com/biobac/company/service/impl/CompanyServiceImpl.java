@@ -18,11 +18,13 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
-import com.biobac.company.service.*;
+import com.biobac.company.service.BranchService;
+import com.biobac.company.service.CompanyService;
+import com.biobac.company.service.ConditionService;
+import com.biobac.company.service.DetailService;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.ProductClientUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -218,10 +219,11 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CompanyResponse> listAllBuyersCompanies() {
+    public List<CompanyResponse> listBuyerCompaniesWithCooperation() {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
                 .and(CompanySpecification.belongsToGroups(groupIds))
+                .and(CompanySpecification.filterByCooperation())
                 .and(CompanySpecification.filterBuyer());
         return companyRepository.findAll(spec)
                 .stream()
@@ -231,10 +233,11 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CompanyResponse> listAllSellersCompanies() {
+    public List<CompanyResponse> listSellerCompaniesWithCooperation() {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
                 .and(CompanySpecification.belongsToGroups(groupIds))
+                .and(CompanySpecification.filterByCooperation())
                 .and(CompanySpecification.filterSeller());
         return companyRepository.findAll(spec)
                 .stream()
@@ -256,6 +259,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompanyResponse> listAllCompaniesBySeller() {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
@@ -273,6 +277,7 @@ public class CompanyServiceImpl implements CompanyService {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
                 .and(CompanySpecification.belongsToGroups(groupIds))
+                .and(CompanySpecification.filterByCooperation())
                 .and(CompanySpecification.filterBuyer());
         if (lineIds != null && !lineIds.isEmpty()) {
             spec = spec.and(CompanySpecification.filterByLines(lineIds));
