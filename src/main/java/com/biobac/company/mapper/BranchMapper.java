@@ -10,6 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface BranchMapper {
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "company", ignore = true)
     @Mapping(target = "address.localAddress", source = "localAddress")
     Branch toBranchEntity(BranchRequest request);

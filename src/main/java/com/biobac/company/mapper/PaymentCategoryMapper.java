@@ -27,14 +27,12 @@ public abstract class PaymentCategoryMapper {
         if (entity == null) return null;
 
         PaymentCategoryResponse existing = context.get(entity);
-//        PaymentCategoryResponse existing = context.getMappedInstance(entity, PaymentCategoryResponse.class);
         if (existing != null) return existing;
 
         PaymentCategoryResponse response = PaymentCategoryResponse.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .parentId(entity.getParent() != null ? entity.getParent().getId() : null)
-//                .parent(toCategoryResponse(entity.getParent(), context))
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .category(entity.getCategory())
@@ -62,7 +60,7 @@ public abstract class PaymentCategoryMapper {
 
                         PaymentCategoryResponse child = PaymentCategoryResponse.builder()
                                 .id(e.getId())
-                                .parentId(e.getId())
+                                .parentId(response.getParentId())
                                 .parent(toShallowParentFromResponse(response))
                                 .name(name.trim())
                                 .children(Collections.emptyList())
@@ -74,7 +72,7 @@ public abstract class PaymentCategoryMapper {
                     List<CompanyResponse> sellers = safeGetSellers();
                     for (CompanyResponse seller : sellers) {
                         PaymentCategoryResponse child = PaymentCategoryResponse.builder()
-                                .id(null)
+                                .id(seller.getId())
                                 .parentId(response.getId())
                                 .parent(toShallowParentFromResponse(response))
                                 .name(seller.getName())
@@ -86,9 +84,8 @@ public abstract class PaymentCategoryMapper {
                 case BUYER -> {
                     List<CompanyResponse> buyers = safeGetBuyer();
                     for (CompanyResponse buyer : buyers) {
-
                         PaymentCategoryResponse child = PaymentCategoryResponse.builder()
-                                .id(null)
+                                .id(buyer.getId())
                                 .parentId(response.getId())
                                 .parent(toShallowParentFromResponse(response))
                                 .name(buyer.getName())
@@ -118,7 +115,6 @@ public abstract class PaymentCategoryMapper {
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .children(new ArrayList<>())
-                .parent(null)
                 .build();
 
         if (entity.getChildren() != null) {
@@ -164,9 +160,10 @@ public abstract class PaymentCategoryMapper {
 
     private List<CompanyResponse> safeGetSellers() {
         try {
-            return enricher != null ? enricher.getSafeSeller() : Collections.emptyList();
+            return enricher != null ? enricher.getSellersSafe() : Collections.emptyList();
         } catch (Exception e) {
-            return Collections.emptyList();
+            e.printStackTrace();
+            throw  e;
         }
     }
 
