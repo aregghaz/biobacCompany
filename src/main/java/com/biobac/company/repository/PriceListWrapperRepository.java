@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -20,4 +22,7 @@ public interface PriceListWrapperRepository extends JpaRepository<PriceListWrapp
     @NonNull
     @EntityGraph(attributePaths = "priceListItems")
     Optional<PriceListWrapper> findById(@NonNull Long id);
+
+    @Query("SELECT p FROM PriceListWrapper p LEFT JOIN FETCH p.priceListItems WHERE p.id = :id")
+    Optional<PriceListWrapper> fetchWithItems(@Param("id") Long id);
 }

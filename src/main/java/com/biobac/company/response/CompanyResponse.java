@@ -50,4 +50,5 @@ public class CompanyResponse {
     private LocalDateTime updatedAt;
     private String seo;
     private List<BranchResponse> branches;
+    private PriceListWrapperResponse priceList;
 }

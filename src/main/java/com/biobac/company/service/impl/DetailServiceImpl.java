@@ -20,7 +20,7 @@ public class DetailServiceImpl implements DetailService {
     public Detail createDetail(DetailsRequest request, Company company) {
         Detail detail = detailsMapper.toDetailEntity(request);
         detail.setCompany(company);
-        return detailsRepository.save(detail);
+        return detail;
     }
 
     @Override

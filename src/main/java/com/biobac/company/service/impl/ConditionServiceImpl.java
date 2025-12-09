@@ -23,7 +23,7 @@ public class ConditionServiceImpl implements ConditionService {
     public Condition createCondition(ConditionsRequest request, Company company) {
         Condition condition = conditionMapper.toConditionEntity(request);
         condition.setCompany(company);
-        return conditionsRepository.save(condition);
+        return condition;
     }
 
     @Override

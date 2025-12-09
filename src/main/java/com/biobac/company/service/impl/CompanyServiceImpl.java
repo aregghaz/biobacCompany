@@ -1,12 +1,14 @@
 package com.biobac.company.service.impl;
 
 import com.biobac.company.client.AttributeClient;
+import com.biobac.company.client.ProductClient;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.*;
 import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.exception.DuplicateException;
 import com.biobac.company.exception.NotFoundException;
 import com.biobac.company.mapper.CompanyMapper;
+import com.biobac.company.mapper.PriceListWrapperMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.request.AttributeUpsertRequest;
@@ -14,10 +16,9 @@ import com.biobac.company.request.BranchRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
-import com.biobac.company.service.BranchService;
-import com.biobac.company.service.CompanyService;
-import com.biobac.company.service.ConditionService;
-import com.biobac.company.service.DetailService;
+import com.biobac.company.response.PriceListWrapperResponse;
+import com.biobac.company.response.ProductResponse;
+import com.biobac.company.service.*;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,9 @@ public class CompanyServiceImpl implements CompanyService {
     private final GroupUtil groupUtil;
     private final ContactPersonRepository contactPersonRepository;
     private final BranchService branchService;
+    private final PriceListWrapperService priceListWrapperService;
+    private final ProductClient productClient;
+    private final PriceListWrapperMapper priceListWrapperMapper;
 
     @Override
     @Transactional
@@ -63,6 +67,13 @@ public class CompanyServiceImpl implements CompanyService {
         Detail detail = request.getDetail() != null
                 ? detailService.createDetail(request.getDetail(), company)
                 : new Detail();
+
+        Optional<PriceListWrapper> priceList = request.getPriceListId() == null
+                ? Optional.empty()
+                : priceListWrapperService.fetchPriceListById(request.getPriceListId());
+
+        priceList.ifPresent(price -> company.setPriceList(price));
+
         List<Branch> branches = new ArrayList<>();
 
         if (request.getBranches() != null && !request.getBranches().isEmpty()) {
@@ -89,7 +100,29 @@ public class CompanyServiceImpl implements CompanyService {
                 request.getAttributeGroupIds(), attributes
         );
 
-        return companyMapper.toCompanyResponse(savedCompany);
+        CompanyResponse response = companyMapper.toCompanyResponse(savedCompany);
+
+        PriceListWrapper pl = savedCompany.getPriceList();
+        if (pl != null) {
+            List<ProductResponse> products = pl.getPriceListItems() == null
+                    ? Collections.emptyList()
+                    : pl.getPriceListItems().stream()
+                    .filter(li -> li.getProductId() != null)
+                    .map(li -> {
+                        ProductResponse product = productClient.getProductById(li.getProductId()).getData();
+                        if (product != null && li.getPrice() != null) {
+                            product.setPrice(li.getPrice());
+                        }
+                        return product;
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            PriceListWrapperResponse plResponse = priceListWrapperMapper.toPriceListWrapperResponse(pl);
+            plResponse.setProduct(products);
+            response.setPriceList(plResponse);
+        }
+        return response;
     }
 
     @Transactional(readOnly = true)
