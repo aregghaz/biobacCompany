@@ -237,7 +237,7 @@ public class CompanyServiceImpl implements CompanyService {
     public List<CompanyResponse> listAllCompaniesByBuyer() {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
-                .and(CompanySpecification.filterByCooperation())
+                .and(CompanySpecification.filterBuyer())
                 .and(CompanySpecification.belongsToGroups(groupIds));
         return companyRepository.findAll(spec)
                 .stream()
@@ -249,7 +249,7 @@ public class CompanyServiceImpl implements CompanyService {
     public List<CompanyResponse> listAllCompaniesBySeller() {
         List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
         Specification<Company> spec = CompanySpecification.isDeleted()
-                .and(CompanySpecification.filterByCooperation())
+                .and(CompanySpecification.filterSeller())
                 .and(CompanySpecification.belongsToGroups(groupIds));
         return companyRepository.findAll(spec)
                 .stream()

@@ -54,7 +54,7 @@ public class Company extends BaseEntity {
     private Set<String> websites;
 
     @ElementCollection
-    @CollectionTable(name = "company_phone", joinColumns = @JoinColumn(name = "company_id"))
+    @CollectionTable(name = "company_address_tt", joinColumns = @JoinColumn(name = "company_id"))
     private Set<String> addressTT;
 
     @ManyToOne
