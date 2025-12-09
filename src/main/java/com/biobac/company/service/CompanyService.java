@@ -32,4 +32,6 @@ public interface CompanyService {
     List<CompanyResponse> listAllCompaniesByBuyer();
 
     List<CompanyResponse> listAllCompaniesBySeller();
+
+    List<CompanyResponse> getBuyerCompaniesByLines(List<Long> lineIds);
 }

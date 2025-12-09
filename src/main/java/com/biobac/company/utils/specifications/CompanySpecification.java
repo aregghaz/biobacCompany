@@ -4,7 +4,6 @@ import com.biobac.company.entity.Company;
 import com.biobac.company.entity.CompanyGroup;
 import com.biobac.company.entity.CompanyType;
 import com.biobac.company.entity.Cooperation;
-import com.biobac.company.entity.enums.Category;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -113,5 +112,9 @@ public class CompanySpecification {
             Expression<String> cooperationNameUpper = cb.upper(cooperationJoin.get("name"));
             return cb.equal(cooperationNameUpper, "Да".toUpperCase());
         };
+    }
+
+    public static Specification<Company> filterByLines(List<Long> lineIds) {
+        return (root, query, cb) -> root.get("lines").get("id").in(lineIds);
     }
 }

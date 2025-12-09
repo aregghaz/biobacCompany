@@ -257,6 +257,22 @@ public class CompanyServiceImpl implements CompanyService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompanyResponse> getBuyerCompaniesByLines(List<Long> lineIds) {
+        List<Long> groupIds = groupUtil.getAccessibleCompanyGroupIds();
+        Specification<Company> spec = CompanySpecification.isDeleted()
+                .and(CompanySpecification.belongsToGroups(groupIds))
+                .and(CompanySpecification.filterBuyer());
+        if (lineIds != null && !lineIds.isEmpty()) {
+            spec = spec.and(CompanySpecification.filterByLines(lineIds));
+        }
+        return companyRepository.findAll(spec)
+                .stream()
+                .map(companyMapper::toCompanyResponse)
+                .toList();
+    }
+
     private void syncBranches(CompanyRequest request, Company company, List<Branch> branches) {
         if (request.getBranches() != null && !request.getBranches().isEmpty()) {
             Set<Long> requestBranchIds = request.getBranches().stream()

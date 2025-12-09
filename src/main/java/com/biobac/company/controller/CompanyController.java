@@ -96,4 +96,10 @@ public class CompanyController {
         String name = companyService.getCompanyName(id);
         return ResponseUtil.success("Company name retrieved successfully", name);
     }
+
+    @GetMapping("/by-lines")
+    public ApiResponse<List<CompanyResponse>> getBuyerCompaniesByLines(@RequestParam(value = "lineIds", required = false) List<Long> lineIds) {
+        List<CompanyResponse> responses = companyService.getBuyerCompaniesByLines(lineIds);
+        return ResponseUtil.success("Companies retrieved successfully", responses);
+    }
 }
