@@ -1,5 +1,6 @@
 package com.biobac.company.entity;
 
+import com.biobac.company.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,4 +33,7 @@ public class ContactPerson extends BaseEntity {
 
     private String notes;
     private LocalDateTime dob;
+
+    @Enumerated(EnumType.STRING)
+    private Category categoryType;
 }
