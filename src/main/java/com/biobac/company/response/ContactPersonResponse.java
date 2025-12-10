@@ -1,5 +1,6 @@
 package com.biobac.company.response;
 
+import com.biobac.company.entity.enums.Category;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,4 +23,5 @@ public class ContactPersonResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long companyId;
+    private Category categoryType;
 }
