@@ -153,6 +153,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public Optional<Company> fetchCompanyById(Long companyId) {
+        return Optional.of(companyRepository.findById(companyId)
+                .orElseThrow(() -> new NotFoundException("Company not found")));
+    }
+
+    @Override
     @Transactional
     public void deleteCompany(Long companyId) {
         Company company = companyRepository.findById(companyId)

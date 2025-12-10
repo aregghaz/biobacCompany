@@ -1,6 +1,9 @@
 package com.biobac.company.utils.specifications;
 
-import com.biobac.company.entity.*;
+import com.biobac.company.entity.Company;
+import com.biobac.company.entity.OurCompany;
+import com.biobac.company.entity.Sale;
+import com.biobac.company.entity.SaleStatus;
 import com.biobac.company.request.FilterCriteria;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;

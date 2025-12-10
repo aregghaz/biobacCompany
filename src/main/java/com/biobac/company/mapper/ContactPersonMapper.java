@@ -13,6 +13,7 @@ public abstract class ContactPersonMapper {
     @Mapping(target = "company", ignore = true)
     public abstract ContactPerson toContactPersonEntity(ContactPersonRequest request);
 
+    @Mapping(target = "companyId",  ignore = true)
     public abstract ContactPersonResponse toContactPersonResponse(ContactPerson contactPerson);
 
     public abstract ContactPerson toUpdatedContactPersonResponse(

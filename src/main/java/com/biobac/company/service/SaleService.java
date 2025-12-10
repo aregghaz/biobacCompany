@@ -2,9 +2,9 @@ package com.biobac.company.service;
 
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.FilterCriteria;
+import com.biobac.company.request.FinalizeSaleRequest;
 import com.biobac.company.request.OnSiteSaleRequest;
 import com.biobac.company.request.PreSaleRequest;
-import com.biobac.company.request.FinalizeSaleRequest;
 import com.biobac.company.response.SaleResponse;
 import org.springframework.data.util.Pair;
 
