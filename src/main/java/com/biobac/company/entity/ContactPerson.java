@@ -1,8 +1,6 @@
 package com.biobac.company.entity;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +27,7 @@ public class ContactPerson extends BaseEntity {
     private List<String> emails;
     private String position;
 
-    @ManyToMany(mappedBy = "contactPerson")
+    @ManyToMany(mappedBy = "contactPerson", fetch = FetchType.LAZY)
     private List<Company> company;
 
     private String notes;

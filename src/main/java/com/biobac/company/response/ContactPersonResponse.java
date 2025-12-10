@@ -21,4 +21,5 @@ public class ContactPersonResponse {
     private LocalDateTime dob;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long companyId;
 }

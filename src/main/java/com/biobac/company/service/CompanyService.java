@@ -1,6 +1,7 @@
 package com.biobac.company.service;
 
 import com.biobac.company.dto.PaginationMetadata;
+import com.biobac.company.entity.Company;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
@@ -8,6 +9,7 @@ import org.springframework.data.util.Pair;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface CompanyService {
 
@@ -16,6 +18,8 @@ public interface CompanyService {
     CompanyResponse getCompanyById(Long companyId);
 
     CompanyResponse updateCompany(Long id, CompanyRequest dto);
+
+    Optional<Company> fetchCompanyById(Long companyId);
 
     void deleteCompany(Long companyId);
 

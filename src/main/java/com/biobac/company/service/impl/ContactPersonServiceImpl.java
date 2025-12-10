@@ -1,12 +1,15 @@
 package com.biobac.company.service.impl;
 
 import com.biobac.company.dto.PaginationMetadata;
+import com.biobac.company.entity.Company;
 import com.biobac.company.entity.ContactPerson;
 import com.biobac.company.mapper.ContactPersonMapper;
+import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.request.ContactPersonRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ContactPersonResponse;
+import com.biobac.company.service.CompanyService;
 import com.biobac.company.service.ContactPersonService;
 import com.biobac.company.utils.specifications.SimpleEntitySpecification;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,27 +34,45 @@ public class ContactPersonServiceImpl implements ContactPersonService {
 
     private final ContactPersonRepository contactPersonRepository;
     private final ContactPersonMapper contactPersonMapper;
+    private final CompanyRepository companyRepository;
 
     @Override
     public ContactPersonResponse createContactPerson(ContactPersonRequest request) {
         ContactPerson contactPerson = contactPersonMapper.toContactPersonEntity(request);
+
+        if (contactPerson.getCompany() == null) {
+            contactPerson.setCompany(new ArrayList<>());
+        }
+
+        if (request.getCompanyId() != null) {
+            companyRepository.findById(request.getCompanyId()).ifPresent(company -> {
+                contactPerson.getCompany().add(company);
+
+                if (company.getContactPerson() == null) {
+                    company.setContactPerson(new ArrayList<>());
+                }
+                company.getContactPerson().add(contactPerson);
+            });
+        }
+
         ContactPerson save = contactPersonRepository.save(contactPerson);
-        return contactPersonMapper.toContactPersonResponse(save);
+        return syncContactPersonResponse(save);
     }
 
     @Override
     public ContactPersonResponse getContactPersonById(Long id) {
         return contactPersonRepository.findById(id)
-                .map(contactPersonMapper::toContactPersonResponse)
+                .map(contactPerson -> syncContactPersonResponse(contactPerson))
                 .orElseThrow(() -> new RuntimeException("Contact not found"));
     }
 
     @Override
     public List<ContactPersonResponse> getAllContactPerson() {
         return contactPersonRepository.findAll().stream()
-                .map(contactPersonMapper::toContactPersonResponse)
+                .map(contactPerson -> syncContactPersonResponse(contactPerson))
                 .toList();
     }
+
 
     @Override
     public ContactPersonResponse updateContactPerson(Long id, ContactPersonRequest request) {
@@ -90,6 +110,14 @@ public class ContactPersonServiceImpl implements ContactPersonService {
     @Override
     public void deleteContactPerson(Long id) {
         contactPersonRepository.deleteById(id);
+    }
+
+    private ContactPersonResponse syncContactPersonResponse(ContactPerson contactPerson) {
+        ContactPersonResponse response = contactPersonMapper.toContactPersonResponse(contactPerson);
+        if (contactPerson.getCompany() != null && !contactPerson.getCompany().isEmpty()) {
+            response.setCompanyId(contactPerson.getCompany().get(0).getId());
+        }
+        return response;
     }
 
     private Pageable buildPageable(Integer page, Integer size, String sortBy, String sortDir) {
