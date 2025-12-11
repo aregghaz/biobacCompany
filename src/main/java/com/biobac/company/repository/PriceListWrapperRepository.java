@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PriceListWrapperRepository extends JpaRepository<PriceListWrapper, Long>, JpaSpecificationExecutor<PriceListWrapper> {
@@ -25,4 +26,9 @@ public interface PriceListWrapperRepository extends JpaRepository<PriceListWrapp
 
     @Query("SELECT p FROM PriceListWrapper p LEFT JOIN FETCH p.priceListItems WHERE p.id = :id")
     Optional<PriceListWrapper> fetchWithItems(@Param("id") Long id);
+
+    @Override
+    @Query("SELECT p FROM PriceListWrapper p LEFT JOIN FETCH p.priceListItems")
+    List<PriceListWrapper> findAll();
+
 }

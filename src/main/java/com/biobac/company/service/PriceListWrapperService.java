@@ -26,6 +26,9 @@ public interface PriceListWrapperService {
             String sortDir
     );
 
+
+    List<PriceListWrapperResponse> getAllPriceList();
+
     PriceListWrapperResponse updatePriceListWrapper(Long id, PriceListWrapperRequest request);
 
     void deletePriceListWrapper(Long id);

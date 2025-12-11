@@ -77,6 +77,7 @@ public abstract class CompanyMapper {
     @Mapping(source = "location.longitude", target = "longitude")
     @Mapping(source = "location.latitude", target = "latitude")
     @Mapping(target = "attributes", expression = "java(fetchAttributes(company.getId()))")
+    @Mapping(target = "priceList", ignore = true)
     public abstract CompanyResponse toCompanyResponse(Company company);
 
     @Mapping(source = "request.localAddress", target = "address.localAddress")

@@ -9,7 +9,9 @@ import com.biobac.company.mapper.SaleMapper;
 import com.biobac.company.repository.*;
 import com.biobac.company.request.*;
 import com.biobac.company.response.ApiResponse;
+import com.biobac.company.response.ProductResponse;
 import com.biobac.company.response.SaleResponse;
+import com.biobac.company.service.CompanyHistoryService;
 import com.biobac.company.service.SaleService;
 import com.biobac.company.utils.specifications.SaleSpecification;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,7 @@ public class SaleServiceImpl implements SaleService {
     private final SaleStatusRepository saleStatusRepository;
     private final ProductClient productClient;
     private final ContactPersonRepository contactPersonRepository;
+    private final CompanyHistoryService companyHistoryService;
 
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_SIZE = 20;
@@ -137,6 +140,24 @@ public class SaleServiceImpl implements SaleService {
         List<ProductConsumeSaleRequest> consumeRequests =
                 saveSaleItems(request.getItems(), sale);
 
+        ApiResponse<ProductResponse> response = productClient.getProductById(consumeRequests.get(0).getProductId());
+
+        final String productName = response.getData().getName();
+        final String note = String.format(
+                "On-site sale created for product: %s (Price: %s)",
+                productName,
+                request.getReceivedAmount()
+        );
+
+        CompanyHistoryRequest historyRequest = CompanyHistoryRequest.builder()
+                .companyId(request.getBuyerCompanyId())
+                .after(sale.getTotalAmount().doubleValue())
+                .before(0.0)
+                .note(note)
+                .build();
+
+        companyHistoryService.recordCompanyHistory(historyRequest);
+
         consumeProducts(consumeRequests);
 
         return saleMapper.toResponse(sale);
@@ -183,13 +204,15 @@ public class SaleServiceImpl implements SaleService {
         return saleMapper.toResponse(sale);
     }
 
-    private Sale initializeSale(Long ourCompanyId,
-                                Long buyerCompanyId,
-                                Long contactPersonId,
-                                LocalDateTime orderDate,
-                                LocalDateTime saleDate,
-                                BigDecimal totalAmount,
-                                BigDecimal receivedAmount) {
+    private Sale initializeSale(
+            Long ourCompanyId,
+            Long buyerCompanyId,
+            Long contactPersonId,
+            LocalDateTime orderDate,
+            LocalDateTime saleDate,
+            BigDecimal totalAmount,
+            BigDecimal receivedAmount
+    ) {
 
         OurCompany ourCompany = fetchOurCompany(ourCompanyId);
         Company buyer = fetchBuyerCompany(buyerCompanyId);

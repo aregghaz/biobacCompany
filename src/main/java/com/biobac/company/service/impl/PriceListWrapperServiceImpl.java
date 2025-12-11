@@ -102,6 +102,14 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
     }
 
     @Override
+    public List<PriceListWrapperResponse> getAllPriceList() {
+        return priceListWrapperRepository.findAll()
+                .stream()
+                .map(priceList -> priceListWrapperMapper.toPriceListWrapperResponse(priceList))
+                .toList();
+    }
+
+    @Override
     public PriceListWrapperResponse updatePriceListWrapper(Long id, PriceListWrapperRequest request) {
         PriceListWrapper priceListWrapper = priceListWrapperRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Price list not found"));

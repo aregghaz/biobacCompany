@@ -23,8 +23,9 @@ jwt:
   secret: b10bac_super_secret_key_which_is_long_enough_please_change
   expiration-ms: 86400000
 services:
-  attribute-url: http://kinomino.ru:8050/api
-  user-url: http://kinomino.ru:8070/api
+  attribute-url: http://kinomino.ru:8092/api
+  user-url: http://kinomino.ru:8093/api
   fns-url: https://api-fns.ru/api
-  warehouse-url: http://kinomino.ru:8080/api
+  warehouse-url: http://kinomino.ru:8090/api
+#  warehouse-url: http://localhost:8080/api
 #  user-url: http://localhost:8070/api
