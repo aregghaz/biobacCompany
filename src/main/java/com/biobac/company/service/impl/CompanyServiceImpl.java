@@ -115,6 +115,13 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public CompanyResponse getCompanyByHistoryId(Long historyId) {
+        return companyRepository.findByHistoryId(historyId)
+                .map(this::getCompanyResponse)
+                .orElseThrow(() -> new NotFoundException("Company not found with history id: " + historyId));
+    }
+
+    @Override
     public Company fetchCompanyById(Long companyId) {
         return companyRepository.findById(companyId)
                 .orElseThrow(() -> new NotFoundException("Company not found with id: " + companyId));

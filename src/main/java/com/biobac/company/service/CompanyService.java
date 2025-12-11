@@ -16,6 +16,8 @@ public interface CompanyService {
 
     CompanyResponse getCompanyById(Long companyId);
 
+    CompanyResponse getCompanyByHistoryId(Long historyId);
+
     Company fetchCompanyById(Long companyId);
 
     CompanyResponse updateCompany(Long id, CompanyRequest dto);
