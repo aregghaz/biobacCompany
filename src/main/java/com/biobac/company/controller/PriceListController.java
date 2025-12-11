@@ -49,6 +49,12 @@ public class PriceListController {
         return ResponseUtil.success("Companies retrieved successfully", result.getFirst(), result.getSecond());
     }
 
+    @GetMapping
+    public ApiResponse<List<PriceListWrapperResponse>> listCompaniesWithPagination() {
+        List<PriceListWrapperResponse> response = priceListWrapperService.getAllPriceList();
+        return ResponseUtil.success("Companies retrieved successfully", response);
+    }
+
     @PutMapping("/{id}")
     public ApiResponse<PriceListWrapperResponse> updatePriceList(@PathVariable Long id, @RequestBody PriceListWrapperRequest request) {
         PriceListWrapperResponse response = priceListWrapperService.updatePriceListWrapper(id, request);
