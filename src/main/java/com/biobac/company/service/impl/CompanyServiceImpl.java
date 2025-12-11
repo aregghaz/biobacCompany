@@ -18,11 +18,13 @@ import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
-import com.biobac.company.service.*;
+import com.biobac.company.service.BranchService;
+import com.biobac.company.service.CompanyService;
+import com.biobac.company.service.ConditionService;
+import com.biobac.company.service.DetailService;
 import com.biobac.company.utils.GroupUtil;
 import com.biobac.company.utils.ProductClientUtil;
 import com.biobac.company.utils.specifications.CompanySpecification;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j

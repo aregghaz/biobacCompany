@@ -5,7 +5,6 @@ import com.biobac.company.request.PaymentCategoryRequest;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.response.EmployeeResponse;
 import com.biobac.company.response.PaymentCategoryResponse;
-import com.biobac.company.response.PaymentResponse;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

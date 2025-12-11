@@ -1,6 +1,5 @@
 package com.biobac.company.request;
 
-import com.biobac.company.entity.ContactPerson;
 import lombok.Getter;
 import lombok.Setter;
 
