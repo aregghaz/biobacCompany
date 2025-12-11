@@ -51,4 +51,5 @@ public class CompanyResponse {
     private String seo;
     private List<BranchResponse> branches;
     private PriceListWrapperResponse priceList;
+    private List<CompanyHistoryResponse> companyHistories;
 }

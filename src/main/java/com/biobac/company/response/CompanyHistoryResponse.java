@@ -6,15 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PriceListWrapperResponse extends AuditableResponse {
-    private Long id;
-    private String name;
-    private List<ProductResponse> product;
+public class CompanyHistoryResponse extends AuditableResponse {
+    private Double before;
+    private Double after;
+    private String note;
+    private LocalDateTime timestamp;
 }
