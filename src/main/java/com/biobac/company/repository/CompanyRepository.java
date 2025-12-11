@@ -13,7 +13,8 @@ public interface CompanyRepository extends JpaRepository<Company, Long>, JpaSpec
     @Query("select c.name from Company c where c.id = :id")
     String findCompanyNameById(@Param("id") Long id);
 
-    boolean existsByName(String name);
+    @Query("SELECT c from Company c join CompanyHistory ch on c.id = ch.company.id where ch.id = :historyId")
+    Optional<Company> findByHistoryId(Long historyId);
 
     boolean existsByNameAndIdNot(String name, Long id);
 }

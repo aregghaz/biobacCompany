@@ -43,6 +43,12 @@ public class CompanyController {
         return ResponseUtil.success("success", response);
     }
 
+    @GetMapping("/history/{historyId}")
+    public ApiResponse<CompanyResponse> getCompanyByHistoryId(@PathVariable Long historyId) {
+        CompanyResponse response = companyService.getCompanyByHistoryId(historyId);
+        return ResponseUtil.success("success", response);
+    }
+
     @PostMapping("/all")
     public ApiResponse<List<CompanyResponse>> listCompaniesWithPagination(
             @RequestParam(required = false, defaultValue = "0") @Min(0) int page,
