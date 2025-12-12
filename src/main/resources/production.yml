@@ -2,21 +2,17 @@ spring:
   application:
     name: companyProd
   datasource:
-    url: jdbc:mysql://localhost:3306/production
-    username: root
-    password: root
+    url: jdbc:mysql://localhost:3306/production?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: biobac_user
+    password: rvz!RJKw54qv3S5%
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: create
-    show-sql: true
-    database-platform: org.hibernate.dialect.MySQLDialect
-    properties:
-      hibernate:
-        generate_statistics: true
 
 server:
-  port: 8060
+  port: 8081
 fns:
   api:
     key: be55d17a512f79f65d5e5afcef5c443e1f40a113

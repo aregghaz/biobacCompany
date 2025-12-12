@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: company
   datasource:
     url: jdbc:mysql://localhost:3306/company
     username: root
