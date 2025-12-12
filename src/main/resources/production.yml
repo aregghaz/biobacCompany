@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: companyProd
+  datasource:
+    url: jdbc:mysql://localhost:3306/production
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        generate_statistics: true
+
+server:
+  port: 8060
+fns:
+  api:
+    key: be55d17a512f79f65d5e5afcef5c443e1f40a113
+jwt:
+  secret: b10bac_super_secret_key_which_is_long_enough_please_change
+  expiration-ms: 86400000
+services:
+  attribute-url: http://kinomino.ru/api/attribute
+  user-url: http://kinomino.ru/api/users
+  fns-url: https://api-fns.ru/api
+  warehouse-url: http://kinomino.ru/api/warehouse
