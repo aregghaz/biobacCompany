@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/account/transfer")
+@RequestMapping("/api/company/account/transfer")
 @RequiredArgsConstructor
 public class TransferController {
     private final TransferService transferService;

@@ -38,4 +38,5 @@ public class Sale extends BaseEntity {
     private LocalDateTime orderDate;
 
     private LocalDateTime saleDate;
+
 }

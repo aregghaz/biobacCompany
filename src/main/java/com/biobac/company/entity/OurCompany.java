@@ -1,7 +1,6 @@
 package com.biobac.company.entity;
 
 import com.biobac.company.entity.embeddable.Address;
-import com.biobac.company.entity.embeddable.BankInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,9 +36,10 @@ public class OurCompany extends BaseEntity {
     @OneToOne(mappedBy = "ourCompany", cascade = CascadeType.ALL, orphanRemoval = true)
     private Detail detail;
 
-    @ElementCollection
-    private List<BankInfo> bankInformationList;
-
     @OneToMany(mappedBy = "ourCompany", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 }

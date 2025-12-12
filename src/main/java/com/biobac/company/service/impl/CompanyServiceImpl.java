@@ -11,11 +11,14 @@ import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.mapper.PriceListWrapperMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.ContactPersonRepository;
+import com.biobac.company.repository.OurCompanyRepository;
+import com.biobac.company.repository.PriceListWrapperRepository;
 import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.BranchRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
+import com.biobac.company.response.OurCompanyResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
 import com.biobac.company.service.BranchService;
@@ -53,6 +56,8 @@ public class CompanyServiceImpl implements CompanyService {
     private final BranchService branchService;
     private final ProductClient productClient;
     private final PriceListWrapperMapper priceListWrapperMapper;
+    private final PriceListWrapperRepository priceListWrapperRepository;
+    private final OurCompanyRepository ourCompanyRepository;
 
     @Override
     @Transactional
@@ -62,6 +67,10 @@ public class CompanyServiceImpl implements CompanyService {
                 ? Collections.emptyList()
                 : contactPersonRepository.findAllById(request.getContactPersonIds());
 
+        List<OurCompany> ourCompanies = request.getOurCompanyIds() != null
+                ? ourCompanyRepository.findAllById(request.getOurCompanyIds())
+                : Collections.emptyList();
+
         Company company = companyMapper.toCompanyEntity(request);
         Condition condition = request.getCondition() != null
                 ? conditionService.createCondition(request.getCondition(), company)
@@ -70,6 +79,10 @@ public class CompanyServiceImpl implements CompanyService {
         Detail detail = request.getDetail() != null
                 ? detailService.createDetail(request.getDetail(), company)
                 : new Detail();
+
+        PriceListWrapper priceListWrapper = request.getPriceListId() != null
+                ? priceListWrapperRepository.findById(request.getPriceListId()).orElseThrow()
+                : null;
 
         List<Branch> branches = new ArrayList<>();
 
@@ -84,6 +97,8 @@ public class CompanyServiceImpl implements CompanyService {
         company.setBranches(branches);
         company.setDetail(detail);
         company.setContactPerson(contactPersons);
+        company.setPriceList(priceListWrapper);
+        company.setOurCompanies(ourCompanies);
         Company savedCompany = companyRepository.save(company);
 
         List<AttributeUpsertRequest> attributes =
@@ -105,6 +120,19 @@ public class CompanyServiceImpl implements CompanyService {
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Company with id %s not found", id)));
         return getCompanyResponse(company);
+    }
+
+    @Override
+    public CompanyResponse getCompanyByHistoryId(Long historyId) {
+        return companyRepository.findByHistoryId(historyId)
+                .map(this::getCompanyResponse)
+                .orElseThrow(() -> new NotFoundException("Company not found with history id: " + historyId));
+    }
+
+    @Override
+    public Company fetchCompanyById(Long companyId) {
+        return companyRepository.findById(companyId)
+                .orElseThrow(() -> new NotFoundException("Company not found with id: " + companyId));
     }
 
     public Company getCompanyEntityById(Long id) {
@@ -150,12 +178,6 @@ public class CompanyServiceImpl implements CompanyService {
         );
 
         return getCompanyResponse(updateCompany);
-    }
-
-    @Override
-    public Optional<Company> fetchCompanyById(Long companyId) {
-        return Optional.of(companyRepository.findById(companyId)
-                .orElseThrow(() -> new NotFoundException("Company not found")));
     }
 
     @Override
@@ -320,13 +342,11 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
-    private CompanyResponse getCompanyResponse(Company updateCompany) {
-        CompanyResponse response = companyMapper.toCompanyResponse(updateCompany);
-        PriceListWrapper priceList = updateCompany.getPriceList();
-        if (priceList != null) {
-            List<ProductResponse> products = priceList.getPriceListItems() != null
-                    ? ProductClientUtil.enrichProductsWithPrices(priceList.getPriceListItems(), productClient)
-                    : Collections.emptyList();
+    private CompanyResponse getCompanyResponse(Company entity) {
+        CompanyResponse response = companyMapper.toCompanyResponse(entity);
+        if (entity.getPriceList() != null) {
+            PriceListWrapper priceList = entity.getPriceList();
+            List<ProductResponse> products = ProductClientUtil.enrichProductsWithPrices(priceList.getPriceListItems(), productClient);
 
             PriceListWrapperResponse priceListResponse = priceListWrapperMapper.toPriceListWrapperResponse(priceList);
             priceListResponse.setProduct(products);
@@ -334,5 +354,4 @@ public class CompanyServiceImpl implements CompanyService {
         }
         return response;
     }
-
 }

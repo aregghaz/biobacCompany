@@ -9,7 +9,6 @@ import org.springframework.data.util.Pair;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface CompanyService {
 
@@ -17,9 +16,11 @@ public interface CompanyService {
 
     CompanyResponse getCompanyById(Long companyId);
 
-    CompanyResponse updateCompany(Long id, CompanyRequest dto);
+    CompanyResponse getCompanyByHistoryId(Long historyId);
 
-    Optional<Company> fetchCompanyById(Long companyId);
+    Company fetchCompanyById(Long companyId);
+
+    CompanyResponse updateCompany(Long id, CompanyRequest dto);
 
     void deleteCompany(Long companyId);
 

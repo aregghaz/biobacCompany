@@ -1,6 +1,5 @@
 package com.biobac.company.response;
 
-import com.biobac.company.entity.embeddable.BankInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +18,6 @@ public class OurCompanyResponse extends AuditableResponse {
     private List<String> websites;
     private List<String> phones;
     private DetailsResponse detail;
-    private List<BankInfo> bankInformationList;
     private List<AccountResponse> accounts;
     private List<AttributeResponse> attributes;
 }
