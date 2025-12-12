@@ -23,22 +23,28 @@ jobs:
       - name: Build JAR
         run: mvn clean package -DskipTests
 
-      # 🔐 Create SSH key on runner
-      - name: Prepare SSH key
+      # 🔐 Prepare SSH (DEPLOY KEY)
+      - name: Prepare SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KEY_B64 }}" | base64 -d > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_DEPLOY_KEY_B64 }}" | base64 -d > ~/.ssh/id_ed25519_deploy
+          chmod 600 ~/.ssh/id_ed25519_deploy
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      # 📦 Copy JAR using native scp
+      # 📦 Copy JAR
       - name: Copy JAR to server
         run: |
-          scp target/company-0.0.1-SNAPSHOT.jar \
+          scp \
+            -i ~/.ssh/id_ed25519_deploy \
+            -o IdentitiesOnly=yes \
+            target/company-0.0.1-SNAPSHOT.jar \
             deploy@${{ secrets.SERVER_IP }}:/home/springapp/production/
 
-      # 🔄 Restart service
+      # 🔄 Restart systemd service
       - name: Restart Company service
         run: |
-          ssh deploy@${{ secrets.SERVER_IP }} \
-            "sudo systemctl restart companyDemo && sudo systemctl status companyDemo --no-pager"
+          ssh \
+            -i ~/.ssh/id_ed25519_deploy \
+            -o IdentitiesOnly=yes \
+            deploy@${{ secrets.SERVER_IP }} \
+            "sudo -n /usr/bin/systemctl restart companyDemo.service"
