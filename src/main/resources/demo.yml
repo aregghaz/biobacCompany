@@ -2,7 +2,7 @@ spring:
   application:
     name: companyProd
   datasource:
-    url: jdbc:mysql://localhost:3306/demo?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/demo?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: biobac_user
     password: rvz!RJKw54qv3S5%
     driver-class-name: com.mysql.cj.jdbc.Driver
