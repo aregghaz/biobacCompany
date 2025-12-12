@@ -72,4 +72,5 @@ public class CompanyRequest {
     private String seo;
     private List<BranchRequest> branches;
     private Long priceListId;
+    private List<Long> ourCompanyIds;
 }

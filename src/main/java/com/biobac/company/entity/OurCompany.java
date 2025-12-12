@@ -38,4 +38,8 @@ public class OurCompany extends BaseEntity {
 
     @OneToMany(mappedBy = "ourCompany", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 }

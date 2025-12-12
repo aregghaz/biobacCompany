@@ -11,12 +11,14 @@ import com.biobac.company.mapper.CompanyMapper;
 import com.biobac.company.mapper.PriceListWrapperMapper;
 import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.ContactPersonRepository;
+import com.biobac.company.repository.OurCompanyRepository;
 import com.biobac.company.repository.PriceListWrapperRepository;
 import com.biobac.company.request.AttributeUpsertRequest;
 import com.biobac.company.request.BranchRequest;
 import com.biobac.company.request.CompanyRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
+import com.biobac.company.response.OurCompanyResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
 import com.biobac.company.service.BranchService;
@@ -55,6 +57,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final ProductClient productClient;
     private final PriceListWrapperMapper priceListWrapperMapper;
     private final PriceListWrapperRepository priceListWrapperRepository;
+    private final OurCompanyRepository ourCompanyRepository;
 
     @Override
     @Transactional
@@ -63,6 +66,10 @@ public class CompanyServiceImpl implements CompanyService {
         List<ContactPerson> contactPersons = request.getContactPersonIds() == null
                 ? Collections.emptyList()
                 : contactPersonRepository.findAllById(request.getContactPersonIds());
+
+        List<OurCompany> ourCompanies = request.getOurCompanyIds() != null
+                ? ourCompanyRepository.findAllById(request.getOurCompanyIds())
+                : Collections.emptyList();
 
         Company company = companyMapper.toCompanyEntity(request);
         Condition condition = request.getCondition() != null
@@ -91,6 +98,7 @@ public class CompanyServiceImpl implements CompanyService {
         company.setDetail(detail);
         company.setContactPerson(contactPersons);
         company.setPriceList(priceListWrapper);
+        company.setOurCompanies(ourCompanies);
         Company savedCompany = companyRepository.save(company);
 
         List<AttributeUpsertRequest> attributes =
