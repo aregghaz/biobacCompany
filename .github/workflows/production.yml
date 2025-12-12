@@ -40,5 +40,5 @@ jobs:
       # 🔄 Restart service
       - name: Restart Company service
         run: |
-          ssh deploy@${{ secrets.SERVER_IP }} \
-            "sudo systemctl restart companyProd && sudo systemctl status companyProd --no-pager"
+          ssh -o StrictHostKeyChecking=no deploy@${{ secrets.SERVER_IP }} \
+            "sudo -n /usr/bin/systemctl restart companyProd.service"
