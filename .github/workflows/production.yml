@@ -25,11 +25,23 @@ jobs:
 
       # 🔐 Prepare SSH (DEPLOY KEY)
       - name: Prepare SSH
+        env:
+          SSH_DEPLOY_KEY_B64: ${{ secrets.SSH_DEPLOY_KEY_B64 }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_DEPLOY_KEY_B64 }}" | base64 -d > ~/.ssh/id_ed25519_deploy
+
+          echo "$SSH_DEPLOY_KEY_B64" \
+            | tr -d '\n' \
+            | base64 -d \
+            | tr -d '\r' \
+            > ~/.ssh/id_ed25519_deploy
+
           chmod 600 ~/.ssh/id_ed25519_deploy
+
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+          # 🔍 sanity check — если ключ битый, job упадёт ЗДЕСЬ
+          ssh-keygen -l -f ~/.ssh/id_ed25519_deploy
 
       # 📦 Copy JAR
       - name: Copy JAR to server
