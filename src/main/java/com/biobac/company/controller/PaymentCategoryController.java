@@ -15,42 +15,42 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/api/company/payment-category")
 @RequiredArgsConstructor
 public class PaymentCategoryController {
     private final PaymentCategoryService paymentCategoryService;
 
-    @PostMapping("/category")
+    @PostMapping
     public ApiResponse<PaymentCategoryResponse> createCategory(@RequestBody PaymentCategoryRequest request) {
         PaymentCategoryResponse response = paymentCategoryService.createCategory(request);
         return ResponseUtil.success("Payment category created successfully", response);
     }
 
-    @PutMapping("/category/{id}")
+    @PutMapping("/{id}")
     public ApiResponse<PaymentCategoryResponse> updateCategory(@PathVariable Long id, @RequestBody PaymentCategoryRequest request) {
         PaymentCategoryResponse response = paymentCategoryService.updateCategory(id, request);
         return ResponseUtil.success("Payment category updated successfully", response);
     }
 
-    @DeleteMapping("/category/{id}")
+    @DeleteMapping("/{id}")
     public ApiResponse<String> deleteCategory(@PathVariable Long id) {
         paymentCategoryService.deleteCategory(id);
         return ResponseUtil.success("Payment category deleted successfully");
     }
 
-    @GetMapping("/category")
+    @GetMapping
     public ApiResponse<List<PaymentCategoryResponse>> getAll() {
         List<PaymentCategoryResponse> responses = paymentCategoryService.getCategoryAll();
         return ResponseUtil.success("Payment categories retrieved successfully", responses);
     }
 
-    @GetMapping("/category/{id}")
+    @GetMapping("/{id}")
     public ApiResponse<PaymentCategoryResponse> getById(@PathVariable Long id) {
         PaymentCategoryResponse response = paymentCategoryService.getById(id);
         return ResponseUtil.success("Payment category retrieved successfully", response);
     }
 
-    @PostMapping("/category/all")
+    @PostMapping("/all")
     public ApiResponse<List<PaymentCategoryResponse>> getAll(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,

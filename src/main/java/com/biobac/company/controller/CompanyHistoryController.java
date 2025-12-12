@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 // TODO this controller is only testing purpose
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/company-history")
+@RequestMapping("/api/company/company-history")
 public class CompanyHistoryController {
     private final CompanyHistoryService companyHistoryService;
 

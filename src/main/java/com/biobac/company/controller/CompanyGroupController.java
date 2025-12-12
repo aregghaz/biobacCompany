@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/company-group")
+@RequestMapping("/api/company/company-group")
 @RequiredArgsConstructor
 public class CompanyGroupController {
     private final CompanyGroupService companyGroupService;
