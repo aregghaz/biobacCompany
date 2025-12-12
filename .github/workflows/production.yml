@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production   # REQUIRED for environment secrets
+    environment: production
 
     steps:
       - name: Checkout
@@ -23,28 +23,22 @@ jobs:
       - name: Build JAR
         run: mvn clean package -DskipTests
 
-      # 🔐 Decode SSH key safely
+      # 🔐 Create SSH key on runner
       - name: Prepare SSH key
         run: |
-          echo "${{ secrets.SSH_KEY_B64 }}" | base64 -d > /tmp/id_ed25519
-          chmod 600 /tmp/id_ed25519
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY_B64 }}" | base64 -d > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
+      # 📦 Copy JAR using native scp
       - name: Copy JAR to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: deploy
-          key_path: /tmp/id_ed25519
-          source: "target/company-0.0.1-SNAPSHOT.jar"
-          target: "/home/springapp/production/"
-          overwrite: true
+        run: |
+          scp target/company-0.0.1-SNAPSHOT.jar \
+            deploy@${{ secrets.SERVER_IP }}:/home/springapp/production/
 
+      # 🔄 Restart service
       - name: Restart Company service
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: deploy
-          key_path: /tmp/id_ed25519
-          script: |
-            sudo systemctl restart companyProd
-            sudo systemctl status companyProd --no-pager
+        run: |
+          ssh deploy@${{ secrets.SERVER_IP }} \
+            "sudo systemctl restart companyProd && sudo systemctl status companyProd --no-pager"
