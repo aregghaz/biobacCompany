@@ -31,7 +31,7 @@ public class CompanyController {
         return ResponseUtil.success("FNS received", fnsService.getExtractedData(inn));
     }
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ApiResponse<CompanyResponse> registerCompany(@RequestBody @Valid CompanyRequest request) {
         CompanyResponse response = companyService.registerCompany(request);
         return ResponseUtil.success("created", response);
@@ -61,7 +61,7 @@ public class CompanyController {
         return ResponseUtil.success("Companies retrieved successfully", result.getFirst(), result.getSecond());
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public ApiResponse<List<CompanyResponse>> listAllCompanies() {
         List<CompanyResponse> companies = companyService.listAllCompanies();
         return ResponseUtil.success("Companies retrieved successfully", companies);
@@ -91,13 +91,13 @@ public class CompanyController {
         return ResponseUtil.success("Companies retrieved successfully", companies);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ApiResponse<CompanyResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyRequest request) {
         CompanyResponse updatedCompany = companyService.updateCompany(id, request);
         return ResponseUtil.success("Company updated successfully", updatedCompany);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ApiResponse<Void> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
         return ResponseUtil.success("Company deleted successfully");
