@@ -52,4 +52,5 @@ public class CompanyResponse {
     private List<BranchResponse> branches;
     private PriceListWrapperResponse priceList;
     private List<CompanyHistoryResponse> companyHistories;
+    private List<OurCompanyResponse> ourCompanies;
 }

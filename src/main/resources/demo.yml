@@ -2,16 +2,18 @@ spring:
   application:
     name: companyProd
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/production?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/demo?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+
     username: biobac_user
     password: rvz!RJKw54qv3S5%
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+
 server:
-  port: 8081
+  port: 8071
 fns:
   api:
     key: be55d17a512f79f65d5e5afcef5c443e1f40a113

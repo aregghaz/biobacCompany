@@ -69,6 +69,7 @@ public abstract class CompanyMapper {
     @Mapping(target = "contactPerson", ignore = true)
     @Mapping(target = "branches", ignore = true)
     @Mapping(target = "priceList", ignore = true)
+    @Mapping(target = "ourCompanies", ignore = true)
     public abstract Company toCompanyEntity(CompanyRequest request);
 
     @Mapping(source = "address.localAddress", target = "localAddress")
