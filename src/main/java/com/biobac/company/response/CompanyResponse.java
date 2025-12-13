@@ -24,6 +24,7 @@ public class CompanyResponse {
     private CompanyGroupResponse companyGroup;
     private SaleTypeResponse saleType;
     private Set<String> emails;
+    private boolean deleted;
     private List<String> phones;
     private Set<String> externalEmails;
     private List<String> externalPhones;

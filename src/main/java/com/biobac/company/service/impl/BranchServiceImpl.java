@@ -5,9 +5,12 @@ import com.biobac.company.entity.Company;
 import com.biobac.company.mapper.BranchMapper;
 import com.biobac.company.repository.BranchRepository;
 import com.biobac.company.request.BranchRequest;
+import com.biobac.company.request.BranchUpdateRequest;
 import com.biobac.company.service.BranchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +27,14 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public Branch updateBranch(Long id, BranchRequest request, Company company) {
+    public Branch createBranchForCompanyDefault(BranchUpdateRequest request, Company company) {
+        Branch branch = branchMapper.toBranchEntityDefault(request);
+        branch.setCompany(company);
+        return branch;
+    }
+
+    @Override
+    public Branch updateBranch(Long id, BranchUpdateRequest request, Company company) {
         return branchRepository.findById(id)
                 .map(branch -> {
                     Branch updatedBranch = branchMapper.updateBranch(request, company.getBranches().get(0));
@@ -32,5 +42,16 @@ public class BranchServiceImpl implements BranchService {
                     return branchRepository.save(updatedBranch);
                 })
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
+    }
+
+    @Override
+    public void deleteBranches(List<Branch> branches) {
+        if (branches != null && !branches.isEmpty()) {
+            branches.forEach(branch -> {
+                if (branch.getId() != null) {
+                    branchRepository.deleteById(branch.getId());
+                }
+            });
+        }
     }
 }

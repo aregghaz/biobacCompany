@@ -13,10 +13,7 @@ import com.biobac.company.repository.CompanyRepository;
 import com.biobac.company.repository.ContactPersonRepository;
 import com.biobac.company.repository.OurCompanyRepository;
 import com.biobac.company.repository.PriceListWrapperRepository;
-import com.biobac.company.request.AttributeUpsertRequest;
-import com.biobac.company.request.BranchRequest;
-import com.biobac.company.request.CompanyRequest;
-import com.biobac.company.request.FilterCriteria;
+import com.biobac.company.request.*;
 import com.biobac.company.response.CompanyResponse;
 import com.biobac.company.response.OurCompanyResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
@@ -86,12 +83,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<Branch> branches = new ArrayList<>();
 
-        if (request.getBranches() != null && !request.getBranches().isEmpty()) {
-            request.getBranches().forEach(branchRequest -> {
-                Branch newBranch = branchService.createBranchForCompany(branchRequest, company);
-                branches.add(newBranch);
-            });
-        }
+        syncBranches(request,  company, branches);
 
         company.setCondition(condition);
         company.setBranches(branches);
@@ -142,7 +134,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     @Transactional
-    public CompanyResponse updateCompany(Long id, CompanyRequest request) {
+    public CompanyResponse updateCompany(Long id, CompanyUpdateRequest request) {
         List<ContactPerson> contactPersons = request.getContactPersonIds() == null
                 ? Collections.emptyList()
                 : contactPersonRepository.findAllById(request.getContactPersonIds());
@@ -152,7 +144,7 @@ public class CompanyServiceImpl implements CompanyService {
         Detail detail = detailService.updateDetail(company.getId(), request.getDetail(), company);
         List<Branch> branches = new ArrayList<>();
 
-        syncBranches(request, company, branches);
+        updateOrCreateBranch(request, company, branches);
 
         company.setContactPerson(contactPersons);
         company.setCondition(condition);
@@ -318,10 +310,28 @@ public class CompanyServiceImpl implements CompanyService {
 
     private void syncBranches(CompanyRequest request, Company company, List<Branch> branches) {
         if (request.getBranches() != null && !request.getBranches().isEmpty()) {
+            request.getBranches().forEach(branchRequest -> {
+                Branch newBranch = branchService.createBranchForCompany(branchRequest, company);
+                branches.add(newBranch);
+            });
+        } else {
+            branches.clear();
+            company.setBranches(Collections.emptyList());
+        }
+    }
+
+    private void updateOrCreateBranch(CompanyUpdateRequest request, Company company, List<Branch> branches) {
+        if (request.getBranches() != null && !request.getBranches().isEmpty()) {
             Set<Long> requestBranchIds = request.getBranches().stream()
-                    .map(BranchRequest::getId)
+                    .map(BranchUpdateRequest::getId)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
+
+            List<Branch> branchesToDelete = company.getBranches().stream()
+                    .filter(branch -> branch.getId() != null && !requestBranchIds.contains(branch.getId()))
+                    .collect(Collectors.toList());
+
+            branchService.deleteBranches(branchesToDelete);
 
             company.getBranches().removeIf(branch ->
                     branch.getId() != null && !requestBranchIds.contains(branch.getId()));
@@ -334,11 +344,15 @@ public class CompanyServiceImpl implements CompanyService {
                 if (branchRequest.getId() != null && existingBranchesMap.containsKey(branchRequest.getId())) {
                     newBranch = branchService.updateBranch(branchRequest.getId(), branchRequest, company);
                 } else {
-                    newBranch = branchService.createBranchForCompany(branchRequest, company);
+                    newBranch = branchService.createBranchForCompanyDefault(branchRequest, company);
                     company.getBranches().add(newBranch);
                 }
                 branches.add(newBranch);
             });
+        } else {
+            branches.clear();
+            branchService.deleteBranches(company.getBranches());
+            company.setBranches(Collections.emptyList());
         }
     }
 
