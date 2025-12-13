@@ -19,7 +19,7 @@ public class CompanyHistoryController {
     private final CompanyHistoryService companyHistoryService;
 
     @GetMapping("/{id}")
-    public ApiResponse<CompanyHistoryResponse> getCompanyHistoryById(@PathVariable Long id){
+    public ApiResponse<CompanyHistoryResponse> getCompanyHistoryById(@PathVariable Long id) {
         CompanyHistoryResponse companyHistoryResponse = companyHistoryService.getCompanyHistoryById(id);
         return ResponseUtil.success("Company history retrieved successfully", companyHistoryResponse);
     }
