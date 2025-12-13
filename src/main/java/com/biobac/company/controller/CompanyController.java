@@ -31,7 +31,7 @@ public class CompanyController {
         return ResponseUtil.success("FNS received", fnsService.getExtractedData(inn));
     }
 
-    @PostMapping
+    @PostMapping("/")
     public ApiResponse<CompanyResponse> registerCompany(@RequestBody @Valid CompanyRequest request) {
         CompanyResponse response = companyService.registerCompany(request);
         return ResponseUtil.success("created", response);
