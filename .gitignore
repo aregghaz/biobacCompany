@@ -18,6 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
+/src/main/resources/application.yml
 /src/main/resources/demo.yml
 /src/main/resources/production.yml
 ### NetBeans ###

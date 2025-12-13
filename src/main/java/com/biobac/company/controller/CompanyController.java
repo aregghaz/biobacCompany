@@ -2,6 +2,7 @@ package com.biobac.company.controller;
 
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.request.CompanyRequest;
+import com.biobac.company.request.CompanyUpdateRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.CompanyResponse;
@@ -92,7 +93,7 @@ public class CompanyController {
     }
 
     @PutMapping("/update/{id}")
-    public ApiResponse<CompanyResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyRequest request) {
+    public ApiResponse<CompanyResponse> updateCompany(@PathVariable Long id, @RequestBody CompanyUpdateRequest request) {
         CompanyResponse updatedCompany = companyService.updateCompany(id, request);
         return ResponseUtil.success("Company updated successfully", updatedCompany);
     }
