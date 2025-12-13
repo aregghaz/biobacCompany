@@ -162,7 +162,7 @@ public abstract class PaymentCategoryMapper {
             return enricher != null ? enricher.getSellersSafe() : Collections.emptyList();
         } catch (Exception e) {
             e.printStackTrace();
-            throw  e;
+            throw e;
         }
     }
 
