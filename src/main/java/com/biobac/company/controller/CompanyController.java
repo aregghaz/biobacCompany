@@ -61,7 +61,7 @@ public class CompanyController {
         return ResponseUtil.success("Companies retrieved successfully", result.getFirst(), result.getSecond());
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ApiResponse<List<CompanyResponse>> listAllCompanies() {
         List<CompanyResponse> companies = companyService.listAllCompanies();
         return ResponseUtil.success("Companies retrieved successfully", companies);
