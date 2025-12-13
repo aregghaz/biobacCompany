@@ -8,5 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {OurCompanyMapper.class, CompanyMapper.class, SaleItemMapper.class, ContactPersonMapper.class})
 public interface SaleMapper {
     @Mapping(source = "buyerCompany", target = "company")
+    @Mapping(target = "items", ignore = true)
     SaleResponse toResponse(Sale entity);
 }
