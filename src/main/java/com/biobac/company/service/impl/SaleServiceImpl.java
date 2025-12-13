@@ -140,6 +140,10 @@ public class SaleServiceImpl implements SaleService {
         List<ProductConsumeSaleRequest> consumeRequests =
                 saveSaleItems(request.getItems(), sale);
 
+        if (consumeRequests.isEmpty()) {
+            return saleMapper.toResponse(sale);
+        }
+
         ApiResponse<ProductResponse> response = productClient.getProductById(consumeRequests.get(0).getProductId());
 
         final String productName = response.getData().getName();
@@ -157,7 +161,6 @@ public class SaleServiceImpl implements SaleService {
                 .build();
 
         companyHistoryService.recordCompanyHistory(historyRequest);
-
         consumeProducts(consumeRequests);
 
         return saleMapper.toResponse(sale);
@@ -178,7 +181,11 @@ public class SaleServiceImpl implements SaleService {
 
         saveSaleItems(request.getItems(), sale);
 
-        return saleMapper.toResponse(sale);
+        SaleResponse response = saleMapper.toResponse(sale);
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            response.setItems(new ArrayList<>());
+        }
+        return response;
     }
 
     @Override
