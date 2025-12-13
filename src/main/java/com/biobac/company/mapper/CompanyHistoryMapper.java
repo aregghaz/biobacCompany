@@ -9,5 +9,6 @@ import org.mapstruct.Mapper;
 public interface CompanyHistoryMapper {
 
     CompanyHistory toCompanyHistoryEntity(CompanyHistoryRequest request);
+
     CompanyHistoryResponse toCompanyHistoryResponse(CompanyHistory entity);
 }

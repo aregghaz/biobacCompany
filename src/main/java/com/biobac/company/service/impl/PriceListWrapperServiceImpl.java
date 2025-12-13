@@ -28,7 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -62,12 +65,6 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
         return priceListWrapperRepository.findById(id)
                 .map(buildPriceListResponse())
                 .orElseThrow(() -> new NotFoundException("Price list not found"));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<PriceListWrapper> fetchPriceListById(Long id) {
-        return priceListWrapperRepository.fetchWithItems(id);
     }
 
     @Override
@@ -121,7 +118,6 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
 
         processProductRequests(request, products, priceListWrapper, priceListItems);
 
-
         if (priceListWrapper.getPriceListItems() == null) {
             priceListWrapper.setPriceListItems(new ArrayList<>());
         }
@@ -139,6 +135,7 @@ public class PriceListWrapperServiceImpl implements PriceListWrapperService {
     public void deletePriceListWrapper(Long id) {
         priceListWrapperRepository.deleteById(id);
     }
+
 
     private void processProductRequests(
             PriceListWrapperRequest request,

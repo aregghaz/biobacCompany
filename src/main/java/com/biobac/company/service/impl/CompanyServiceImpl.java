@@ -15,7 +15,6 @@ import com.biobac.company.repository.OurCompanyRepository;
 import com.biobac.company.repository.PriceListWrapperRepository;
 import com.biobac.company.request.*;
 import com.biobac.company.response.CompanyResponse;
-import com.biobac.company.response.OurCompanyResponse;
 import com.biobac.company.response.PriceListWrapperResponse;
 import com.biobac.company.response.ProductResponse;
 import com.biobac.company.service.BranchService;
@@ -83,7 +82,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<Branch> branches = new ArrayList<>();
 
-        syncBranches(request,  company, branches);
+        syncBranches(request, company, branches);
 
         company.setCondition(condition);
         company.setBranches(branches);
@@ -145,6 +144,9 @@ public class CompanyServiceImpl implements CompanyService {
         List<Branch> branches = new ArrayList<>();
 
         updateOrCreateBranch(request, company, branches);
+
+        priceListWrapperRepository.findById(request.getPriceListId())
+                .ifPresent(priceListWrapper -> company.setPriceList(priceListWrapper));
 
         company.setContactPerson(contactPersons);
         company.setCondition(condition);

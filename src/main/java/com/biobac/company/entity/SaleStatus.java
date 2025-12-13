@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class SaleStatus extends BaseEntity{
+public class SaleStatus extends BaseEntity {
     private String name;
 }

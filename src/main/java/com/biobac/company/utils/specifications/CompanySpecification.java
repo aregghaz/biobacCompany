@@ -93,7 +93,7 @@ public class CompanySpecification {
     }
 
     public static Specification<Company> filterBuyer() {
-        return (root, query, cb) ->{
+        return (root, query, cb) -> {
             Join<Company, CompanyType> typesJoin = root.join("types", JoinType.INNER);
             return cb.equal(typesJoin.get("id"), 1);
         };
