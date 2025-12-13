@@ -3,6 +3,7 @@ package com.biobac.company.service;
 import com.biobac.company.dto.PaginationMetadata;
 import com.biobac.company.entity.Company;
 import com.biobac.company.request.CompanyRequest;
+import com.biobac.company.request.CompanyUpdateRequest;
 import com.biobac.company.request.FilterCriteria;
 import com.biobac.company.response.CompanyResponse;
 import org.springframework.data.util.Pair;
@@ -20,7 +21,7 @@ public interface CompanyService {
 
     Company fetchCompanyById(Long companyId);
 
-    CompanyResponse updateCompany(Long id, CompanyRequest dto);
+    CompanyResponse updateCompany(Long id, CompanyUpdateRequest dto);
 
     void deleteCompany(Long companyId);
 

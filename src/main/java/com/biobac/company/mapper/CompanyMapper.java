@@ -5,6 +5,7 @@ import com.biobac.company.entity.*;
 import com.biobac.company.entity.enums.AttributeTargetType;
 import com.biobac.company.repository.*;
 import com.biobac.company.request.CompanyRequest;
+import com.biobac.company.request.CompanyUpdateRequest;
 import com.biobac.company.response.ApiResponse;
 import com.biobac.company.response.AttributeResponse;
 import com.biobac.company.response.CompanyResponse;
@@ -99,7 +100,7 @@ public abstract class CompanyMapper {
     @Mapping(target = "contactPerson", ignore = true)
     @Mapping(target = "branches", ignore = true)
     @Mapping(target = "priceList", ignore = true)
-    public abstract Company toUpdateCompany(CompanyRequest request, @MappingTarget Company company);
+    public abstract Company toUpdateCompany(CompanyUpdateRequest request, @MappingTarget Company company);
 
     protected Source getSource(Long id) {
         if (id == null) return null;
